@@ -41,12 +41,12 @@ class Wizard(models.TransientModel):
     def generate_file(self):
         month_first_date=datetime.datetime(self.ine_year,self.ine_month,1)
         month_end_date=month_first_date + datetime.timedelta(days=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1)
-
-        lines = self.env['cardex'].search([('enter_date','>',month_first_date)])
+        m_f_d_search = datetime.date(self.ine_year,self.ine_month,1)
+        m_e_d_search = m_f_d_search + datetime.timedelta(days=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1)
+        # Seleccionamos los que tienen Entrada en el mes + salida en el mes + entrada antes y salida despues.
+        lines = self.env['cardex'].search(['|','|','&',('exit_date','>=',m_f_d_search),('exit_date','<=',m_e_d_search),'&',('enter_date','>=',m_f_d_search),('enter_date','<=',m_e_d_search),'&',('enter_date','<=',m_f_d_search),('exit_date','>=',m_e_d_search)] , order="enter_date" )
 
         compan = self.env.user.company_id
-        #compan.rooms
-        #compan.seats
 
         encuesta = ET.Element("ENCUESTA")
         cabezera = ET.SubElement(encuesta, "CABEZERA")
@@ -78,12 +78,16 @@ class Wizard(models.TransientModel):
         #Bucle de RESIDENCIA
         for linea in lines:
             alojamiento = ET.SubElement(encuesta, "RESIDENCIA")
-            ET.SubElement(alojamiento,"V0").text = str(linea.enter_date)
-            ET.SubElement(alojamiento,"V1").text = str(linea.exit_date)
-            ET.SubElement(alojamiento,"V2").text = str(linea.reservation_id.state)
-            ET.SubElement(alojamiento,"V3").text = str(linea.partner_id.documenttype)
-            ET.SubElement(alojamiento,"V4").text = str(linea.partner_id.code_ine.name)
-            ET.SubElement(alojamiento,"V5").text = str(linea.reservation_id.room_type_id.code_type)
+            ET.SubElement(alojamiento,"Primerdiadelmesbuscado").text = str(m_f_d_search)
+            ET.SubElement(alojamiento,"Ultidiadelmesbuscado").text = str(m_e_d_search)
+            ET.SubElement(alojamiento,"Entrada").text = str(linea.enter_date)
+            ET.SubElement(alojamiento,"Salida").text = str(linea.exit_date)
+            ET.SubElement(alojamiento,"Estado").text = str(linea.reservation_id.state)
+            ET.SubElement(alojamiento,"Doctipe").text = str(linea.partner_id.documenttype)
+            ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.name)
+            ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.code)
+            ET.SubElement(alojamiento,"Codigohabita").text = str(linea.reservation_id.room_type_id.code_type)
+            ET.SubElement(alojamiento,"Codigohabita").text = str(linea.partner_id.name)
 
         habitaciones = ET.SubElement(encuesta, "HABITACIONES")
         #Bucle de HABITACIONES_MOVIMIENTO
