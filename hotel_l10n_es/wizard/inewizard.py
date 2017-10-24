@@ -44,7 +44,7 @@ class Wizard(models.TransientModel):
         m_f_d_search = datetime.date(self.ine_year,self.ine_month,1)
         m_e_d_search = m_f_d_search + datetime.timedelta(days=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1)
         # Seleccionamos los que tienen Entrada en el mes + salida en el mes + entrada antes y salida despues.
-        lines = self.env['cardex'].search(['|','|','&',('exit_date','>=',m_f_d_search),('exit_date','<=',m_e_d_search),'&',('enter_date','>=',m_f_d_search),('enter_date','<=',m_e_d_search),'&',('enter_date','<=',m_f_d_search),('exit_date','>=',m_e_d_search)] , order="enter_date desc" )
+        lines = self.env['cardex'].search(['|','|','&',('exit_date','>=',m_f_d_search),('exit_date','<=',m_e_d_search),'&',('enter_date','>=',m_f_d_search),('enter_date','<=',m_e_d_search),'&',('enter_date','<=',m_f_d_search),('exit_date','>=',m_e_d_search)] , order="enter_date" )
 
         compan = self.env.user.company_id
 
@@ -85,6 +85,7 @@ class Wizard(models.TransientModel):
             ET.SubElement(alojamiento,"Estado").text = str(linea.reservation_id.state)
             ET.SubElement(alojamiento,"Doctipe").text = str(linea.partner_id.documenttype)
             ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.name)
+            ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.code)
             ET.SubElement(alojamiento,"Codigohabita").text = str(linea.reservation_id.room_type_id.code_type)
             ET.SubElement(alojamiento,"Codigohabita").text = str(linea.partner_id.name)
 
