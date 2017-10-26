@@ -41,10 +41,8 @@ class Wizard(models.TransientModel):
     def generate_file(self):
         month_first_date=datetime.datetime(self.ine_year,self.ine_month,1)
         last_day=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1
-        #month_end_date=month_first_date + datetime.timedelta(days=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1)
         month_end_date=month_first_date + datetime.timedelta(days=last_day)
         m_f_d_search = datetime.date(self.ine_year,self.ine_month,1)
-        #m_e_d_search = m_f_d_search + datetime.timedelta(days=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1)
         m_e_d_search = m_f_d_search + datetime.timedelta(days=last_day)
         last_day +=1
         
@@ -83,7 +81,7 @@ class Wizard(models.TransientModel):
         alojamiento = ET.SubElement(encuesta, "ALOJAMIENTO")
         #Bucle de RESIDENCIA
 
-
+        #Reset Variables
         ine_entrada = []
         ine_salidas = []
         ine_pernoct = []
@@ -92,7 +90,35 @@ class Wizard(models.TransientModel):
             ine_salidas.append(0)
             ine_pernoct.append(0)
 
+        #Cabezera
+        code_control = lines[0].partner_id.code_ine.code
+        alojamiento = ET.SubElement(encuesta, "RESIDENCIA")
+
         for linea in lines:
+            #Si ha cambiado el codigo
+            if code_control<>linea.partner_id.code_ine.code:
+                ET.SubElement(alojamiento,"ID_PROVINCIA_ISLA").text = str(code_control)
+                movimiento = ET.SubElement(alojamiento, "MOVIMIENTO")
+
+                for x in xrange(1,last_day+1):
+                    if ine_entrada[x]+ine_salidas[x]+ine_pernoct[x] > 0:
+                        ET.SubElement(movimiento,"N_DIA").text = str(x)
+                        ET.SubElement(movimiento,"ENTRADAS").text = str(ine_entrada[x])
+                        ET.SubElement(movimiento,"SALIDAS").text = str(ine_salidas[x])
+                        ET.SubElement(movimiento,"PERNOCTACIONES").text = str(ine_pernoct[x])
+
+                #Reset Variables
+                ine_entrada = []
+                ine_salidas = []
+                ine_pernoct = []
+                for x in xrange(last_day+1):
+                    ine_entrada.append(0)
+                    ine_salidas.append(0)
+                    ine_pernoct.append(0)
+
+                code_control = linea.partner_id.code_ine.code
+
+            #Hacemos las sumas
             f_entrada = linea.enter_date.split('-')
             f_salida = linea.exit_date.split('-')
             # Ha entrado este mes
@@ -117,18 +143,20 @@ class Wizard(models.TransientModel):
 
             #if linea.enter_date == datetime.date(self.ine_year,self.ine_month,i):
             #    ET.SubElement(alojamiento,"Entrada_"+str(i)).text = str(linea.enter_date)
-            alojamiento = ET.SubElement(encuesta, "RESIDENCIA")
-            ET.SubElement(alojamiento,"Entrada").text = str(linea.enter_date)
+            # alojamiento = ET.SubElement(encuesta, "RESIDENCIA")
+            # ET.SubElement(alojamiento,"Entrada").text = str(linea.enter_date)
             # ET.SubElement(alojamiento,"entrada_separada_ano").text = str(f_entrada[0])
             # ET.SubElement(alojamiento,"entrada_separada_mes").text = str(f_entrada[1])
             # ET.SubElement(alojamiento,"entrada_separada_dia").text = str(f_entrada[2])
-            ET.SubElement(alojamiento,"Salida").text = str(linea.exit_date)
-            ET.SubElement(alojamiento,"Estado").text = str(linea.reservation_id.state)
-            ET.SubElement(alojamiento,"Doctipe").text = str(linea.partner_id.documenttype)
-            ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.name)
-            ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.code)
-            ET.SubElement(alojamiento,"Codigohabita").text = str(linea.reservation_id.room_type_id.code_type)
-            ET.SubElement(alojamiento,"Codigohabita").text = str(linea.partner_id.name)
+            # ET.SubElement(alojamiento,"Salida").text = str(linea.exit_date)
+            # ET.SubElement(alojamiento,"Estado").text = str(linea.reservation_id.state)
+            # ET.SubElement(alojamiento,"Doctipe").text = str(linea.partner_id.documenttype)
+            # ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.name)
+            # ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.code)
+            # ET.SubElement(alojamiento,"Codigohabita").text = str(linea.reservation_id.room_type_id.code_type)
+            # ET.SubElement(alojamiento,"Codigohabita").text = str(linea.partner_id.name)
+
+
 
         habitaciones = ET.SubElement(encuesta, "HABITACIONES")
         #Bucle de HABITACIONES_MOVIMIENTO
@@ -142,15 +170,16 @@ class Wizard(models.TransientModel):
         seguimiento = ET.SubElement(encuesta, "seguimiento_variables")
         ET.SubElement(seguimiento,"month_end_date").text = str(month_end_date)
         ET.SubElement(seguimiento,"month_first_date").text = str(month_first_date)
-        for x,y in enumerate(ine_entrada):
-            ET.SubElement(seguimiento,"ENTRADAS_"+str(x)).text = str(y)
-        for x,y in enumerate(ine_salidas):
-            ET.SubElement(seguimiento,"Salidas_"+str(x)).text = str(y)
-        for x,y in enumerate(ine_pernoct):
-            ET.SubElement(seguimiento,"Pernoctaciones_"+str(x)).text = str(y)
+        # for x,y in enumerate(ine_entrada):
+        #     ET.SubElement(seguimiento,"ENTRADAS_"+str(x)).text = str(y)
+        # for x,y in enumerate(ine_salidas):
+        #     ET.SubElement(seguimiento,"Salidas_"+str(x)).text = str(y)
+        # for x,y in enumerate(ine_pernoct):
+        #     ET.SubElement(seguimiento,"Pernoctaciones_"+str(x)).text = str(y)
         ET.SubElement(alojamiento,"Primerdiadelmesbuscado").text = str(m_f_d_search)
         ET.SubElement(alojamiento,"Ultidiadelmesbuscado").text = str(m_e_d_search)
         ET.SubElement(seguimiento,"last_day").text = str(last_day)
+        ET.SubElement(seguimiento,"CodeControl").text = str(lines[0].partner_id.code_ine.code)
 
 
 
