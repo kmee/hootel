@@ -48,8 +48,9 @@ class Wizard(models.TransientModel):
         m_e_d_search = m_f_d_search + datetime.timedelta(days=last_day)
         last_day +=1
         
-        # Seleccionamos los que tienen Entrada en el mes + salida en el mes + entrada antes y salida despues.
+        # Seleccionamos los que tienen Entrada en el mes + salida en el mes + entrada antes y salida despues. Ordenandolos.
         lines = self.env['cardex'].search(['|','|','&',('exit_date','>=',m_f_d_search),('exit_date','<=',m_e_d_search),'&',('enter_date','>=',m_f_d_search),('enter_date','<=',m_e_d_search),'&',('enter_date','<=',m_f_d_search),('exit_date','>=',m_e_d_search)] , order="enter_date" )
+        lines = lines.sorted(key=lambda r: str(r.partner_id.code_ine)+r.enter_date)
 
         compan = self.env.user.company_id
 
@@ -118,9 +119,9 @@ class Wizard(models.TransientModel):
             #    ET.SubElement(alojamiento,"Entrada_"+str(i)).text = str(linea.enter_date)
             alojamiento = ET.SubElement(encuesta, "RESIDENCIA")
             ET.SubElement(alojamiento,"Entrada").text = str(linea.enter_date)
-            ET.SubElement(alojamiento,"entrada_separada_ano").text = str(f_entrada[0])
-            ET.SubElement(alojamiento,"entrada_separada_mes").text = str(f_entrada[1])
-            ET.SubElement(alojamiento,"entrada_separada_dia").text = str(f_entrada[2])
+            # ET.SubElement(alojamiento,"entrada_separada_ano").text = str(f_entrada[0])
+            # ET.SubElement(alojamiento,"entrada_separada_mes").text = str(f_entrada[1])
+            # ET.SubElement(alojamiento,"entrada_separada_dia").text = str(f_entrada[2])
             ET.SubElement(alojamiento,"Salida").text = str(linea.exit_date)
             ET.SubElement(alojamiento,"Estado").text = str(linea.reservation_id.state)
             ET.SubElement(alojamiento,"Doctipe").text = str(linea.partner_id.documenttype)
