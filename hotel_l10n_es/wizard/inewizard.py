@@ -40,9 +40,14 @@ class Wizard(models.TransientModel):
     @api.one
     def generate_file(self):
         month_first_date=datetime.datetime(self.ine_year,self.ine_month,1)
-        month_end_date=month_first_date + datetime.timedelta(days=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1)
+        last_day=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1
+        #month_end_date=month_first_date + datetime.timedelta(days=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1)
+        month_end_date=month_first_date + datetime.timedelta(days=last_day)
         m_f_d_search = datetime.date(self.ine_year,self.ine_month,1)
-        m_e_d_search = m_f_d_search + datetime.timedelta(days=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1)
+        #m_e_d_search = m_f_d_search + datetime.timedelta(days=calendar.monthrange(self.ine_year,self.ine_month)[1] - 1)
+        m_e_d_search = m_f_d_search + datetime.timedelta(days=last_day)
+        last_day +=1
+        
         # Seleccionamos los que tienen Entrada en el mes + salida en el mes + entrada antes y salida despues.
         lines = self.env['cardex'].search(['|','|','&',('exit_date','>=',m_f_d_search),('exit_date','<=',m_e_d_search),'&',('enter_date','>=',m_f_d_search),('enter_date','<=',m_e_d_search),'&',('enter_date','<=',m_f_d_search),('exit_date','>=',m_e_d_search)] , order="enter_date" )
 
@@ -76,11 +81,46 @@ class Wizard(models.TransientModel):
 
         alojamiento = ET.SubElement(encuesta, "ALOJAMIENTO")
         #Bucle de RESIDENCIA
+
+
+        ine_entrada = []
+        ine_salidas = []
+        ine_pernoct = []
+        for x in xrange(last_day+1):
+            ine_entrada.append(0)
+            ine_salidas.append(0)
+            ine_pernoct.append(0)
+
         for linea in lines:
+            f_entrada = linea.enter_date.split('-')
+            f_salida = linea.exit_date.split('-')
+            # Ha entrado este mes
+            if int(f_entrada[1]) == self.ine_month:
+                ine_entrada[int(f_entrada[2])] += 1
+                cuenta_entrada = int(f_entrada[2])
+            else:
+                # No marco entrada y cuento desde el dia 1
+                cuenta_entrada = 1
+            if int(f_salida[1]) == self.ine_month:
+                ine_salidas[int(f_salida[2])] += 1
+                cuenta_salida = int(f_salida[2])
+            else:
+                # No marco entrada y cuento desde el dia 1
+                cuenta_salida = last_day
+            #Contando pernoctaciones
+            for i in range(cuenta_salida-cuenta_entrada):
+                ine_pernoct[cuenta_entrada+i] += 1
+
+
+
+
+            #if linea.enter_date == datetime.date(self.ine_year,self.ine_month,i):
+            #    ET.SubElement(alojamiento,"Entrada_"+str(i)).text = str(linea.enter_date)
             alojamiento = ET.SubElement(encuesta, "RESIDENCIA")
-            ET.SubElement(alojamiento,"Primerdiadelmesbuscado").text = str(m_f_d_search)
-            ET.SubElement(alojamiento,"Ultidiadelmesbuscado").text = str(m_e_d_search)
             ET.SubElement(alojamiento,"Entrada").text = str(linea.enter_date)
+            ET.SubElement(alojamiento,"entrada_separada_ano").text = str(f_entrada[0])
+            ET.SubElement(alojamiento,"entrada_separada_mes").text = str(f_entrada[1])
+            ET.SubElement(alojamiento,"entrada_separada_dia").text = str(f_entrada[2])
             ET.SubElement(alojamiento,"Salida").text = str(linea.exit_date)
             ET.SubElement(alojamiento,"Estado").text = str(linea.reservation_id.state)
             ET.SubElement(alojamiento,"Doctipe").text = str(linea.partner_id.documenttype)
@@ -99,8 +139,17 @@ class Wizard(models.TransientModel):
 
 
         seguimiento = ET.SubElement(encuesta, "seguimiento_variables")
-        ET.SubElement(seguimiento,"Fecha").text = str(month_end_date)
-        ET.SubElement(seguimiento,"Fecha").text = str(month_first_date)
+        ET.SubElement(seguimiento,"month_end_date").text = str(month_end_date)
+        ET.SubElement(seguimiento,"month_first_date").text = str(month_first_date)
+        for x,y in enumerate(ine_entrada):
+            ET.SubElement(seguimiento,"ENTRADAS_"+str(x)).text = str(y)
+        for x,y in enumerate(ine_salidas):
+            ET.SubElement(seguimiento,"Salidas_"+str(x)).text = str(y)
+        for x,y in enumerate(ine_pernoct):
+            ET.SubElement(seguimiento,"Pernoctaciones_"+str(x)).text = str(y)
+        ET.SubElement(alojamiento,"Primerdiadelmesbuscado").text = str(m_f_d_search)
+        ET.SubElement(alojamiento,"Ultidiadelmesbuscado").text = str(m_e_d_search)
+        ET.SubElement(seguimiento,"last_day").text = str(last_day)
 
 
 
