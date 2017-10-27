@@ -137,35 +137,102 @@ class Wizard(models.TransientModel):
             #Contando pernoctaciones
             for i in range(cuenta_salida-cuenta_entrada):
                 ine_pernoct[cuenta_entrada+i] += 1
-
-
-
-
-            #if linea.enter_date == datetime.date(self.ine_year,self.ine_month,i):
-            #    ET.SubElement(alojamiento,"Entrada_"+str(i)).text = str(linea.enter_date)
-            # alojamiento = ET.SubElement(encuesta, "RESIDENCIA")
-            # ET.SubElement(alojamiento,"Entrada").text = str(linea.enter_date)
-            # ET.SubElement(alojamiento,"entrada_separada_ano").text = str(f_entrada[0])
-            # ET.SubElement(alojamiento,"entrada_separada_mes").text = str(f_entrada[1])
-            # ET.SubElement(alojamiento,"entrada_separada_dia").text = str(f_entrada[2])
-            # ET.SubElement(alojamiento,"Salida").text = str(linea.exit_date)
-            # ET.SubElement(alojamiento,"Estado").text = str(linea.reservation_id.state)
-            # ET.SubElement(alojamiento,"Doctipe").text = str(linea.partner_id.documenttype)
-            # ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.name)
-            # ET.SubElement(alojamiento,"INEName").text = str(linea.partner_id.code_ine.code)
-            # ET.SubElement(alojamiento,"Codigohabita").text = str(linea.reservation_id.room_type_id.code_type)
-            # ET.SubElement(alojamiento,"Codigohabita").text = str(linea.partner_id.name)
+        # Fin de cuenta desde Cardex
 
 
 
         habitaciones = ET.SubElement(encuesta, "HABITACIONES")
         #Bucle de HABITACIONES_MOVIMIENTO
 
+        movimientos = []
+        for x in xrange(last_day+1):
+            movimientos.append([0,0,0,0])
+            #movimientos.append(['suple','doble','indi','otra'])
+
+        lines_res = self.env['hotel.reservation'].search(['|','|','&',('checkout','>=',str(m_f_d_search)),('checkout','<=',str(m_e_d_search)),'&',('checkin','>=',str(m_f_d_search)),('checkin','<=',str(m_e_d_search)),'&',('checkin','<=',str(m_f_d_search)),('checkout','>=',str(m_e_d_search))] , order="checkin" )
+        for line_res in lines_res:
+            room = self.env['hotel.room'].search([('product_id','=',line_res.product_id.id)])
+            # ET.SubElement(habitaciones,"reservation_no").text = str(line_res)
+            # ET.SubElement(habitaciones,"checkin").text = str(line_res.checkin)
+            # ET.SubElement(habitaciones,"checkout").text = str(line_res.checkout)
+            # ET.SubElement(habitaciones,"adults").text = str(line_res.adults)
+            # ET.SubElement(habitaciones,"children").text = str(line_res.children)
+            # ET.SubElement(habitaciones,"state").text = str(line_res.state)
+            # ET.SubElement(habitaciones,"reservation_type").text = str(line_res.reservation_type)
+            # ET.SubElement(habitaciones,"cardex_count").text = str(line_res.cardex_count)
+            # ET.SubElement(habitaciones,"habitacion").text = str(room)
+            # ET.SubElement(habitaciones,"Capacity").text = str(room.capacity)
+            # ET.SubElement(habitaciones,"___").text = str("____")
+
+            #calculamos capacidad de habitacion
+            # !!!!! ATENCION !!!!
+            #pendiente de añadir un campo con las supletorias.
+            #asumimos de momento que por defecto supletorias sera 1 por ejemplo......
+            #cambiar siguiente linea cuando el campo exista.
+            suple_room = 1
+
+            capacidad = room.capacity - suple_room
+
+            #Cuadramos adultos con los checkin realizados.
+            if line_res.adults > line_res.checkin:
+                adultos = line_res.checkin
+            else:
+                adultos = line_res.adults
+
+            f_entrada = line_res.checkin.split('-')
+            f_salida = line_res.checkout.split('-')
+            f_entrada[2] = f_entrada[2].split()[0]
+            f_salida[2] = f_salida[2].split()[0]
+
+            # Ha entrado este mes
+            if int(f_entrada[1]) == self.ine_month:
+                ine_entrada[int(f_entrada[2])] += 1
+                cuenta_entrada = int(f_entrada[2])
+            else:
+                # No marco entrada y cuento desde el dia 1
+                cuenta_entrada = 1
+            if int(f_salida[1]) == self.ine_month:
+                ine_salidas[int(f_salida[2])] += 1
+                cuenta_salida = int(f_salida[2])
+            else:
+                # No marco salida y cuento hasta el dia last_day
+                cuenta_salida = last_day +1
+
+            #movimientos.append(['suple':0,'doble':0,'indi':0,'otra':0])
+            # para las noches que ha estado
+            for xx in xrange(cuenta_entrada,cuenta_salida):
+                if capacidad == 1:
+                    # Habitacion Individual
+                    movimientos[xx][3]+= 1
+                    if adultos > 1:
+                        # Supletorias
+                        movimientos[xx][0]+= 1
+                if capacidad == 2:
+                    # Habitacion Doble
+                    if adultos == 1:
+                        #Uso individual
+                        movimientos[xx][2]+= 1
+                    if adultos > 2:
+                        #Doble + supletorias
+                        movimientos[xx][0]+= adultos - 2
+                    else:
+                        #Doble
+                        movimientos[xx][1]+= 1
+                if capacidad > 2:
+                    #Otras Habitaciones
+                    movimientos[xx][3]+= 1
+
+        for xx in xrange(1,last_day+1):
+            ET.SubElement(habitaciones,"HABITACIONES_N_DIA").text = str(xx)
+            ET.SubElement(habitaciones,"PLAZAS_SUPLETORIAS").text = str(movimientos[xx][0])
+            ET.SubElement(habitaciones,"HABITACIONES_DOBLES_USO_DOBLE").text = str(movimientos[xx][1])
+            ET.SubElement(habitaciones,"HABITACIONES_DOBLES_USO_INDIVIDUAL").text = str(movimientos[xx][2])
+            ET.SubElement(habitaciones,"HABITACIONES_OTRAS").text = str(movimientos[xx][3])
+           
         personal = ET.SubElement(encuesta, "PERSONAL_OCUPADO")
         ET.SubElement(personal,"PERSONAL_NO_REMUNERADO").text = '0'
         ET.SubElement(personal,"PERSONAL_REMUNERADO_FIJO").text = str(compan.permanentstaff)
         ET.SubElement(personal,"PERSONAL_REMUNERADO_EVENTUAL").text = str(compan.eventualstaff)
-
 
         seguimiento = ET.SubElement(encuesta, "seguimiento_variables")
         ET.SubElement(seguimiento,"month_end_date").text = str(month_end_date)
@@ -176,10 +243,20 @@ class Wizard(models.TransientModel):
         #     ET.SubElement(seguimiento,"Salidas_"+str(x)).text = str(y)
         # for x,y in enumerate(ine_pernoct):
         #     ET.SubElement(seguimiento,"Pernoctaciones_"+str(x)).text = str(y)
-        ET.SubElement(alojamiento,"Primerdiadelmesbuscado").text = str(m_f_d_search)
-        ET.SubElement(alojamiento,"Ultidiadelmesbuscado").text = str(m_e_d_search)
+        ET.SubElement(seguimiento,"Primerdiadelmesbuscado").text = str(m_f_d_search)
+        ET.SubElement(seguimiento,"Ultidiadelmesbuscado").text = str(m_e_d_search)
         ET.SubElement(seguimiento,"last_day").text = str(last_day)
+        ET.SubElement(seguimiento,"Entrada").text = str(lines[0].enter_date)
         ET.SubElement(seguimiento,"CodeControl").text = str(lines[0].partner_id.code_ine.code)
+        #ET.SubElement(seguimiento,"Capacidad").text = str(lines[0].reservation_id.capacity)
+        ET.SubElement(seguimiento,"Adultos").text = str(lines[0].reservation_id.adults)
+        ET.SubElement(seguimiento,"Ninos").text = str(lines[0].reservation_id.children)
+        ET.SubElement(seguimiento,"habitacion").text = str(lines[0].reservation_id.product_id)
+
+        room = self.env['hotel.room'].search([('product_id','=',lines[0].reservation_id.product_id.id)])
+        ET.SubElement(seguimiento,"habitacion").text = str(room)
+        ET.SubElement(seguimiento,"Capacity").text = str(room.capacity)
+        ET.SubElement(seguimiento,"Numero").text = str(room.name)
 
 
 
