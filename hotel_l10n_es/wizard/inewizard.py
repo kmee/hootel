@@ -144,6 +144,8 @@ class Wizard(models.TransientModel):
         habitaciones = ET.SubElement(encuesta, "HABITACIONES")
         #Bucle de HABITACIONES_MOVIMIENTO
 
+        month_adr_sum = 0
+        month_adr_rooms = 0
         movimientos = []
         for x in xrange(last_day+1):
             movimientos.append([0,0,0,0])
@@ -221,6 +223,17 @@ class Wizard(models.TransientModel):
                 if capacidad > 2:
                     #Otras Habitaciones
                     movimientos[xx][3]+= 1
+            # ADR y RevPar
+            #for xx in xrange(cuenta_entrada,cuenta_salida):
+            for xx_lines in line_res.reservation_lines:
+                month_adr_sum += xx_lines.price
+                month_adr_rooms += 1
+                #ET.SubElement(habitaciones,"ADR").text = str(xx_lines.date)
+                #ET.SubElement(habitaciones,"ADR").text = str(xx_lines.price)
+
+
+
+
 
         for xx in xrange(1,last_day+1):
             ET.SubElement(habitaciones,"HABITACIONES_N_DIA").text = str(xx)
@@ -229,6 +242,32 @@ class Wizard(models.TransientModel):
             ET.SubElement(habitaciones,"HABITACIONES_DOBLES_USO_INDIVIDUAL").text = str(movimientos[xx][2])
             ET.SubElement(habitaciones,"HABITACIONES_OTRAS").text = str(movimientos[xx][3])
            
+        precios = ET.SubElement(encuesta, "PRECIOS")
+        ET.SubElement(precios,"REVPAR_MENSUAL").text = str(month_adr_sum/month_adr_rooms)
+        ET.SubElement(precios,"ADR_MENSUAL").text = str(month_adr_sum/month_adr_rooms)
+        ET.SubElement(precios,"ADR_TOUROPERADOR_TRADICIONAL").text = '0'
+        ET.SubElement(precios,"PCTN_HABITACIONES_OCUPADAS_TOUROPERADOR_TRADICIONAL").text = '0'
+        ET.SubElement(precios,"ADR_TOUROPERADOR_ONLINE").text = '0'
+        ET.SubElement(precios,"PCTN_HABITACIONES_OCUPADAS_TOUROPERADOR_ONLINE").text = '0'
+        ET.SubElement(precios,"ADR_EMPRESAS").text = '0'
+        ET.SubElement(precios,"PCTN_HABITACIONES_OCUPADAS_EMPRESAS").text = '0'
+        ET.SubElement(precios,"ADR_AGENCIA_DE_VIAJE_TRADICIONAL").text = '0'
+        ET.SubElement(precios,"PCTN_HABITACIONES_OCUPADAS_AGENCIA_TRADICIONAL").text = '0'
+        ET.SubElement(precios,"ADR_AGENCIA_DE_VIAJE_ONLINE").text = '0'
+        ET.SubElement(precios,"PCTN_HABITACIONES_OCUPADAS_AGENCIA_ONLINE").text = '0'
+        ET.SubElement(precios,"ADR_PARTICULARES").text = '0'
+        ET.SubElement(precios,"PCTN_HABITACIONES_OCUPADAS_PARTICULARES").text = '0'
+        ET.SubElement(precios,"ADR_GRUPOS").text = '0'
+        ET.SubElement(precios,"PCTN_HABITACIONES_OCUPADAS_GRUPOS").text = '0'
+        ET.SubElement(precios,"ADR_INTERNET").text = '0'
+        ET.SubElement(precios,"PCTN_HABITACIONES_OCUPADAS_INTERNET").text = '0'
+        ET.SubElement(precios,"ADR_OTROS").text = '0'
+        ET.SubElement(precios,"PCTN_HABITACIONES_OCUPADAS_OTROS").text = '0'
+       
+
+
+
+
         personal = ET.SubElement(encuesta, "PERSONAL_OCUPADO")
         ET.SubElement(personal,"PERSONAL_NO_REMUNERADO").text = '0'
         ET.SubElement(personal,"PERSONAL_REMUNERADO_FIJO").text = str(compan.permanentstaff)
