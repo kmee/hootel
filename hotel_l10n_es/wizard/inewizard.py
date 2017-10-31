@@ -36,6 +36,8 @@ class Wizard(models.TransientModel):
                           (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December'), ], 
                           string='Month', default=get_month())
     ine_year = fields.Selection(get_years(), default=get_year(), string='Year')
+    adr_screen = fields.Char()
+    rev_screen = fields.Char()
 
     @api.one
     def generate_file(self):
@@ -303,9 +305,11 @@ class Wizard(models.TransientModel):
             file=base64.encodestring( xmlstr )
             return self.write({
                  'txt_filename': 'INE_'+str(self.ine_month)+'_'+str(self.ine_year) +'.'+ 'xml',
+                 'adr_screen' : 'El ADR en el mes de la encuesta asciende a '+str(round(month_adr_sum/month_adr_rooms,2))+'€',
+                 'rev_screen' : 'El RevPar asciende a '+str(round(month_adr_sum/month_revpar_staff_rooms,2))+'€',
                  'txt_binary': base64.encodestring(xmlstr)
                  })
         else:
             return self.write({
-                 'txt_filename': 'No hay datos en este mes'
+                 'adr_screen': 'No hay datos en este mes'
                  })            
