@@ -75,7 +75,8 @@ class Wizard(models.TransientModel):
             ET.SubElement(cabezera,"TELEFONO_1").text = compan.phone
             ET.SubElement(cabezera,"TIPO").text = compan.category_id.name
             ET.SubElement(cabezera,"CATEGORIA").text = compan.vat
-            ET.SubElement(cabezera,"HABITACIONES").text = str(compan.rooms)
+            active_room = self.env['hotel.room'].search_count([('capacity', '>', 0)])
+            ET.SubElement(cabezera,"HABITACIONES").text = str(active_room)
             ET.SubElement(cabezera,"PLAZAS_DISPONIBLES_SIN_SUPLETORIAS").text = str(compan.seats)
             ET.SubElement(cabezera,"URL").text = compan.website
 
@@ -143,7 +144,6 @@ class Wizard(models.TransientModel):
             habitaciones = ET.SubElement(encuesta, "HABITACIONES")
             #Bucle de HABITACIONES_MOVIMIENTO
 
-            active_room = self.env['hotel.room'].search_count([('capacity', '>', 0)])
             month_adr_sum = 0
             month_adr_rooms = 0
             month_revpar_staff_rooms = 0
