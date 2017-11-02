@@ -103,7 +103,7 @@ class Wizard(models.TransientModel):
 
                     for x in xrange(1,last_day+1):
                         if ine_entrada[x]+ine_salidas[x]+ine_pernoct[x] > 0:
-                            ET.SubElement(movimiento,"N_DIA").text = str(x)
+                            ET.SubElement(movimiento,"N_DIA").text = "%02d" % (x)
                             ET.SubElement(movimiento,"ENTRADAS").text = str(ine_entrada[x])
                             ET.SubElement(movimiento,"SALIDAS").text = str(ine_salidas[x])
                             ET.SubElement(movimiento,"PERNOCTACIONES").text = str(ine_pernoct[x])
@@ -232,7 +232,7 @@ class Wizard(models.TransientModel):
                             movimientos[int(xx_dia[2])][6]-= 1
 
             for xx in xrange(1,last_day+1):
-                ET.SubElement(habitaciones,"HABITACIONES_N_DIA").text = str(xx)
+                ET.SubElement(habitaciones,"HABITACIONES_N_DIA").text = "%02d" % (xx)
                 ET.SubElement(habitaciones,"PLAZAS_SUPLETORIAS").text = str(movimientos[xx][0])
                 ET.SubElement(habitaciones,"HABITACIONES_DOBLES_USO_DOBLE").text = str(movimientos[xx][1])
                 ET.SubElement(habitaciones,"HABITACIONES_DOBLES_USO_INDIVIDUAL").text = str(movimientos[xx][2])
@@ -311,5 +311,5 @@ class Wizard(models.TransientModel):
                  })
         else:
             return self.write({
-                 'adr_screen': 'No hay datos en este mes'
+                 'rev_screen': 'No hay datos en este mes'
                  })            
