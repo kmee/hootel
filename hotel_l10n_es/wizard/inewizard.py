@@ -75,7 +75,8 @@ class Wizard(models.TransientModel):
             ET.SubElement(cabezera,"TELEFONO_1").text = compan.phone
             ET.SubElement(cabezera,"TIPO").text = compan.category_id.name
             ET.SubElement(cabezera,"CATEGORIA").text = compan.vat
-            ET.SubElement(cabezera,"HABITACIONES").text = str(compan.rooms)
+            active_room = self.env['hotel.room'].search_count([('capacity', '>', 0)])
+            ET.SubElement(cabezera,"HABITACIONES").text = str(active_room)
             ET.SubElement(cabezera,"PLAZAS_DISPONIBLES_SIN_SUPLETORIAS").text = str(compan.seats)
             ET.SubElement(cabezera,"URL").text = compan.website
 
@@ -103,7 +104,7 @@ class Wizard(models.TransientModel):
 
                     for x in xrange(1,last_day+1):
                         if ine_entrada[x]+ine_salidas[x]+ine_pernoct[x] > 0:
-                            ET.SubElement(movimiento,"N_DIA").text = str(x)
+                            ET.SubElement(movimiento,"N_DIA").text = "%02d" % (x)
                             ET.SubElement(movimiento,"ENTRADAS").text = str(ine_entrada[x])
                             ET.SubElement(movimiento,"SALIDAS").text = str(ine_salidas[x])
                             ET.SubElement(movimiento,"PERNOCTACIONES").text = str(ine_pernoct[x])
@@ -143,7 +144,6 @@ class Wizard(models.TransientModel):
             habitaciones = ET.SubElement(encuesta, "HABITACIONES")
             #Bucle de HABITACIONES_MOVIMIENTO
 
-            active_room = self.env['hotel.room'].search_count([('capacity', '>', 0)])
             month_adr_sum = 0
             month_adr_rooms = 0
             month_revpar_staff_rooms = 0
@@ -232,7 +232,7 @@ class Wizard(models.TransientModel):
                             movimientos[int(xx_dia[2])][6]-= 1
 
             for xx in xrange(1,last_day+1):
-                ET.SubElement(habitaciones,"HABITACIONES_N_DIA").text = str(xx)
+                ET.SubElement(habitaciones,"HABITACIONES_N_DIA").text = "%02d" % (xx)
                 ET.SubElement(habitaciones,"PLAZAS_SUPLETORIAS").text = str(movimientos[xx][0])
                 ET.SubElement(habitaciones,"HABITACIONES_DOBLES_USO_DOBLE").text = str(movimientos[xx][1])
                 ET.SubElement(habitaciones,"HABITACIONES_DOBLES_USO_INDIVIDUAL").text = str(movimientos[xx][2])
@@ -311,5 +311,5 @@ class Wizard(models.TransientModel):
                  })
         else:
             return self.write({
-                 'adr_screen': 'No hay datos en este mes'
+                 'rev_screen': 'No hay datos en este mes'
                  })            
