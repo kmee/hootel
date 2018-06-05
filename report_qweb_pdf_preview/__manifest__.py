@@ -28,9 +28,11 @@
     'summary': "Preview pdf report & launch print process",
     'description': "Preview pdf report & launch print process",
     'depends': [
+        'report',
     ],
     'data': [
         'views/general.xml',
+        'views/inherited_ir_actions_report_xml.xml',
     ],
     'qweb': [
         'static/src/xml/*.xml',

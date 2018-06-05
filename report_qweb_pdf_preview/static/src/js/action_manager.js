@@ -39,31 +39,35 @@ odoo.define('report_qweb_pdf_preview.report', function (require) {
       return report_urls;
   };
 
+  console.log("PPAAAA SSAAA POORORO");
+
   ActionManager.include({
 
     ir_actions_report_xml: function (action, options) {
       var self = this;
       action = _.clone(action);
 
-      if (action.report_type === 'qweb-pdf-preview' || action.report_type === 'qweb-pdf-preview-print') {
+      if (action.report_type === 'qweb-pdfjs') {
         var report_urls = make_report_url(action);
-        Session.rpc('/report/check_wkhtmltopdf').then(function (state) {
+        Session.rpc('/report/check_wkhtmltopdf').then(function(state) {
           if (state === 'upgrade' || state === 'ok') {
             var response = [
               report_urls['qweb-pdf'],
               'qweb-pdf'
             ];
-
             self.ir_actions_act_window_close(action, options);
+
             var uri = encodeURIComponent(`/report/download?token=123&data=${JSON.stringify(response)}`);
-            if (action.report_type === 'qweb-pdf-preview-print') {
-              uri += '#autoprint=1';
+            // Viewer Options
+            uri += `#printdpi=${action.pdfjs.print_dpi}`;
+            if (action.pdfjs.auto_print) {
+              uri += '&autoprint=1';
             }
             self._open_viewer(uri);
-          } else {
-            this._super(action, options);
           }
         });
+      } else {
+        this._super(action, options);
       }
     },
 

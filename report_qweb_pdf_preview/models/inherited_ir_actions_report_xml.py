@@ -18,4 +18,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import models
+from openerp import models, fields, api
+
+
+class IrActionsReportXml(models.Model):
+    _inherit = 'ir.actions.report.xml'
+
+    pdfjs_enabled = fields.Boolean("PDFjs Preview Enabled", default=False)
+    pdfjs_auto_print = fields.Boolean("PDFjs Auto-Print", default=False)
+    pdfjs_print_dpi = fields.Integer("PDFjs Print DPI", default=300)

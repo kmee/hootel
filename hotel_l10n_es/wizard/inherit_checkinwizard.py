@@ -160,10 +160,7 @@ class Wizard(models.TransientModel):
 
         # get the last cardex in this reservation (set difference theory)
         cardex = self.env['cardex'].search([('reservation_id', '=', record_id.id)]) - old_cardex
-
-        action_report = self.pdf_viajero(cardex.id)
-        action_report['report_type'] = 'qweb-pdf-preview-print'
-        return action_report
+        return self.pdf_viajero(cardex.id)
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):

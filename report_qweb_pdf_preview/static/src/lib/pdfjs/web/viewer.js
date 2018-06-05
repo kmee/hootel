@@ -1,4 +1,5 @@
 /* Copyright 2017 Mozilla Foundation
+ * Modified 2018 Alexandre Díaz <dev@redneboa.es>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -961,7 +962,7 @@ var PDFViewerApplication = {
     renderer: 'canvas',
     enhanceTextSelection: false,
     renderInteractiveForms: false,
-    enablePrintAutoRotate: false
+    enablePrintAutoRotate: false,
   },
   isViewerEmbedded: window.parent !== window,
   url: '',
@@ -1089,7 +1090,7 @@ var PDFViewerApplication = {
         l10n: _this2.l10n,
         enhanceTextSelection: _this2.viewerPrefs['enhanceTextSelection'],
         renderInteractiveForms: _this2.viewerPrefs['renderInteractiveForms'],
-        enablePrintAutoRotate: _this2.viewerPrefs['enablePrintAutoRotate']
+        enablePrintAutoRotate: _this2.viewerPrefs['enablePrintAutoRotate'],
       });
       pdfRenderingQueue.setViewer(_this2.pdfViewer);
       pdfLinkService.setViewer(_this2.pdfViewer);
@@ -1687,7 +1688,7 @@ var PDFViewerApplication = {
     }
     var pagesOverview = this.pdfViewer.getPagesOverview();
     var printContainer = this.appConfig.printContainer;
-    var printService = PDFPrintServiceFactory.instance.createPrintService(this.pdfDocument, pagesOverview, printContainer, this.l10n);
+    var printService = PDFPrintServiceFactory.instance.createPrintService(this.pdfDocument, pagesOverview, printContainer, this.l10n, this.pdfLinkService.printDPI);
     this.printService = printService;
     this.forceRendering();
     printService.layout();
@@ -2751,6 +2752,10 @@ var PDFLinkService = function () {
 
         // FIXME: Workarround for auto-print feature
         this.autoPrint = ('autoprint' in params && params.autoprint !== 0);
+        // FIXME: Workarround for custom dpi print
+        if ('printdpi' in params) {
+          this.printDPI = params.printdpi;
+        }
       } else {
         if (/^\d+$/.test(hash) && hash <= this.pagesCount) {
           console.warn('PDFLinkService_setHash: specifying a page number ' + 'directly after the hash symbol (#) is deprecated, ' + ('please use the "#page=' + hash + '" form instead.'));
@@ -3618,9 +3623,10 @@ var _pdfjsLib = __webpack_require__(1);
 
 var activeService = null;
 var overlayManager = null;
-function renderPage(activeServiceOnEntry, pdfDocument, pageNumber, size) {
+// FIXME: Workarround for custom dpi print
+function renderPage(activeServiceOnEntry, pdfDocument, pageNumber, size, dpi) {
   var scratchCanvas = activeService.scratchCanvas;
-  var PRINT_RESOLUTION = 150;
+  var PRINT_RESOLUTION = dpi || 150;
   var PRINT_UNITS = PRINT_RESOLUTION / 72.0;
   scratchCanvas.width = Math.floor(size.width * PRINT_UNITS);
   scratchCanvas.height = Math.floor(size.height * PRINT_UNITS);
@@ -3646,12 +3652,14 @@ function renderPage(activeServiceOnEntry, pdfDocument, pageNumber, size) {
     };
   });
 }
-function PDFPrintService(pdfDocument, pagesOverview, printContainer, l10n) {
+// FIXME: Workarround for custom dpi print
+function PDFPrintService(pdfDocument, pagesOverview, printContainer, l10n, dpi) {
   this.pdfDocument = pdfDocument;
   this.pagesOverview = pagesOverview;
   this.printContainer = printContainer;
   this.l10n = l10n || _ui_utils.NullL10n;
   this.currentPage = -1;
+  this.dpi = dpi || 150;
   this.scratchCanvas = document.createElement('canvas');
 }
 PDFPrintService.prototype = {
@@ -3702,7 +3710,8 @@ PDFPrintService.prototype = {
       }
       var index = _this.currentPage;
       renderProgress(index, pageCount, _this.l10n);
-      renderPage(_this, _this.pdfDocument, index + 1, _this.pagesOverview[index]).then(_this.useRenderedPage.bind(_this)).then(function () {
+      // FIXME: Workarround for custom dpi print
+      renderPage(_this, _this.pdfDocument, index + 1, _this.pagesOverview[index], _this.dpi).then(_this.useRenderedPage.bind(_this)).then(function () {
         renderNextPage(resolve, reject);
       }, reject);
     };
@@ -3856,11 +3865,11 @@ function ensureOverlay() {
 }
 _app.PDFPrintServiceFactory.instance = {
   supportsPrinting: true,
-  createPrintService: function createPrintService(pdfDocument, pagesOverview, printContainer, l10n) {
+  createPrintService: function createPrintService(pdfDocument, pagesOverview, printContainer, l10n, dpi) {
     if (activeService) {
       throw new Error('The print service is created and active.');
     }
-    activeService = new PDFPrintService(pdfDocument, pagesOverview, printContainer, l10n);
+    activeService = new PDFPrintService(pdfDocument, pagesOverview, printContainer, l10n, dpi);
     return activeService;
   }
 };
@@ -9002,7 +9011,7 @@ function getDefaultPreferences() {
       "renderInteractiveForms": false,
       "enablePrintAutoRotate": false,
       "disablePageMode": false,
-      "disablePageLabels": false
+      "disablePageLabels": false,
     });
   }
   return defaultPreferences;
@@ -10182,7 +10191,7 @@ function getViewerConfiguration() {
     printContainer: document.getElementById('printContainer'),
     openFileInputName: 'fileInput',
     debuggerScriptPath: './debugger.js',
-    defaultUrl: DEFAULT_URL
+    defaultUrl: DEFAULT_URL,
   };
 }
 function webViewerLoad() {
