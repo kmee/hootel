@@ -39,7 +39,6 @@ odoo.define('report_qweb_pdf_preview.report', function (require) {
       return report_urls;
   };
 
-  console.log("PPAAAA SSAAA POORORO");
 
   ActionManager.include({
 
@@ -57,7 +56,7 @@ odoo.define('report_qweb_pdf_preview.report', function (require) {
             ];
             self.ir_actions_act_window_close(action, options);
 
-            var uri = encodeURIComponent(`/report/download?token=123&data=${JSON.stringify(response)}`);
+            var uri = encodeURIComponent(`/report/download?token=pdfjs&data=${JSON.stringify(response)}`);
             // Viewer Options
             uri += `#printdpi=${action.pdfjs.print_dpi}`;
             if (action.pdfjs.auto_print) {
