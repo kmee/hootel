@@ -56,13 +56,13 @@ odoo.define('report_qweb_pdf_preview.report', function (require) {
             ];
             self.ir_actions_act_window_close(action, options);
 
-            var uri = encodeURIComponent(`/report/download?token=pdfjs&data=${JSON.stringify(response)}`);
+            var url = encodeURIComponent(`/report/download?token=pdfjs&data=${JSON.stringify(response)}`);
             // Viewer Options
-            uri += `#printdpi=${action.pdfjs.print_dpi}`;
+            url += `#printdpi=${action.pdfjs.print_dpi}`;
             if (action.pdfjs.auto_print) {
-              uri += '&autoprint=1';
+              url += '&autoprint=1';
             }
-            self._open_viewer(uri);
+            self._open_viewer(url);
           }
         });
       } else {
