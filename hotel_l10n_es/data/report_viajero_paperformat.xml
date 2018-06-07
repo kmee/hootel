@@ -1,4 +1,4 @@
-<?xml version="1.0"?> 
+<?xml version="1.0"?>
 <openerp>
     <data>
 
@@ -15,7 +15,7 @@
             <field name="margin_right">1</field>
             <field name="header_line" eval="False"/>
             <field name="header_spacing">1</field>
-            <field name="dpi">130</field>
+            <field name="dpi">201</field>
         </record>
 
     </data>

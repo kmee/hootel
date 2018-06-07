@@ -33,7 +33,7 @@
                             </group>
                             <group>
                               <div><!-- site-exportine -->
-                                <p>Abrir web del I.N.E.: <a href="https://arce.ine.es/ARCE/jsp/encuestaXml.jsp" target="_blank">I.N.E. <i class="fa fa-align-right"></i></a></p>
+                                <p>Abrir web del I.N.E.: <a href="https://arce.ine.es/ARCE/jsp/encuestaXml.jsp" target="_blank">Presentar encuesta I.N.E. <i class="fa fa-signal"></i></a></p>
                               </div>
                             </group>
                         </sheet>

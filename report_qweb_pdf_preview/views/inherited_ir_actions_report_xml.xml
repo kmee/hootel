@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<odoo>
+
+  <!-- Adding a print_report_name field inside to the report action form view -->
+  <record id="act_report_xml_view_inherit_report" model="ir.ui.view">
+      <field name="name">ir.actions.report.xml.form.inherit</field>
+      <field name="inherit_id" ref="base.act_report_xml_view" />
+      <field name="model">ir.actions.report.xml</field>
+      <field name="arch" type="xml">
+          <data>
+              <xpath expr="//field[@name='paperformat_id']" position="after">
+                  <field name="pdfjs_enabled" attrs="{'invisible': [('report_type', '!=', 'qweb-pdf')]}" />
+                  <field name="pdfjs_auto_print" attrs="{'invisible': [('pdfjs_enabled', '!=', True)]}" />
+                  <field name="pdfjs_print_dpi" attrs="{'invisible': [('pdfjs_enabled', '!=', True)]}" />
+              </xpath>
+          </data>
+      </field>
+  </record>
+
+</odoo>

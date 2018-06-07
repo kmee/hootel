@@ -210,6 +210,11 @@ HotelCalendar.prototype = {
         var rindex = !forced?_.findKey(this._reservations, {'id': r.id}):false;
         if (rindex) {
           r._html = this._reservations[rindex]._html;
+          if (this._reservations[rindex].overbooking && !r.overbooking) {
+            if (this.getReservationsByRoom(this._reservations[rindex].room).length === 1) {
+              this.removeOBRoomRow(this._reservations[rindex]);
+            }
+          }
           this._reservations[rindex] = r;
           this._cleanUnusedZones(r);
         } else {
@@ -260,6 +265,7 @@ HotelCalendar.prototype = {
     if (!(reserv instanceof HReservation)) {
       reserv = this.getReservation(reservation);
     }
+
     if (reserv) {
       // Remove all related content...
       var elms = [reserv._html, this.e.querySelector(`.hcal-warn-ob-indicator[data-hcal-reservation-obj-id='${reserv.id}']`)];
