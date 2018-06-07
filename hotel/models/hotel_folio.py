@@ -250,7 +250,7 @@ class HotelFolio(models.Model):
                     ('folio_id', '=', record.id)
                 ])
                 total_paid = sum(pay.amount for pay in payments)
-                return_lines = self.env['payment.return.line'].search([('move_line_ids','in',payments.mapped('move_line_ids.id'))])
+                return_lines = self.env['payment.return.line'].search([('move_line_ids','in',payments.mapped('move_line_ids.id')),('return_id.state','=', 'done')])
                 total_inv_refund = sum(pay_return.amount for pay_return in return_lines)
                 vals = {
                     'invoices_amount': record.amount_total - total_paid + total_inv_refund,
