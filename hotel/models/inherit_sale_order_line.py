@@ -27,3 +27,20 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     product_id = fields.Many2one(track_visibility='onchange')
+
+    @api.depends('product_uom_qty', 'discount', 'price_unit', 'tax_id')
+    def _compute_amount(self):
+        reservs = self.env['hotel.reservation'].search([
+            ('order_line_id', 'in', self.ids)
+        ])
+        if reservs:
+            for line in reservs:
+                price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+                taxes = line.order_line_id.tax_id.compute_all(price, line.order_line_id.order_id.currency_id, line.order_line_id.product_uom_qty, product=line.order_line_id.product_id, partner=line.order_line_id.order_id.partner_shipping_id)
+                line.order_line_id.update({
+                    'price_tax': taxes['total_included'] - taxes['total_excluded'],
+                    'price_total': price,
+                    'price_subtotal': price - (taxes['total_included'] - taxes['total_excluded']),
+                })
+        else:
+            super(SaleOrderLine, self)._compute_amount()

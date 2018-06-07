@@ -718,7 +718,6 @@ class HotelReservation(models.Model):
             'reservation_lines': rlines,
             'unit_price': tprice,
         })
-        master_reservation._computed_amount_reservation()
         if not self_is_master:
             return {'type': 'ir.actions.act_window_close'}
         return True
@@ -793,18 +792,6 @@ class HotelReservation(models.Model):
                     record.preconfirm == True:
                 record.confirm()
             record._compute_color()
-
-            if not record.reservation_lines and not record.splitted: #To allow add tree edit bottom room_lines on folio form
-            #TO REVIEW: Hot fix to avoid duplicate reservation_lines
-                checkin = vals.get('checkin', record.checkin)
-                checkout = vals.get('checkout', record.checkout)
-                days_diff = date_utils.date_diff(checkin,
-                                                 checkout, hours=False)
-                rlines = record.prepare_reservation_lines(checkin, days_diff)
-                record.update({
-                    'reservation_lines': rlines['commands'],
-                    'price_unit': rlines['total_price'],
-                })
             return record
 
     @api.multi
@@ -838,17 +825,15 @@ class HotelReservation(models.Model):
                 if record.reservation_type in ('staff', 'out'):
                     record.update({'price_unit': 0})
                 record.folio_id.compute_invoices_amount()
-        for record in self:
-            if (pricesChanged and 'reservation_lines' not in vals):
-                    checkin = vals.get('checkin', record.checkin)
-                    checkout = vals.get('checkout', record.checkout)
-                    days_diff = date_utils.date_diff(checkin,
-                                                     checkout, hours=False)
-                    rlines = record.prepare_reservation_lines(checkin, days_diff)
-                    record.update({
-                        'reservation_lines': rlines['commands'],
-                        'price_unit': rlines['total_price'],
-                    })
+                checkin = vals.get('checkin', record.checkin)
+                checkout = vals.get('checkout', record.checkout)
+                days_diff = date_utils.date_diff(checkin,
+                                                 checkout, hours=False)
+                rlines = record.prepare_reservation_lines(checkin, days_diff)
+                record.update({
+                    'reservation_lines': rlines['commands'],
+                    'price_unit': rlines['total_price'],
+                })
         return res
 
     @api.multi
