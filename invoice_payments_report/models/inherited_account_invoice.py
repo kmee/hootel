@@ -27,13 +27,14 @@ class AccountInvoice(models.Model):
 
     @api.depends('payments_widget', 'amount_total')
     def _compute_balance_due(self):
-        json_payments = self.payments_widget and json.loads(self.payments_widget) or False
-        if json_payments:
-            payments_amount_total = 0.0
-            for payment in json_payments['content']:
-                payments_amount_total += payment['amount']
-            self.balance_due = self.amount_total - payments_amount_total
-        else:
-            self.balance_due = self.amount_total
+        for record in self:
+            json_payments = record.payments_widget and json.loads(record.payments_widget) or False
+            if json_payments:
+                payments_amount_total = 0.0
+                for payment in json_payments['content']:
+                    payments_amount_total += payment['amount']
+                record.balance_due = record.amount_total - payments_amount_total
+            else:
+                record.balance_due = record.amount_total
 
     balance_due = fields.Float('Balance Due', compute="_compute_balance_due")
