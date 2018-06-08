@@ -811,11 +811,11 @@ class HotelReservation(models.Model):
 
     @api.multi
     def write(self, vals):
-        _logger.info("WRITE")
         for record in self:
-            if ('checkin' in vals and self.checkin != vals['checkin']) or \
-               ('checkout' in vals and self.checkout != vals['checkout']) or \
-                    ('state' in vals and self.state != vals['state']):
+            if ('checkin' in vals and record.checkin != vals['checkin']) or \
+                    ('checkout' in vals and record.checkout != vals['checkout']) or \
+                    ('state' in vals and record.state != vals['state']) or \
+                    ('amount_discount' in vals and record.amount_discount != vals['amount_discount']):
                 vals.update({'to_send': True})
 
         pricesChanged = ('checkin' in vals or \
