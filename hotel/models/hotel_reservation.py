@@ -326,11 +326,15 @@ class HotelReservation(models.Model):
     overbooking = fields.Boolean('Is Overbooking', default=False)
     # To show de total amount line in read_only mode
     amount_reservation = fields.Float('Total',
-                                      compute='_computed_amount_reservation')
+                                      compute='_computed_amount_reservation',
+                                      store=True)
     amount_reservation_services = fields.Float('Services Amount',
-                                               compute='_computed_amount_reservation')
-    amount_room = fields.Float('Amount Room', compute="_computed_amount_reservation")
-    amount_discount = fields.Float('Room with Discount', compute="_computed_amount_reservation")
+                                               compute='_computed_amount_reservation',
+                                               store=True)
+    amount_room = fields.Float('Amount Room', compute="_computed_amount_reservation",
+                                store=True)
+    amount_discount = fields.Float('Room with Discount', compute="_computed_amount_reservation",
+                                   store=True)
     discount_type = fields.Selection([
         ('percent', 'Percent'),
         ('fixed', 'Fixed')], 'Discount Type', default=lambda *a: 'percent')
@@ -418,7 +422,18 @@ class HotelReservation(models.Model):
                     res.checkout, hours=False)
                 res.nights = nights
 
-    @api.depends('reservation_lines', 'discount_fixed', 'discount', 'product_uom_qty', 'tax_id')
+    @api.model
+    def recompute_reservation_totals(self):
+        reservations = self.env['hotel.reservation'].search([])
+        for res in reservations:
+            _logger.info('---------BOOK-----------')
+            _logger.info(res.amount_reservation)
+            _logger.info(res.id)
+            res._computed_amount_reservation()
+            _logger.info(res.amount_reservation)
+            _logger.info('---------------------------')
+
+    @api.depends('reservation_lines.price', 'discount_fixed', 'discount', 'product_uom_qty', 'tax_id')
     def _computed_amount_reservation(self):
         _logger.info('_computed_amount_reservation')
         for res in self:
@@ -437,7 +452,7 @@ class HotelReservation(models.Model):
             else:
                 res.discount_fixed = (res.discount * amount_room) / 100
             res.amount_discount = amount_room - res.discount_fixed
-            res.price_unit = res.amount_room
+            res.price_unit = amount_room
             res.amount_reservation_services = amount_service
             res.amount_reservation = res.amount_discount + amount_service #To the smartbutton
 
@@ -716,7 +731,7 @@ class HotelReservation(models.Model):
         })
         master_reservation.write({
             'reservation_lines': rlines,
-            'unit_price': tprice,
+            'price_unit': tprice,
         })
         if not self_is_master:
             return {'type': 'ir.actions.act_window_close'}
@@ -796,6 +811,7 @@ class HotelReservation(models.Model):
 
     @api.multi
     def write(self, vals):
+        _logger.info("WRITE")
         for record in self:
             if ('checkin' in vals and self.checkin != vals['checkin']) or \
                ('checkout' in vals and self.checkout != vals['checkout']) or \
@@ -804,8 +820,7 @@ class HotelReservation(models.Model):
 
         pricesChanged = ('checkin' in vals or \
                          'checkout' in vals or \
-                         'discount' in vals or \
-                         'unit_price' in vals)
+                         'discount' in vals)
         vals.update({
             'edit_room': False,
         })
@@ -880,7 +895,8 @@ class HotelReservation(models.Model):
         else:
             self.price_unit = rlines['total_price']
 
-    @api.onchange('checkin', 'checkout', 'product_id', 'reservation_type', 'virtual_room_id', 'discount')
+    @api.onchange('checkin', 'checkout', 'product_id',
+        'reservation_type', 'virtual_room_id', 'discount')
     def on_change_checkin_checkout_product_id(self):
         _logger.info('on_change_checkin_checkout_product_id')
         if not self.checkin:
