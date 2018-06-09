@@ -34,7 +34,7 @@ class SaleOrderLine(models.Model):
             ('order_line_id', 'in', self.ids)
         ])
         services = self.env['hotel.service.line'].search([
-            ('order_line_id', 'in', self.ids)
+            ('service_line_id', 'in', self.ids)
         ])
         if reservs or services:
             for line in reservs:
@@ -47,8 +47,8 @@ class SaleOrderLine(models.Model):
                 })
             for line in services:
                 price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-                taxes = line.order_line_id.tax_id.compute_all(price, line.order_line_id.order_id.currency_id, line.order_line_id.product_uom_qty, product=line.order_line_id.product_id, partner=line.order_line_id.order_id.partner_shipping_id)
-                line.order_line_id.update({
+                taxes = line.service_line_id.tax_id.compute_all(price, line.service_line_id.order_id.currency_id, line.service_line_id.product_uom_qty, product=line.service_line_id.product_id, partner=line.service_line_id.order_id.partner_shipping_id)
+                line.service_line_id.update({
                     'price_tax': taxes['total_included'] - taxes['total_excluded'],
                     'price_total': taxes['total_included'],
                     'price_subtotal': taxes['total_excluded'],

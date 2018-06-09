@@ -50,7 +50,7 @@ class HotelVirtualRoomRestrictionItem(models.Model):
     closed_departure = fields.Boolean('Closed Departure')
     closed_arrival = fields.Boolean('Closed Arrival')
 
-    _sql_constraints = [('vroom_registry_unique', 'unique(virtual_room_id, date_start, date_end)',
+    _sql_constraints = [('vroom_registry_unique', 'unique(restriction_id, virtual_room_id, date_start, date_end)',
                          'Only can exists one restriction in the same day for the same virtual room!')]
 
     @api.constrains('min_stay', 'min_stay_arrival', 'max_stay',

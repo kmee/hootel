@@ -384,12 +384,12 @@ class HotelFolio(models.Model):
                     ('splitted', '=', True),
                     ('folio_id', '=', self.id),
                     ('to_send', '=', True),
-                    ('state', '=', 'confirm'),
+                    ('state', 'in', ('confirm', 'booking')),
                     '|',
                     ('parent_reservation', '=', master_reservation.id),
                     ('id', '=', master_reservation.id),
                 ]) > 0
-            elif rline.to_send and rline.state == 'confirm':
+            elif rline.to_send and rline.state in ('confirm', 'booking'):
                 has_to_send = True
                 break
         self.has_confirmed_reservations_to_send = has_to_send
