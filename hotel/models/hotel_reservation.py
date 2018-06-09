@@ -448,7 +448,7 @@ class HotelReservation(models.Model):
                 discount = (service.discount * total_line) / 100
                 amount_service += total_line - discount
             res.amount_room = amount_room #To view price_unit with read_only
-            if res.discount_type == 'fixed':
+            if res.discount_type == 'fixed' and amount_room > 0:
                 res.discount = (res.discount_fixed * 100) / amount_room
             else:
                 res.discount_fixed = (res.discount * amount_room) / 100
