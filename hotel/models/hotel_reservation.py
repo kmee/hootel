@@ -426,12 +426,13 @@ class HotelReservation(models.Model):
     def recompute_reservation_totals(self):
         reservations = self.env['hotel.reservation'].search([])
         for res in reservations:
-            _logger.info('---------BOOK-----------')
-            _logger.info(res.amount_reservation)
-            _logger.info(res.id)
-            res._computed_amount_reservation()
-            _logger.info(res.amount_reservation)
-            _logger.info('---------------------------')
+            if res.folio_id.state not in ('done','cancel'):
+                _logger.info('---------BOOK-----------')
+                _logger.info(res.amount_reservation)
+                _logger.info(res.id)
+                res._computed_amount_reservation()
+                _logger.info(res.amount_reservation)
+                _logger.info('---------------------------')
 
     @api.depends('reservation_lines.price', 'discount_fixed', 'discount', 'product_uom_qty', 'tax_id')
     def _computed_amount_reservation(self):
