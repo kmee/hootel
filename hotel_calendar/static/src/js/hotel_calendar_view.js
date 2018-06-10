@@ -1053,21 +1053,21 @@ var HotelCalendarView = View.extend({
               case 'reservation':
                 var reserv = notif[1]['reservation'];
                 // Only show notifications of other users
-                if (notif[1]['subtype'] !== 'noshow' && this._view_options['show_notifications'] && notif[1]['userid'] != this.dataset.context.uid) {
-                  var qdict = _.clone(reserv);
-                  qdict = _.extend(qdict, {
-                    'checkin': HotelCalendar.toMomentUTC(qdict['checkin'], ODOO_DATETIME_MOMENT_FORMAT).clone().local().format(L10N_DATETIME_MOMENT_FORMAT), // UTC -> Local
-                    'checkout': HotelCalendar.toMomentUTC(qdict['checkout'], ODOO_DATETIME_MOMENT_FORMAT).clone().local().format(L10N_DATETIME_MOMENT_FORMAT), // UTC -> Local
-                    'username': notif[1]['username'],
-                    'userid': notif[1]['userid']
-                  });
-                  var msg = QWeb.render('HotelCalendar.Notification', qdict);
-                  if (notif[1]['subtype'] === "notify") {
-                      this.do_notify(notif[1]['title'], msg, true);
-                  } else if (notif[1]['subtype'] === "warn") {
-                      this.do_warn(notif[1]['title'], msg, true);
-                  }
-                }
+                // if (notif[1]['subtype'] !== 'noshow' && this._view_options['show_notifications'] && notif[1]['userid'] != this.dataset.context.uid) {
+                //   var qdict = _.clone(reserv);
+                //   qdict = _.extend(qdict, {
+                //     'checkin': HotelCalendar.toMomentUTC(qdict['checkin'], ODOO_DATETIME_MOMENT_FORMAT).clone().local().format(L10N_DATETIME_MOMENT_FORMAT), // UTC -> Local
+                //     'checkout': HotelCalendar.toMomentUTC(qdict['checkout'], ODOO_DATETIME_MOMENT_FORMAT).clone().local().format(L10N_DATETIME_MOMENT_FORMAT), // UTC -> Local
+                //     'username': notif[1]['username'],
+                //     'userid': notif[1]['userid']
+                //   });
+                //   var msg = QWeb.render('HotelCalendar.Notification', qdict);
+                //   if (notif[1]['subtype'] === "notify") {
+                //       this.do_notify(notif[1]['title'], msg, true);
+                //   } else if (notif[1]['subtype'] === "warn") {
+                //       this.do_warn(notif[1]['title'], msg, true);
+                //   }
+                // }
 
                 // Create/Update/Delete reservation
                 if (notif[1]['action'] === 'unlink' || reserv['state'] === 'cancelled') {
