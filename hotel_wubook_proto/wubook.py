@@ -184,7 +184,7 @@ class WuBook(models.AbstractModel):
     @api.model
     def create_wubook_issue(self, section, message, wmessage, wid=False,
                             dfrom=False, dto=False):
-        self.env['wubook.issue'].create({
+        self.env['wubook.issue'].sudo().create({
             'section': section,
             'message': message,
             'wid': wid,

@@ -50,7 +50,7 @@ class VirtualRoomAvailability(models.Model):
         max_avail = min(cavail,
                         self.virtual_room_id.total_rooms_count)
         if self.avail > max_avail:
-            self.env['wubook.issue'].create({
+            self.env['wubook.issue'].sudo().create({
                 'section': 'avail',
                 'message': _("The new availability can't be greater than \
                     the actual availability \
