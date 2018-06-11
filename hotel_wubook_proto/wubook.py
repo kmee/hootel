@@ -156,7 +156,9 @@ class WuBook(models.AbstractModel):
             return False
 
         try:
-            self.SERVER = xmlrpclib.Server(server_addr)
+            t = TimeoutTransport()
+            t.set_timeout(3.0)
+            self.SERVER = xmlrpclib.Server(server_addr, transport=t)
             res, tok = self.SERVER.acquire_token(user, passwd, pkey)
             self.TOKEN = tok
             if res != 0:
