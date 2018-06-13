@@ -1165,7 +1165,7 @@ class HotelReservation(models.Model):
         sale_line_obj = self.env['sale.order.line'].browse(line_id)
         return sale_line_obj.copy_data(default=default)
 
-    @api.constrains('checkin', 'checkout', 'state', 'product_id')
+    @api.constrains('checkin', 'checkout', 'state', 'product_id', 'overbooking')
     def check_dates(self):
         """
         1.-When date_order is less then checkin date or
@@ -1175,7 +1175,7 @@ class HotelReservation(models.Model):
         chkin_utc_dt = date_utils.get_datetime(self.checkin)
         chkout_utc_dt = date_utils.get_datetime(self.checkout)
         if chkin_utc_dt >= chkout_utc_dt:
-                raise ValidationError(_('Room line Check In Date Should be \
+            raise ValidationError(_('Room line Check In Date Should be \
                 less than the Check Out Date!'))
         if not self.overbooking and not self._context.get("ignore_avail_restrictions", False):
             occupied = self.env['hotel.reservation'].occupied(
