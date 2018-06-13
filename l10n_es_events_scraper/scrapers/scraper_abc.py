@@ -42,10 +42,12 @@ def analize_page(url, onlyFuture):
             eventCity.postid = res.group(1)
         # Name
         res = re.search(
-            r'<h1 class="entry-title"><a href="[^"]+" rel="bookmark" title="(?:Entradas\s)?([^"]+)">',
+            r'class=\"entry-title\">(?:Entradas\s)?(?:Conciertos\s)?([^<]+)<',
             r.text, re.I)
         if res:
             eventCity.name = res.group(1)
+            _logger.info("==== EVENT NAME")
+            _logger.info(u"%s" % eventCity.name)
         # Date
         res = re.search(r'<p><strong>Fecha:<\/strong>\s(.*?)<\/p>',
                         r.text,
@@ -138,7 +140,8 @@ def import_city_events(events, search, npag=1, pags=-1,
                        onlyFuture=False):
     pags = pags if pags == -1 else (pags-1)
     E_URL = 'http://www.entradasyconciertos.com'
-    frmt_page = u'/page/%d/?s=%s' % (npag, quote_plus(search))
+    search_uni = u'%s' % search
+    frmt_page = u'/page/%d/?s=%s' % (npag, quote_plus(search_uni.encode('utf-8'), safe=':/'.encode('utf-8')))
     r = requests.get('%s%s' % (E_URL, frmt_page))
     if r.status_code == 200:
         # Get Pagination
@@ -148,7 +151,7 @@ def import_city_events(events, search, npag=1, pags=-1,
         total_pags = pages and int(pages.group(2)) or 0
 
         res_founds = re.finditer(
-            r'<h2 class="entry-title"><a href="([^"]+)" rel="bookmark">',
+            r'class="entry-title"><a href="([^"]+)" rel="bookmark">',
             r.text)
         for res in res_founds:
             sleep(REQUEST_DELAY)
