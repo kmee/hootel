@@ -21,6 +21,7 @@
 ##############################################################################
 import logging
 import xmlrpclib
+import socket
 import pytz
 import json
 from datetime import timedelta
@@ -56,6 +57,27 @@ WUBOOK_STATUS_BAD = (
     WUBOOK_STATUS_CANCELLED,
     WUBOOK_STATUS_CANCELLED_PENALTY,
 )
+
+# class TimeoutTransport(xmlrpclib.Transport):
+#     """
+#     Custom XML-RPC transport class for HTTP connections, allowing a timeout in
+#     the base connection.
+#     """
+#
+#     def __init__(self, timeout=socket._GLOBAL_DEFAULT_TIMEOUT, use_datetime=0):
+#         xmlrpclib.Transport.__init__(self, use_datetime)
+#         self._timeout = timeout
+#
+#     def make_connection(self, host):
+#         # If using python 2.6, since that implementation normally returns the
+#         # HTTP compatibility class, which doesn't have a timeout feature.
+#         #import httplib
+#         #host, extra_headers, x509 = self.get_host_info(host)
+#         #return httplib.HTTPConnection(host, timeout=self._timeout)
+#
+#         conn = xmlrpclib.Transport.make_connection(self, host)
+#         conn.timeout = self._timeout
+#         return conn
 
 
 # WUBOOK
@@ -156,9 +178,9 @@ class WuBook(models.AbstractModel):
             return False
 
         try:
-            t = TimeoutTransport()
-            t.set_timeout(3.0)
-            self.SERVER = xmlrpclib.Server(server_addr, transport=t)
+            # t = TimeoutTransport(timeout=3)
+            # self.SERVER = xmlrpclib.Server(server_addr, transport=t)
+            self.SERVER = xmlrpclib.Server(server_addr)
             res, tok = self.SERVER.acquire_token(user, passwd, pkey)
             self.TOKEN = tok
             if res != 0:
@@ -1219,7 +1241,7 @@ class WuBook(models.AbstractModel):
         persons = vroom.wcapacity
         if 'ancillary' in broom and 'guests' in broom['ancillary']:
             persons = broom['ancillary']['guests']
-        return {
+        vals = {
             'checkin': checkin_str,
             'checkout': checkout_str,
             'adults': persons,
@@ -1238,6 +1260,9 @@ class WuBook(models.AbstractModel):
             'wbook_json': json.dumps(book),
             'wmodified': book['was_modified']
         }
+        _logger.info("===== CONTRUCT RESERV")
+        _logger.info(vals)
+        return vals
 
     @api.model
     def _generate_partner_vals(self, book):
@@ -1525,6 +1550,8 @@ class WuBook(models.AbstractModel):
                             book['customer_notes'], addons, discounts),
                         'channel_type': 'web',
                     }
+                    _logger.info("=== FOLIO CREATE")
+                    _logger.info(reservations)
                     if folio_id:
                         folio_id.with_context({
                                         'wubook_action': False}).write(vals)
