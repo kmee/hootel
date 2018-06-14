@@ -5,7 +5,7 @@
   - Set time zone of users that use the calendar
 
 **MODULES:**
-  - [x] hotel: Base module (a fork of SerpentCS Hotel Module)
+  - [x] hotel: Base module (Inspired by the work of SerpentCS Hotel Module)
   - [x] hotel_calendar: Adds calendar for manage hotel reservations and rooms configuration
   - [x] hotel_calendar_wubook: Unify 'hotel_wubook_prototype' and 'hotel_calendar' modules
   - [x] hotel_data_bi: Export reservations data for Revenue to MyDataBI
