@@ -110,11 +110,10 @@ class WuBook(models.AbstractModel):
 
     @api.model
     def push_activation(self):
-        errors = []
         base_url = self.env['ir.config_parameter'].get_param('web.base.url')
         base_url = base_url.replace("http://", "https://")
         hotel_security_token = self.env['ir.values'].sudo().get_default(
-                        'wubook.config.settings', 'wubook_push_security_token')
+            'wubook.config.settings', 'wubook_push_security_token')
 
         init_connection = self._context.get('init_connection', True)
         if init_connection:
@@ -145,29 +144,29 @@ class WuBook(models.AbstractModel):
 
     def is_valid_account(self):
         user = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_user')
+            'wubook.config.settings', 'wubook_user')
         passwd = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_passwd')
+            'wubook.config.settings', 'wubook_passwd')
         lcode = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_lcode')
+            'wubook.config.settings', 'wubook_lcode')
         pkey = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_pkey')
+            'wubook.config.settings', 'wubook_pkey')
         server_addr = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_server')
-        return (user and passwd and pkey and server_addr and lcode)
+            'wubook.config.settings', 'wubook_server')
+        return bool(user and passwd and pkey and server_addr and lcode)
 
     # === NETWORK
     def init_connection(self):
         user = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_user')
+            'wubook.config.settings', 'wubook_user')
         passwd = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_passwd')
+            'wubook.config.settings', 'wubook_passwd')
         self.LCODE = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_lcode')
+            'wubook.config.settings', 'wubook_lcode')
         pkey = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_pkey')
+            'wubook.config.settings', 'wubook_pkey')
         server_addr = self.env['ir.values'].sudo().get_default(
-                                    'wubook.config.settings', 'wubook_server')
+            'wubook.config.settings', 'wubook_server')
 
         if not user or not passwd or not pkey or not server_addr or \
                 not self.LCODE:
@@ -216,11 +215,11 @@ class WuBook(models.AbstractModel):
             'date_start': dfrom and date_utils.get_datetime(
                 dfrom,
                 dtformat=DEFAULT_WUBOOK_DATE_FORMAT).strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT),
+                    DEFAULT_SERVER_DATE_FORMAT),
             'date_end': dto and date_utils.get_datetime(
                 dto,
                 dtformat=DEFAULT_WUBOOK_DATE_FORMAT).strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT),
+                    DEFAULT_SERVER_DATE_FORMAT),
         })
 
     def set_clousure_today(self, status):
@@ -232,7 +231,7 @@ class WuBook(models.AbstractModel):
         vrooms = self.env['hotel.virtual.room'].search([])
 
         restriction_parity_id = self.env['ir.values'].sudo().get_default(
-                            'hotel.config.settings', 'parity_restrictions_id')
+            'hotel.config.settings', 'parity_restrictions_id')
         if restriction_parity_id:
             restriction_parity_id = int(restriction_parity_id)
 
@@ -294,7 +293,7 @@ class WuBook(models.AbstractModel):
 
         if rcode != 0:
             self.create_wubook_issue(
-                                'room', "Can't create room in WuBook", results)
+                'room', "Can't create room in WuBook", results)
             return False
 
         return results
@@ -378,10 +377,10 @@ class WuBook(models.AbstractModel):
                     vroom.with_context({'wubook_action': False}).write(vals)
                 else:
                     vroom_obj.with_context({'wubook_action': False}).create(
-                                                                        vals)
+                        vals)
         else:
             self.create_wubook_issue(
-                            'room', "Can't import rooms from WuBook", results)
+                'room', "Can't import rooms from WuBook", results)
 
         return (rcode == 0, count)
 
@@ -628,7 +627,7 @@ class WuBook(models.AbstractModel):
             self.create_wubook_issue(
                 'reservation',
                 "Can't mark as readed a reservation in wubook",
-                results, wid=wrid)
+                results, wid=str(wrids))
 
         return rcode == 0
 
@@ -648,7 +647,7 @@ class WuBook(models.AbstractModel):
 
         if rcode != 0:
             self.create_wubook_issue(
-                        'plan', "Can't add pricing plan to wubook", results)
+                'plan', "Can't add pricing plan to wubook", results)
             return False
 
         return results
@@ -762,7 +761,7 @@ class WuBook(models.AbstractModel):
         return (rcode == 0, count)
 
     @api.model
-    def fetch_plan_prices(self, pid, dfrom, dto, rooms=[]):
+    def fetch_plan_prices(self, pid, dfrom, dto, rooms=None):
         init_connection = self._context.get('init_connection', True)
         if init_connection:
             if not self.init_connection():
@@ -772,7 +771,7 @@ class WuBook(models.AbstractModel):
                                                        pid,
                                                        dfrom,
                                                        dto,
-                                                       rooms)
+                                                       rooms or [])
         if init_connection:
             self.close_connection()
 
@@ -787,7 +786,7 @@ class WuBook(models.AbstractModel):
         return rcode == 0
 
     @api.model
-    def fetch_all_plan_prices(self, dfrom, dto, rooms=[]):
+    def fetch_all_plan_prices(self, dfrom, dto, rooms=None):
         no_errors = True
         plan_wpids = self.env['product.pricelist'].search([
             ('wpid', '!=', False), ('wpid', '!=', '')
@@ -803,7 +802,7 @@ class WuBook(models.AbstractModel):
                                                                wpid,
                                                                dfrom,
                                                                dto,
-                                                               rooms)
+                                                               rooms or [])
                 if rcode != 0:
                     self.create_wubook_issue(
                         'plan',
@@ -969,7 +968,7 @@ class WuBook(models.AbstractModel):
         vroom_restr_item_obj = self.env['hotel.virtual.room.restriction.item']
         hotel_virtual_room_obj = self.env['hotel.virtual.room']
         def_wubook_restr = virtual_room_restr_obj.search([('wpid', '=', '0')])
-        _logger.info("==== ROOM VALUES (%s -- %s)" % (dfrom, dto))
+        _logger.info("==== ROOM VALUES (%s -- %s)", dfrom, dto)
         _logger.info(values)
         for k_rid, v_rid in values.iteritems():
             vroom = hotel_virtual_room_obj.search([
@@ -1101,9 +1100,9 @@ class WuBook(models.AbstractModel):
                             restriction_item = restriction_item_obj.search([
                                 ('restriction_id', '=', restriction_id.id),
                                 ('date_start', '=', date_dt.strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT)),
+                                    DEFAULT_SERVER_DATE_FORMAT)),
                                 ('date_end', '=', date_dt.strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT)),
+                                    DEFAULT_SERVER_DATE_FORMAT)),
                                 ('applied_on', '=', '0_virtual_room'),
                                 ('virtual_room_id', '=', vroom.id)
                             ], limit=1)
@@ -1119,19 +1118,19 @@ class WuBook(models.AbstractModel):
                             }
                             if restriction_item:
                                 restriction_item.with_context({
-                                        'wubook_action': False}).write(vals)
+                                    'wubook_action': False}).write(vals)
                             else:
                                 vals.update({
                                     'restriction_id': restriction_id.id,
                                     'date_start': date_dt.strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT),
+                                        DEFAULT_SERVER_DATE_FORMAT),
                                     'date_end': date_dt.strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT),
+                                        DEFAULT_SERVER_DATE_FORMAT),
                                     'applied_on': '0_virtual_room',
                                     'virtual_room_id': vroom.id
                                 })
                                 restriction_item_obj.with_context({
-                                        'wubook_action': False}).create(vals)
+                                    'wubook_action': False}).create(vals)
 
         return True
 
@@ -1160,9 +1159,9 @@ class WuBook(models.AbstractModel):
                         pricelist_item = pricelist_item_obj.search([
                             ('pricelist_id', '=', pricelist.id),
                             ('date_start', '=', ndate_dt.strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT)),
+                                DEFAULT_SERVER_DATE_FORMAT)),
                             ('date_end', '=', ndate_dt.strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT)),
+                                DEFAULT_SERVER_DATE_FORMAT)),
                             ('compute_price', '=', 'fixed'),
                             ('applied_on', '=', '1_product'),
                             ('product_tmpl_id', '=', vroom.product_id.product_tmpl_id.id)
@@ -1173,20 +1172,20 @@ class WuBook(models.AbstractModel):
                         }
                         if pricelist_item:
                             pricelist_item.with_context({
-                                        'wubook_action': False}).write(vals)
+                                'wubook_action': False}).write(vals)
                         else:
                             vals.update({
                                 'pricelist_id': pricelist.id,
                                 'date_start': ndate_dt.strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT),
+                                    DEFAULT_SERVER_DATE_FORMAT),
                                 'date_end': ndate_dt.strftime(
-                                                DEFAULT_SERVER_DATE_FORMAT),
+                                    DEFAULT_SERVER_DATE_FORMAT),
                                 'compute_price': 'fixed',
                                 'applied_on': '1_product',
                                 'product_tmpl_id': vroom.product_id.product_tmpl_id.id
                             })
                             pricelist_item_obj.with_context({
-                                        'wubook_action': False}).create(vals)
+                                'wubook_action': False}).create(vals)
         return True
 
     @api.model
@@ -1209,7 +1208,7 @@ class WuBook(models.AbstractModel):
                     'wpid': str(plan['id']),
                 })
                 product_listprice_obj.with_context({
-                                        'wubook_action': False}).create(vals)
+                    'wubook_action': False}).create(vals)
             else:
                 plan_id.with_context({'wubook_action': False}).write(vals)
             count = count + 1
@@ -1238,14 +1237,11 @@ class WuBook(models.AbstractModel):
                     'price': brday['price']
                 }))
                 tprice += brday['price']
-        persons = vroom.wcapacity
-        if 'ancillary' in broom and 'guests' in broom['ancillary']:
-            persons = broom['ancillary']['guests']
         vals = {
             'checkin': checkin_str,
             'checkout': checkout_str,
-            'adults': persons,
-            'children': 0,
+            'adults': book['men'] or vroom.wcapacity,
+            'children': book['children'],
             'reservation_lines': reservation_lines,
             'price_unit': tprice,
             'to_assign': True,
@@ -1272,7 +1268,7 @@ class WuBook(models.AbstractModel):
         # lang = self.env['res.lang'].search([('code', '=', book['customer_language_iso'])], limit=1)
         return {
             'name': "%s, %s" %
-            (book['customer_surname'], book['customer_name']),
+                    (book['customer_surname'], book['customer_name']),
             'country_id': country_id and country_id.id,
             'city': book['customer_city'],
             'phone': book['customer_phone'],
@@ -1289,19 +1285,17 @@ class WuBook(models.AbstractModel):
         _logger.info("=== BOOKINGS FROM WUBOOK")
         _logger.info(bookings)
         default_arrival_hour = self.env['ir.values'].sudo().get_default(
-                            'hotel.config.settings', 'default_arrival_hour')
+            'hotel.config.settings', 'default_arrival_hour')
         default_departure_hour = self.env['ir.values'].sudo().get_default(
-                            'hotel.config.settings', 'default_departure_hour')
+            'hotel.config.settings', 'default_departure_hour')
 
         # Get user timezone
-        user_id = self.env['res.users'].browse(self.env.uid)
         tz_hotel = self.env['ir.values'].sudo().get_default(
-                                        'hotel.config.settings', 'tz_hotel')
+            'hotel.config.settings', 'tz_hotel')
         res_partner_obj = self.env['res.partner']
         hotel_reserv_obj = self.env['hotel.reservation']
         hotel_folio_obj = self.env['hotel.folio']
         hotel_vroom_obj = self.env['hotel.virtual.room']
-        vroom_avail_obj = self.env['hotel.virtual.room.availability']
         # Space for store some data for construct folios
         processed_rids = []
         failed_reservations = []
@@ -1313,8 +1307,8 @@ class WuBook(models.AbstractModel):
             is_cancellation = book['status'] in WUBOOK_STATUS_BAD
             bstatus = str(book['status'])
             rcode = str(book['reservation_code'])
-            crcode = book['channel_reservation_code'] and \
-                str(book['channel_reservation_code']) or 'undefined'
+            crcode = str(book['channel_reservation_code']) \
+                if book['channel_reservation_code'] else 'undefined'
 
             # Can't process failed reservations
             #  (for example set a invalid new reservation and receive in
@@ -1327,8 +1321,8 @@ class WuBook(models.AbstractModel):
                 continue
 
             # Get dates for the reservation (GMT->UTC)
-            arr_hour = book['arrival_hour'] == "--" and \
-                default_arrival_hour or book['arrival_hour']
+            arr_hour = default_arrival_hour if book['arrival_hour'] == "--" \
+                else book['arrival_hour']
             checkin = "%s %s" % (book['date_arrival'], arr_hour)
             checkin_dt = date_utils.get_datetime(
                 checkin,
@@ -1363,7 +1357,7 @@ class WuBook(models.AbstractModel):
 
             # Need update reservations?
             sreservs = hotel_reserv_obj.search([('wrid', '=', rcode)])
-            reservs = folio_id and folio_id.room_lines or sreservs
+            reservs = folio_id.room_lines if folio_id else sreservs
             reservs_processed = False
             if any(reservs):
                 folio_id = reservs[0].folio_id
@@ -1385,7 +1379,7 @@ class WuBook(models.AbstractModel):
                         reservs_processed = True
                         if is_cancellation:
                             reserv.with_context({
-                                    'wubook_action': False}).action_cancel()
+                                'wubook_action': False}).action_cancel()
                         elif reserv.state == 'cancelled':
                             reserv.with_context({
                                 'wubook_action': False,
@@ -1416,7 +1410,6 @@ class WuBook(models.AbstractModel):
             reservations = []
             used_rooms = []
             # Iterate booked rooms
-            customer_room_index = 0
             for broom in book['booked_rooms']:
                 vroom = hotel_vroom_obj.search([
                     ('wrid', '=', broom['room_id'])
@@ -1437,9 +1430,9 @@ class WuBook(models.AbstractModel):
                 # This perhaps create splitted reservation
                 while dates_checkin[0]:
                     checkin_str = dates_checkin[0].strftime(
-                                                DEFAULT_SERVER_DATETIME_FORMAT)
+                        DEFAULT_SERVER_DATETIME_FORMAT)
                     checkout_str = dates_checkout[0].strftime(
-                                                DEFAULT_SERVER_DATETIME_FORMAT)
+                        DEFAULT_SERVER_DATETIME_FORMAT)
                     vals = self._generate_booking_vals(
                         broom,
                         checkin_str,
@@ -1470,8 +1463,7 @@ class WuBook(models.AbstractModel):
 
                         if split_booking:
                             if not split_booking_parent:
-                                split_booking_parent = len(
-                                                reservations)
+                                split_booking_parent = len(reservations)
                             else:
                                 splitted_map.setdefault(
                                     split_booking_parent,
@@ -1480,11 +1472,11 @@ class WuBook(models.AbstractModel):
                         dates_checkout = [dates_checkout[1], False]
                     else:
                         date_diff = (dates_checkout[0].replace(
-                                        hour=0, minute=0, second=0,
-                                        microsecond=0) -
+                            hour=0, minute=0, second=0,
+                            microsecond=0) -
                                      dates_checkin[0].replace(
-                                        hour=0, minute=0, second=0,
-                                        microsecond=0)).days
+                                         hour=0, minute=0, second=0,
+                                         microsecond=0)).days
                         if date_diff <= 0:
                             if split_booking:
                                 if split_booking_parent:
@@ -1542,7 +1534,7 @@ class WuBook(models.AbstractModel):
             if not any(failed_reservations) and any(reservations):
                 try:
                     # TODO: Improve 'addons_list' & discounts
-                    addons = any(book['addons_list']) and str(book['addons_list']) or ''
+                    addons = str(book['addons_list']) if any(book['addons_list']) else ''
                     discounts = book.get('discount', '')
                     vals = {
                         'room_lines': reservations,
@@ -1554,14 +1546,14 @@ class WuBook(models.AbstractModel):
                     _logger.info(reservations)
                     if folio_id:
                         folio_id.with_context({
-                                        'wubook_action': False}).write(vals)
+                            'wubook_action': False}).write(vals)
                     else:
                         vals.update({
                             'partner_id': partner_id.id,
                             'wseed': book['sessionSeed']
                         })
                         folio_id = hotel_folio_obj.with_context({
-                                        'wubook_action': False}).create(vals)
+                            'wubook_action': False}).create(vals)
 
                     # Update Reservation Spitted Parents
                     sorted_rlines = folio_id.room_lines.sorted(key='id')
@@ -1572,10 +1564,10 @@ class WuBook(models.AbstractModel):
                             creserv.parent_reservation = preserv.id
 
                     processed_rids.append(rcode)
-                except Exception, e:
+                except Exception as e_msg:
                     self.create_wubook_issue(
                         'reservation',
-                        e[0],
+                        e_msg[0],
                         '', wid=rcode)
                     failed_reservations.append(crcode)
         return (processed_rids, any(failed_reservations),
@@ -1614,18 +1606,18 @@ class WuBook(models.AbstractModel):
         vroom_avail_ids = self.env['hotel.virtual.room.availability'].search([
             ('wpushed', '=', False),
             ('date', '>=', date_utils.now(hours=False).strftime(
-                                             DEFAULT_SERVER_DATE_FORMAT))
+                DEFAULT_SERVER_DATE_FORMAT))
         ])
 
         vrooms = vroom_avail_ids.mapped('virtual_room_id')
         avails = []
         for vroom in vrooms:
             vroom_avails = vroom_avail_ids.filtered(
-                                    lambda x: x.virtual_room_id.id == vroom.id)
+                lambda x: x.virtual_room_id.id == vroom.id)
             days = []
             for vroom_avail in vroom_avails:
                 vroom_avail.with_context({
-                            'wubook_action': False}).write({'wpushed': True})
+                    'wubook_action': False}).write({'wpushed': True})
                 wavail = vroom_avail.avail
                 if wavail > vroom_avail.wmax_avail:
                     wavail = vroom_avail.wmax_avail
@@ -1650,7 +1642,7 @@ class WuBook(models.AbstractModel):
         unpushed = self.env['product.pricelist.item'].search([
             ('wpushed', '=', False),
             ('date_start', '>=', date_utils.now(hours=False).strftime(
-                                                   DEFAULT_SERVER_DATE_FORMAT))
+                DEFAULT_SERVER_DATE_FORMAT))
         ], order="date_start ASC")
         if any(unpushed):
             date_start = date_utils.get_datetime(
@@ -1679,10 +1671,10 @@ class WuBook(models.AbstractModel):
                         prices[pr.wpid].update({vroom.wrid: []})
                         for i in range(0, days_diff):
                             prod = vroom.product_id.with_context({
-                                    'quantity': 1,
-                                    'pricelist': pr.id,
-                                    'date': (date_start + timedelta(days=i)).
-                                    strftime(DEFAULT_SERVER_DATE_FORMAT),
+                                'quantity': 1,
+                                'pricelist': pr.id,
+                                'date': (date_start + timedelta(days=i)).
+                                        strftime(DEFAULT_SERVER_DATE_FORMAT),
                                 })
                             prices[pr.wpid][vroom.wrid].append(prod.price)
             _logger.info("UPDATING PRICES IN WUBOOK...")
@@ -1690,10 +1682,10 @@ class WuBook(models.AbstractModel):
             for k_pk, v_pk in prices.iteritems():
                 if any(v_pk):
                     self.update_plan_prices(k_pk, date_start.strftime(
-                                            DEFAULT_WUBOOK_DATE_FORMAT), v_pk)
+                        DEFAULT_WUBOOK_DATE_FORMAT), v_pk)
 
             unpushed.with_context({
-                            'wubook_action': False}).write({'wpushed': True})
+                'wubook_action': False}).write({'wpushed': True})
         return True
 
     @api.model
@@ -1703,7 +1695,7 @@ class WuBook(models.AbstractModel):
         unpushed = rest_item_obj.search([
             ('wpushed', '=', False),
             ('date_start', '>=', date_utils.now(hours=False).strftime(
-                                                   DEFAULT_SERVER_DATE_FORMAT))
+                DEFAULT_SERVER_DATE_FORMAT))
         ], order="date_start ASC")
         if any(unpushed):
             date_start = date_utils.get_datetime(
@@ -1755,5 +1747,5 @@ class WuBook(models.AbstractModel):
                         date_start.strftime(DEFAULT_WUBOOK_DATE_FORMAT),
                         v_res)
             unpushed.with_context({
-                            'wubook_action': False}).write({'wpushed': True})
+                'wubook_action': False}).write({'wpushed': True})
         return True
