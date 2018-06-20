@@ -125,6 +125,7 @@ class ProductPricelist(models.Model):
 
     @api.multi
     def unlink(self):
+        res = super(ProductPricelist, self).unlink()
         if self._context.get('wubook_action', True) and \
                 self.env['wubook'].is_valid_account():
             for record in self:
@@ -132,7 +133,7 @@ class ProductPricelist(models.Model):
                     wres = self.env['wubook'].delete_plan(record.wpid)
                     if not wres:
                         raise ValidationError(_("Can't delete plan on WuBook"))
-        return super(ProductPricelist, self).unlink()
+        return res
 
     @api.multi
     def import_price_plans(self):
