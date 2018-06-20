@@ -124,6 +124,7 @@ class ProductPricelist(models.Model):
         return updated
 
     @api.multi
+    def unlink(self):
         if self._context.get('wubook_action', True) and \
                 self.env['wubook'].is_valid_account():
             for record in self:
