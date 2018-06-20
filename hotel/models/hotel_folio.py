@@ -166,6 +166,21 @@ class HotelFolio(models.Model):
                         compute='_compute_has_cancelled_reservations_to_send')
     has_checkout_to_send = fields.Boolean(
                         compute='_compute_has_checkout_to_send')
+    fix_price = fields.Boolean(compute='_compute_fix_price')
+
+    def _compute_fix_price(self):
+        for record in self:
+            for res in record.room_lines:
+                if res.fix_total == True:
+                    record.fix_price = True
+                    break
+                else:
+                    record.fix_price = False
+
+    def action_recalcule_payment(self):
+        for record in self:
+            for res in record.room_lines:
+                res.on_change_checkin_checkout_product_id()
 
     def _computed_rooms_char(self):
         for record in self:

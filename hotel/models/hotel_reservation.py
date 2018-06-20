@@ -351,6 +351,20 @@ class HotelReservation(models.Model):
     has_checkout_to_send = fields.Boolean(
                         related='folio_id.has_checkout_to_send',
                         readonly=True)
+    fix_total = fields.Boolean(compute='_compute_fix_total')
+    fix_folio_pending = fields.Boolean(related='folio_id.fix_price')
+
+    def action_recalcule_payment(self):
+        for record in self:
+            for res in record.folio_id.room_lines:
+                res.on_change_checkin_checkout_product_id()
+
+    def _compute_fix_total(self):
+        for res in self:
+            if int(res.amount_discount) != int(res.price_total):
+                res.fix_total = True
+            else:
+                res.fix_total = False
 
     def _computed_folio_name(self):
         for res in self:

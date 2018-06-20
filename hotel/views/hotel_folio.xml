@@ -86,13 +86,24 @@
                                 id="payment_smart_button"
                                 icon="fa-money"
                                 name="action_pay"
-                                attrs="{'invisible': [('invoices_amount','&lt;=',0)]}">
+                                attrs="{'invisible': ['|',('invoices_amount','&lt;=',0),('fix_price','=',True)]}">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_value">
                                         <field name="invoices_amount" nolabel="1"
                                         widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     </span>
                                     <span class="o_stat_text">Pending Payment</span>
+                                </div>
+                            </button>
+
+                            <button type="object" class="oe_stat_button"
+                                id="payment_smart_button"
+                                icon="fa-money"
+                                name="action_recalcule_payment"
+                                attrs="{'invisible': [('fix_price','=',False)]}"
+                                help="Calcule the total Price">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_text">Calcule Price</span>
                                 </div>
                             </button>
 
@@ -162,6 +173,7 @@
                             <field name="invoice_status" invisible="1" />
                             <field name="hotel_invoice_id" states='progress,done,cancel'
                                 readonly="1" invisible="1" />
+                            <field name="fix_price" invisible="1" />
                         </group>
                         <notebook colspan="4" col="1">
                             <page string="Lines">
@@ -233,6 +245,7 @@
                                         <field name="amount_discount" string="Final Price"/>
                                         <field name="price_subtotal" widget="monetary" invisible="1"/>
                                         <field name="price_total" widget="monetary" invisible="1"/>
+                                        <field name="fix_total" invisible="1" />
                                         <button type="object" class="oe_stat_button"
                                             id="go_reservation" icon="fa fa-2x fa-bars"
                                             name="open_reservation_form"/>
