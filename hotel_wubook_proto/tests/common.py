@@ -125,6 +125,7 @@ class TestHotelWubook(TestHotel):
         rooms_occu = []
         booked_rooms = []
         vroom_obj = self.env['hotel.virtual.room']
+        max_persons = 0
         for k_room, v_room in rinfo.iteritems():
             vroom = vroom_obj.search([
                 ('wrid', '=', k_room)
@@ -159,6 +160,8 @@ class TestHotelWubook(TestHotel):
                     'room_id': k_room,
                     'roomdays': roomdays
                 })
+                if val > max_persons:
+                    max_persons = val
 
         return {
             'id_channel': channel,
@@ -187,7 +190,7 @@ class TestHotelWubook(TestHotel):
             'status': WUBOOK_STATUS_CONFIRMED,
             'was_modified': 0,
             'channel_reservation_code': crcode,
-            'men': 4,
+            'men': max_persons,
             'orig_amount': total_amount,
             'customer_phone': partner.mobile or partner.phone or '',
             'customer_notes': notes,
