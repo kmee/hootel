@@ -792,14 +792,14 @@ class HotelReservation(models.Model):
             room = self.env['hotel.room'].search([
                 ('product_id', '=', record.product_id.id)
             ])
-            persons = record.adults + record.children
+            persons = record.adults     # Not count childrens
             if persons > room.capacity:
                 raise ValidationError(
                     _("Reservation persons can't be higher than room capacity"))
             if record.adults == 0:
                 raise ValidationError(_("Reservation has no adults"))
             if (record.state == 'draft' and record.folio_id.state == 'sale') or \
-                    record.preconfirm == True:
+                    record.preconfirm:
                 record.confirm()
             record._compute_color()
             return record

@@ -369,7 +369,7 @@ HotelCalendar.prototype = {
 
       // More Beds?
       var rpersons = (reservation.room.shared || this.options.divideRoomsByCapacity)?reservation.room.capacity:1;
-      var reservPersons = reservation.getTotalPersons();
+      var reservPersons = reservation.getTotalPersons(false);
       if ((reservation.room.shared || this.options.divideRoomsByCapacity) && reservPersons > 1 && bedNum+reservPersons <= rpersons) {
         bedNum += reservPersons-1;
       }
@@ -769,7 +769,7 @@ HotelCalendar.prototype = {
       if (r.unusedZone || r.overbooking) {
     	   continue;
       }
-      num_rooms -= (r.room && r.room.shared)?r.getTotalPersons():1;
+      num_rooms -= (r.room && r.room.shared)?r.getTotalPersons(false):1;
     }
 
     return num_rooms;
@@ -787,7 +787,7 @@ HotelCalendar.prototype = {
       if (r.unusedZone || r.overbooking) {
     	   continue;
       }
-      num_rooms -= (r.room && r.room.shared)?r.getTotalPersons():1;
+      num_rooms -= (r.room && r.room.shared)?r.getTotalPersons(false):1;
     }
 
     return num_rooms;
@@ -1434,8 +1434,8 @@ HotelCalendar.prototype = {
         }
 
         // Invalid capacity
-        var totalReservPerson = nreserv.getTotalPersons();
-        if (totalReservPerson > inCapacity || (outCapacity && totalReservPerson > outCapacity) || nreserv.room.capacity < refInReservation.getTotalPersons())
+        var totalReservPerson = nreserv.getTotalPersons(false);
+        if (totalReservPerson > inCapacity || (outCapacity && totalReservPerson > outCapacity) || nreserv.room.capacity < refInReservation.getTotalPersons(false))
         {
           nreserv._html.classList.add('hcal-reservation-invalid-swap');
         }
@@ -1995,7 +1995,7 @@ HotelCalendar.prototype = {
     for (var reserv of reservs) {
       if (!reserv.unusedZone) {
         var unused_id = 0;
-        var numBeds = reserv.getTotalPersons();
+        var numBeds = reserv.getTotalPersons(false);
       	for (var e=numBeds; e<reserv.room.capacity; ++e) {
       		nreservs.push(new HReservation({
             'id': `${reserv.id}@${--unused_id}`,
@@ -2261,7 +2261,7 @@ HotelCalendar.prototype = {
   },
 
   checkReservationPlace: function(/*HReservationObject*/reservationObj) {
-    var persons = reservationObj.getTotalPersons();
+    var persons = reservationObj.getTotalPersons(false);
     if (((reservationObj.room.shared || this.options.divideRoomsByCapacity) && reservationObj._beds.length < persons)
       || (!(reservationObj.room.shared || this.options.divideRoomsByCapacity) && persons > reservationObj.room.capacity)) {
       return false;
@@ -2786,8 +2786,12 @@ HReservation.prototype = {
       this._userData = _.extend(this._userData, data);
     }
   },
-  getTotalPersons: function() {
-    return this.adults+this.childrens;
+  getTotalPersons: function(/*Boolean*/countChildrens) {
+    var persons = this.adults;
+    if (countChildrens) {
+      persons += this.childrens;
+    }
+    return persons;
   },
   clone: function() {
     var nreserv = new HReservation({
