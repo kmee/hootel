@@ -1237,10 +1237,13 @@ class WuBook(models.AbstractModel):
                     'price': brday['price']
                 }))
                 tprice += brday['price']
+        persons = vroom.wcapacity
+        if 'ancillary' in broom and 'guests' in broom['ancillary']:
+            persons = broom['ancillary']['guests']
         vals = {
             'checkin': checkin_str,
             'checkout': checkout_str,
-            'adults': book['men'] or vroom.wcapacity,
+            'adults': persons,
             'children': book['children'],
             'reservation_lines': reservation_lines,
             'price_unit': tprice,

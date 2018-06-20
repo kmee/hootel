@@ -115,7 +115,6 @@ class ReservationRestriction(models.Model):
 
     @api.multi
     def unlink(self):
-        res = super(ReservationRestriction, self).unlink()
         if self._context.get('wubook_action', True) and \
                 self.env['wubook'].is_valid_account():
             for record in self:
@@ -124,7 +123,7 @@ class ReservationRestriction(models.Model):
                     if not wres:
                         raise ValidationError(_("Can't delete restriction plan \
                         on WuBook"))
-        return res
+        return super(ReservationRestriction, self).unlink()
 
     @api.multi
     def import_restriction_plans(self):
