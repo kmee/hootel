@@ -22,6 +22,8 @@
 from openerp import models, fields, api, _
 from datetime import date, datetime, timedelta
 import json
+import logging
+_logger = logging.getLogger(__name__)
 
 
 def get_years():
@@ -87,6 +89,8 @@ class Data_Bi(models.Model):
         # Change this to local test
         # fechafoto=date.today()
         # fechafoto=date(2018, 03, 01)
+
+        _logger.warning("Init Export Data_Bi Module")
 
         if not isinstance(archivo, int):
             archivo = 0
@@ -294,10 +298,62 @@ class Data_Bi(models.Model):
                     channel_c = int(linea.reservation_id.wchannel_id.wid)
                     if channel_c == 1:
                         # Expedia.
-                        precio_iva = (precio_neto*10/100)
-                        precio_neto -= precio_iva
-                        precio_comision = (precio_neto*18/100)
-                        precio_neto -= precio_comision
+                        if linea.reservation_id.wbook_json:
+                            jsonExp = json.loads(
+                                linea.reservation_id.wbook_json)
+                            jsonRate = jsonExp['booked_rooms'][0][
+                                'ancillary']['channel_rate_name']
+                            jsonPay = jsonExp['channel_data']['pay_model']
+                            if jsonRate == "Standalone Room Only":
+                                # Expedia TIPO 1 Merchant
+                                if jsonPay == "merchant":
+                                    # Expedia TIPO 1 Merchant
+                                    precio_iva = precio_neto-(precio_neto/1.10)
+                                    precio_comision = precio_neto*(
+                                        100/float(100-18)) - precio_neto
+                                    precio_neto += precio_comision
+                                else:
+                                    # Expedia TIPO 1 Agency
+                                    precio_iva = precio_neto-(precio_neto/1.10)
+                                    precio_neto -= precio_iva
+                                    precio_comision = precio_neto-(
+                                        precio_neto/1.18)
+                                    precio_neto -= precio_comision
+                            else:
+                                if jsonRate == "Package Room Only":
+                                    if jsonPay == "merchant":
+                                        # Expedia TIPO 2 Merchant EMPAQUETADA
+                                        comision1 = 0
+                                        comision2 = 0
+                                        precio_iva = precio_neto-(
+                                            precio_neto/1.10)
+                                        comision1 = precio_neto*(
+                                            100/float(100-18)) - precio_neto
+                                        precio_neto += comision1
+                                        comision2 = precio_neto*(
+                                            100/float(100-10)) - precio_neto
+                                        precio_neto += comision2
+                                        precio_comision = comision1 + comision2
+                                    else:
+                                        _logger.warning(
+                                            "---- " +
+                                            linea.reservation_id.partner_id.name
+                                            + " ----")
+                                        _logger.critical(
+                                            "Expedia Tarifa No Contemplada : "
+                                            + jsonRate)
+                                else:
+                                    _logger.warning(
+                                        "---- " +
+                                        linea.reservation_id.partner_id.name +
+                                        " ----")
+                                    _logger.critical(
+                                        "Expedia Tarifa No Contemplada : "
+                                        + jsonRate)
+                        else:
+                            _logger.error("--------------------------- " +
+                                          linea.reservation_id.partner_id.name
+                                          + " No Json DATA for EXPEDIA rates")
                     elif channel_c == 2:
                         # Booking.
                         precio_comision = (precio_neto*15/100)
@@ -383,6 +439,8 @@ class Data_Bi(models.Model):
             dic_export.append({'Estado Reservas': dic_estados})
 
         dictionaryToJson = json.dumps(dic_export)
+        _logger.warning("End Export Data_Bi Module to Json")
+
         # Debug Stop -------------------
         # import wdb; wdb.set_trace()
         # Debug Stop -------------------
