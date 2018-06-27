@@ -238,8 +238,11 @@ class Data_Bi(models.Model):
         lineas = self.env['wubook.channel.info'].search([])
         dic_clientes = []  # Diccionario con Clientes (OTAs)
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
-                             'ID_Cliente': u'999',
+                             'ID_Cliente': u'0',
                              'Descripcion': 'Ninguno'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'999',
+                             'Descripcion': 'Web Propia'})
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'901',
                              'Descripcion': 'Expedia Empaquedata'})
