@@ -23,12 +23,23 @@ class AccountPayment(models.Model):
         compute="_compute_folio_amount", store=True,
         string="Total amount in folio",
     )
+    save_amount = fields.Monetary(string='onchange_amount')
+    save_date = fields.Date()
+    save_journal = fields.Integer()
+    
+    @api.onchange('amount','payment_date','journal_id')
+    def onchange_amount(self):
+        if self._origin:
+            self.save_amount = self._origin.amount
+            self.save_journal = self._origin.journal_id.id
+            self.save_date = self._origin.payment_date
 
     @api.multi
     def return_payment_folio(self):
         journal = self.journal_id
         partner = self.partner_id
         amount = self.amount
+        date = self.payment_date
         reference = self.communication
         account_move_lines = self.move_line_ids.filtered(lambda x: (
             x.account_id.internal_type == 'receivable'))
@@ -40,9 +51,16 @@ class AccountPayment(models.Model):
             }
         return_vals = {
             'journal_id': journal.id,
+            'date': date,
             'line_ids': [(0,0,return_line_vals)],
             }
         return_pay = self.env['payment.return'].create(return_vals)
+        if self.save_amount:
+            self.amount = self.save_amount
+        if self.save_date:
+            self.payment_date = self.save_date
+        if self.save_journal:
+            self.journal_id = self.env['account.journal'].browse(self.save_journal)
         return {
             'name': 'Folio Payment Return',
             'view_type': 'form',
