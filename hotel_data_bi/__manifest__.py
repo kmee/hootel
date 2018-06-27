@@ -22,7 +22,7 @@
 
 {
     'name': 'Hotel MyDataBI Exporter',
-    'version': '1.1',
+    'version': '1.2',
     'author': "Jose Luis Algara (Alda hotels) <osotranquilo@gmail.com>",
     'website': 'https://www.aldahotels.com',
     'category': 'hotel/revenue',
