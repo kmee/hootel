@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<odoo>
+
+	<record model="ir.ui.view" id="view_hotel_send_confirm_mail_wizard">
+		<field name="name">hotel.wizard.send.confirm.mail</field>
+		<field name="model">hotel.wizard.send.confirm.mail</field>
+		<field name="arch" type="xml">
+			<form string="Send Confirm Mail" >
+				<!-- Common Fields -->
+				<p>Force send confirmation mail.</p>
+				<footer>
+					<button name="send_confirm_mail" string="Send Mail" type="object"
+						class="oe_highlight" />
+					or
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_hotel_send_confirm_mail" model="ir.actions.act_window">
+		<field name="name">Send Confirm Mail</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">hotel.wizard.send.confirm.mail</field>
+		<field name="view_id" ref="view_hotel_send_confirm_mail_wizard"/>
+		<field name="view_type">form</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	</record>
+
+</odoo>

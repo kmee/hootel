@@ -2,10 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2017 Solucións Aloxa S.L. <info@aloxa.eu>
-#                       Dario Lodeiros <>
-#                       Alexandre Díaz <dev@redneboa.es>
-#
+#    Copyright (C) 2018 Alexandre Díaz <dev@redneboa.es>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,11 +18,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import hotel_wizard
-from . import folio_make_invoice_advance
-from . import checkinwizard
-from . import massive_changes
-from . import split_reservation
-from . import duplicate_reservation
-from . import massive_price_reservation_days
-from . import send_confirm_mail
+from openerp.exceptions import ValidationError
+from openerp import models, fields, api, _
+
+class SendConfirmMailWizard(models.TransientModel):
+    _name = 'hotel.wizard.send.confirm.mail'
+
+    @api.multi
+    def send_confirm_mail(self):
+        folios = self.env['hotel.folio'].browse(
+            self._context.get('active_ids', []))
+        if len(folios) > 1:
+            raise ValidationError("Can't send more than one mail at the same time")
+        return folios[0].send_reservation_mail()
