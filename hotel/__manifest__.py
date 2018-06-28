@@ -26,7 +26,6 @@
         'wizard/massive_changes.xml',
         'wizard/split_reservation.xml',
         'wizard/duplicate_reservation.xml',
-        'wizard/send_confirm_mail.xml',
         'views/res_config.xml',
         'data/menus.xml',
         'views/inherit_account_payment_views.xml',
