@@ -28,4 +28,3 @@ from . import massive_changes
 from . import split_reservation
 from . import duplicate_reservation
 from . import massive_price_reservation_days
-from . import send_confirm_mail
