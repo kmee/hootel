@@ -360,7 +360,7 @@ class Wizard(models.TransientModel):
                               round(month_adr_sum/month_revpar_staff_rooms, 2))
             ET.SubElement(precios,
                           "ADR_MENSUAL").text = str(
-                              round(month_adr_sum/month_adr_rooms,2))
+                              round(month_adr_sum/month_adr_rooms, 2))
             ET.SubElement(precios, "ADR_TOUROPERADOR_TRADICIONAL").text = '0'
             ET.SubElement(precios,
                           "PCTN_HABITACIONES_OCUPADAS_TOUROPERADOR_TRADICIONAL"
@@ -423,7 +423,6 @@ class Wizard(models.TransientModel):
                  'rev_screen': _('No data in this month')
                  })
 
-
-                 # Debug Stop -------------------
-                 #import wdb; wdb.set_trace()
-                 # Debug Stop -------------------
+# Debug Stop -------------------
+# import wdb; wdb.set_trace()
+# Debug Stop -------------------
