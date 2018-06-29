@@ -11,11 +11,11 @@
                     <group colspan="4">
                         <group>
                             <field name="documenttype"/>
-                            <field name="poldocument"/> 
+                            <field name="poldocument"/>
                         </group>
-                        <group> 
-                            <field name="code_ine"/>
-                            <field name="polexpedition"/>                  
+                        <group>
+                            <field name="code_ine" placeholder="Code in INE" options="{'no_create': True,'no_open': True}"/>
+                            <field name="polexpedition"/>
                         </group>
                     </group>
                 </xpath>
