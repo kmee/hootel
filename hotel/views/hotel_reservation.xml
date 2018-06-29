@@ -115,7 +115,7 @@
                             <button type="object" class="oe_stat_button"
                                 id="payment_smart_button"
                                 icon="fa-money"
-                                name="action_pay"
+                                name="action_pay_folio"
                                 attrs="{'invisible': ['|',('folio_pending_amount','&lt;=',0),('fix_folio_pending','=',True)]}">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_value">
