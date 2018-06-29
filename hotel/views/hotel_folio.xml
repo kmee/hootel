@@ -676,6 +676,27 @@
             key2="client_action_multi" target="new"
             view_mode="form" multi="True"/>
 
+        <act_window name="Send Confirm Mail"
+            res_model="mail.compose.message"
+            src_model="hotel.folio"
+            view_mode="form"
+            multi="False"
+            view_type="form"
+            target="new"
+            key2="client_action_multi"
+            id="action_view_folio_send_confirm_mail"
+            context="{
+                'default_model': 'hotel.folio',
+                'default_res_id': active_id,
+                'default_use_template': True,
+                'default_template_id': ref('hotel.mail_template_hotel_reservation'),
+                'default_composition_mode': 'comment',
+                'force_send': True,
+                'mark_so_as_sent': True,
+            }"
+        />
+
+
         <!-- Action for hotel folio -->
         <record model="ir.actions.act_window" id="open_hotel_folio1_form_tree_all">
             <field name="name">Hotel Folio</field>

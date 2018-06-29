@@ -88,7 +88,7 @@ class Data_Bi(models.Model):
         fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
         # Change this to local test
         # fechafoto=date.today()
-        # fechafoto=date(2018, 03, 01)
+        # fechafoto=date(2018, 01, 01)
 
         _logger.warning("Init Export Data_Bi Module")
 
@@ -240,6 +240,15 @@ class Data_Bi(models.Model):
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'0',
                              'Descripcion': 'Ninguno'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'999',
+                             'Descripcion': 'Web Propia'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'901',
+                             'Descripcion': 'Expedia Empaquedata'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'902',
+                             'Descripcion': 'Expedia Sin Comisión'})
         for linea in lineas:
             dic_clientes.append({'ID_Hotel': compan.id_hotel,
                                  'ID_Cliente': linea.wid,
@@ -312,6 +321,7 @@ class Data_Bi(models.Model):
                                     precio_comision = precio_neto*(
                                         100/float(100-18)) - precio_neto
                                     precio_neto += precio_comision
+                                    channel_c = 902
                                 else:
                                     # Expedia TIPO 1 Agency
                                     precio_iva = precio_neto-(precio_neto/1.10)
@@ -334,6 +344,7 @@ class Data_Bi(models.Model):
                                             100/float(100-10)) - precio_neto
                                         precio_neto += comision2
                                         precio_comision = comision1 + comision2
+                                        channel_c = 901
                                     else:
                                         _logger.warning(
                                             "---- " +
