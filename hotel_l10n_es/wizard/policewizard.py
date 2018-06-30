@@ -58,9 +58,11 @@ class Wizard(models.TransientModel):
                         and (line.partner_id.lastname is not False)):
 
                     if line.partner_id.documenttype in ["D", "P", "C"]:
-                        content += "2|"+line.partner_id.poldocument + "||"
+                        content += "2|"+line.partner_id.poldocument.upper(
+                            ) + "||"
                     else:
-                        content += "2||"+line.partner_id.poldocument + "|"
+                        content += "2||"+line.partner_id.poldocument.upper(
+                            ) + "|"
                     content += line.partner_id.documenttype + "|"
                     content += datetime.datetime.strptime(
                         line.partner_id.polexpedition,
