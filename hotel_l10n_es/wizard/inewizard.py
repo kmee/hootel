@@ -309,10 +309,10 @@ class Wizard(models.TransientModel):
                                 movimientos[dia_x-1][3] += 1
                         else:
                             _logger.info(str(dia_x) +
-                                         '---- Exceso de habitaciones ---' +
+                                         'Exceso de habitaciones ' +
                                          str(line_res) + ' ' + line_res.name +
                                          ' ' + line_res.partner_id.name +
-                                         ' PERNOCTACIONES:' +
+                                         ' PERNOCT.: ' +
                                          str(ine_pernoct_total[dia_x-1]))
 
                     # ADR y RevPar
@@ -336,6 +336,13 @@ class Wizard(models.TransientModel):
                                                "HABITACIONES_MOVIMIENTO")
                 ET.SubElement(habitaciones_m,
                               "HABITACIONES_N_DIA").text = "%02d" % (dia_x)
+                if ine_pernoct_total[dia_x] > compan.seats:
+                    # Añadimos Supletorias por si excedemos plazas
+                    movimientos[dia_x][0] = (ine_pernoct_total[dia_x]
+                                             - compan.seats)
+                    _logger.info(' Dia: ' + str(dia_x) +
+                                 ' [ADD] Supletorias a : ' +
+                                 str(movimientos[dia_x][0]))
                 ET.SubElement(habitaciones_m,
                               "PLAZAS_SUPLETORIAS").text = str(
                                   movimientos[dia_x][0])
