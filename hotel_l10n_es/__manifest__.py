@@ -53,6 +53,7 @@
         'views/inherit_res_partner.xml',
         'views/report_viajero_document.xml',
         'views/report_viajero.xml',
+        'static/src/xml/hotel_l10n_es_templates.xml'
     ],
     'test': [
     ],
