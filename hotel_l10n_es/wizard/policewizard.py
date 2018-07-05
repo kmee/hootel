@@ -94,7 +94,8 @@ class Wizard(models.TransientModel):
                     return self.write({
                         'txt_message': _('Problem generating the file. \
                                          Checkin without data, \
-                                         or incorrect data.')})
+                                         or incorrect data: - ' +
+                                         line.partner_id.name)})
 
             return self.write({
                 'txt_filename': compa.police + '.' + self.download_num,
