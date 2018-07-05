@@ -117,10 +117,22 @@ class FolioWizard(models.TransientModel):
     virtual_room_wizard_ids = fields.Many2many('hotel.virtual.room.wizard',
                                       string="Virtual Rooms")
     call_center = fields.Boolean(default=_get_default_center_user)
+    email = fields.Char('E-mail')
+    mobile = fields.Char('Mobile')
+    partner_internal_comment = fields.Text(string='Internal Partner Notes')
+    internal_comment = fields.Text(string='Internal Folio Notes')
 
     def assign_rooms(self):
         self.assign=True
 
+    @api.onchange('partner_id')
+    def onchange_partner(self):
+        customer = self.partner_id
+        if customer:
+            self.email = customer.email
+            self.mobile = customer.mobile
+            self.partner_internal_comment = customer.comment
+    
     @api.onchange('autoassign')
     def create_reservations(self):
         self.ensure_one()
@@ -264,6 +276,12 @@ class FolioWizard(models.TransientModel):
         services = [(5, False, False)]
         if self.autoassign == True:
             self.create_reservations()
+        partner_vals = {
+                        'mobile': self.mobile,
+                        'email': self.email,
+                        'comment': self.partner_internal_comment,
+                    }
+        self.partner_id.update(partner_vals)
         for line in self.reservation_wizard_ids:
             reservations.append((0, False, {
                         'product_id': line.product_id.id,
@@ -288,6 +306,7 @@ class FolioWizard(models.TransientModel):
                 'channel_type': self.channel_type,
                 'room_lines': reservations,
                 'service_lines': services,
+                'internal_comment': self.internal_comment,
             }
         newfol = self.env['hotel.folio'].create(vals)
         for room in newfol.room_lines:
@@ -318,6 +337,7 @@ class VirtualRoomWizars(models.TransientModel):
                                       string="Virtual Rooms")
     rooms_num = fields.Integer('Number of Rooms')
     max_rooms = fields.Integer('Max', compute="_compute_max")
+    real_avail = fields.Integer('Real Max', compute="_compute_max")
     price = fields.Float(string='Price by Room')
     total_price = fields.Float(string='Total Price')
     folio_wizard_id = fields.Many2one('hotel.folio.wizard')
@@ -356,6 +376,7 @@ class VirtualRoomWizars(models.TransientModel):
                         res.checkin,
                         res.checkout,
                         res.virtual_room_id.id))
+            res.real_avail = real_max
             avail = 100000
             min_stay = 0
             dates = []
@@ -377,7 +398,6 @@ class VirtualRoomWizars(models.TransientModel):
                             avail = min(max_avail, real_max)
                 else:
                     avail = real_max
-                
 
             if avail < 100000 and avail > 0:
                 res.max_rooms = avail
