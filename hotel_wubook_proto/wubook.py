@@ -1410,8 +1410,6 @@ class WuBook(models.AbstractModel):
             wchannel_info = self.env['wubook.channel.info'].search(
                 [('wid', '=', str(book['id_channel']))], limit=1)
 
-            n_reservations_offset = len(folio_id.room_lines) if folio_id else 0
-
             reservations = []
             used_rooms = []
             # Iterate booked rooms
@@ -1468,11 +1466,12 @@ class WuBook(models.AbstractModel):
 
                         if split_booking:
                             if not split_booking_parent:
-                                split_booking_parent = n_reservations_offset + (len(reservations) - 1)
+                                split_booking_parent = len(reservations)
                             else:
                                 splitted_map.setdefault(
                                     split_booking_parent,
-                                    []).append(n_reservations_offset + (len(reservations) - 1))
+                                    []).append(len(reservations))
+
                         dates_checkin = [dates_checkin[1], False]
                         dates_checkout = [dates_checkout[1], False]
                     else:
@@ -1485,9 +1484,9 @@ class WuBook(models.AbstractModel):
                         if date_diff <= 0:
                             if split_booking:
                                 if split_booking_parent:
-                                    del reservations[split_booking_parent:]
+                                    del reservations[split_booking_parent-1:]
                                     if split_booking_parent in splitted_map:
-                                        del splitted_map[split_booking_parent]
+                                        del splitted_map[split_booking_parent-1]
                             # Can't found space for reservation
                             vals = self._generate_booking_vals(
                                 broom,
@@ -1550,22 +1549,23 @@ class WuBook(models.AbstractModel):
                     _logger.info("=== FOLIO CREATE")
                     _logger.info(reservations)
                     if folio_id:
+                        n_reservations_offset = len(folio_id.room_lines)
                         folio_id.with_context({
                             'wubook_action': False}).write(vals)
                     else:
+                        n_reservations_offset = 0
                         vals.update({
                             'partner_id': partner_id.id,
                             'wseed': book['sessionSeed']
                         })
                         folio_id = hotel_folio_obj.with_context({
                             'wubook_action': False}).create(vals)
-
                     # Update Reservation Spitted Parents
                     sorted_rlines = folio_id.room_lines.sorted(key='id')
                     for k_pid, v_pid in splitted_map.iteritems():
-                        preserv = sorted_rlines[k_pid]
+                        preserv = sorted_rlines[n_reservations_offset+(k_pid-1)]
                         for pid in v_pid:
-                            creserv = sorted_rlines[pid]
+                            creserv = sorted_rlines[n_reservations_offset+(pid-1)]
                             creserv.parent_reservation = preserv.id
 
                     processed_rids.append(rcode)
