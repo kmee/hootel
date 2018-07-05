@@ -1410,6 +1410,8 @@ class WuBook(models.AbstractModel):
             wchannel_info = self.env['wubook.channel.info'].search(
                 [('wid', '=', str(book['id_channel']))], limit=1)
 
+            n_reservations_offset = len(folio_id.room_lines)
+
             reservations = []
             used_rooms = []
             # Iterate booked rooms
@@ -1466,11 +1468,11 @@ class WuBook(models.AbstractModel):
 
                         if split_booking:
                             if not split_booking_parent:
-                                split_booking_parent = len(reservations)
+                                split_booking_parent = n_reservations_offset + (len(reservations) - 1)
                             else:
                                 splitted_map.setdefault(
                                     split_booking_parent,
-                                    []).append(len(reservations))
+                                    []).append(n_reservations_offset + (len(reservations) - 1))
                         dates_checkin = [dates_checkin[1], False]
                         dates_checkout = [dates_checkout[1], False]
                     else:
@@ -1483,7 +1485,7 @@ class WuBook(models.AbstractModel):
                         if date_diff <= 0:
                             if split_booking:
                                 if split_booking_parent:
-                                    del reservations[split_booking_parent-1:]
+                                    del reservations[split_booking_parent:]
                                     if split_booking_parent in splitted_map:
                                         del splitted_map[split_booking_parent]
                             # Can't found space for reservation
@@ -1561,9 +1563,9 @@ class WuBook(models.AbstractModel):
                     # Update Reservation Spitted Parents
                     sorted_rlines = folio_id.room_lines.sorted(key='id')
                     for k_pid, v_pid in splitted_map.iteritems():
-                        preserv = sorted_rlines[k_pid-1]
+                        preserv = sorted_rlines[k_pid]
                         for pid in v_pid:
-                            creserv = sorted_rlines[pid-1]
+                            creserv = sorted_rlines[pid]
                             creserv.parent_reservation = preserv.id
 
                     processed_rids.append(rcode)
