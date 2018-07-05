@@ -1410,7 +1410,7 @@ class WuBook(models.AbstractModel):
             wchannel_info = self.env['wubook.channel.info'].search(
                 [('wid', '=', str(book['id_channel']))], limit=1)
 
-            n_reservations_offset = len(folio_id.room_lines)
+            n_reservations_offset = len(folio_id.room_lines) if folio_id else 0
 
             reservations = []
             used_rooms = []
