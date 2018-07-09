@@ -68,12 +68,19 @@ class Wizard(models.TransientModel):
                         line.partner_id.polexpedition,
                         "%Y-%m-%d").date().strftime("%Y%m%d") + "|"
                     content += line.partner_id.firstname.upper() + "|"
-                    apellidos = line.partner_id.lastname.split(" ", 1)
+                    apellidos = line.partner_id.lastname.split()
                     if len(apellidos) == 2:
                         content += apellidos[0].upper() + "|"
                         content += apellidos[1].upper() + "|"
                     else:
-                        content += "|"+apellidos[0].upper() + "|"
+                        if len(apellidos) > 2:
+                            content += apellidos[0].upper() + "|"
+                            apellidos.pop(0)
+                            for apellido in apellidos:
+                                content += apellido.upper() + " "
+                        else:
+                            content += apellidos[0].upper() + "|"
+                        content += "|"
                     content += line.partner_id.gender.upper()[0] + "|"
                     content += datetime.datetime.strptime(
                         line.partner_id.birthdate_date,
