@@ -88,7 +88,7 @@ class Data_Bi(models.Model):
         fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
         # Change this to local test
         # fechafoto=date.today()
-        # fechafoto=date(2018, 01, 01)
+        # fechafoto=date(2018, 01, 07)
 
         _logger.warning("Init Export Data_Bi Module")
 
@@ -274,9 +274,12 @@ class Data_Bi(models.Model):
 # ID_Pais numérico Código del país
         dic_reservas = []
         # Diccionario con las Reservas
+        # lineas = self.env['hotel.reservation.line'].search(
+        #     ['&', ('date', '>=', fechafoto),
+        #      ('reservation_id.reservation_type', '=', 'normal'),
+        #      ], order="date")
         lineas = self.env['hotel.reservation.line'].search(
-            ['&', ('date', '>=', fechafoto),
-             ('reservation_id.reservation_type', '=', 'normal'),
+            [('reservation_id.reservation_type', '=', 'normal'),
              ], order="date")
         for linea in lineas:
             id_estado_r = linea.reservation_id.state
@@ -301,6 +304,7 @@ class Data_Bi(models.Model):
 
             channel_c = 0
             precio_comision = 0
+            precio_iva = 0
             precio_neto = linea.price
             if linea.reservation_id.wrid:
                 if linea.reservation_id.wchannel_id.wid:
@@ -347,9 +351,9 @@ class Data_Bi(models.Model):
                                         channel_c = 901
                                     else:
                                         _logger.warning(
-                                            "---- " +
-                                            linea.reservation_id.partner_id.name
-                                            + " ----")
+                                           "---- " +
+                                           linea.reservation_id.partner_id.name
+                                           + " ----")
                                         _logger.critical(
                                             "Expedia Tarifa No Contemplada : "
                                             + jsonRate)
