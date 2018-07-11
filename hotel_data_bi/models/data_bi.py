@@ -206,10 +206,15 @@ class Data_Bi(models.Model):
                                       'ascii', 'xmlcharrefreplace')})
 
         dic_bloqueos = []  # Diccionario con Bloqueos
+        # lineas = self.env['hotel.reservation.line'].search(
+        #     ['&', ('date', '>=', fechafoto),
+        #      ('reservation_id.reservation_type', '<>', 'normal'),
+        #      ], order="date")
         lineas = self.env['hotel.reservation.line'].search(
-            ['&', ('date', '>=', fechafoto),
-             ('reservation_id.reservation_type', '<>', 'normal'),
+            [('reservation_id.reservation_type', '<>', 'normal')
              ], order="date")
+        # str(fechafoto.year) == lineas[1].create_date[:4]
+
         for linea in lineas:
             if linea.reservation_id.reservation_type == 'out':
                 id_m_b = 1
