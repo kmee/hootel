@@ -88,7 +88,7 @@ class Data_Bi(models.Model):
         fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
         # Change this to local test
         # fechafoto=date.today()
-        # fechafoto=date(2018, 01, 07)
+        # fechafoto=date(2018, 01, 01)
 
         _logger.warning("Init Export Data_Bi Module")
 
@@ -210,11 +210,15 @@ class Data_Bi(models.Model):
         #     ['&', ('date', '>=', fechafoto),
         #      ('reservation_id.reservation_type', '<>', 'normal'),
         #      ], order="date")
+        # lineas = self.env['hotel.reservation.line'].search(
+        #     ['&', ('date', '>=', fechafoto),
+        #      ('reservation_id.reservation_type', '<>', 'normal')
+        #      ], order="date")
         lineas = self.env['hotel.reservation.line'].search(
-            [('reservation_id.reservation_type', '<>', 'normal')
-             ], order="date")
-        # str(fechafoto.year) == lineas[1].create_date[:4]
-
+            ['&', ('create_date', '>=',
+                   date(fechafoto.year, 1, 1).strftime('%Y-%m-%d')),
+             ('reservation_id.reservation_type', '<>', 'normal')],
+            order="date")
         for linea in lineas:
             if linea.reservation_id.reservation_type == 'out':
                 id_m_b = 1
@@ -284,8 +288,10 @@ class Data_Bi(models.Model):
         #      ('reservation_id.reservation_type', '=', 'normal'),
         #      ], order="date")
         lineas = self.env['hotel.reservation.line'].search(
-            [('reservation_id.reservation_type', '=', 'normal'),
-             ], order="date")
+            ['&', ('create_date', '>=',
+                   date(fechafoto.year, 1, 1).strftime('%Y-%m-%d')),
+             ('reservation_id.reservation_type', '=', 'normal')],
+            order="date")
         for linea in lineas:
             id_estado_r = linea.reservation_id.state
 
