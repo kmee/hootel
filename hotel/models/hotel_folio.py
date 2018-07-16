@@ -155,7 +155,10 @@ class HotelFolio(models.Model):
         ('door', 'Door'),
         ('mail', 'Mail'),
         ('phone', 'Phone'),
-        ('web','Web')], 'Sales Channel')
+        ('web', 'Web'),
+        ('agency', 'Agencia'),
+        ('operator', 'Touroperador')
+        ], 'Sales Channel')
     num_invoices = fields.Integer(compute='_compute_num_invoices')
     rooms_char = fields.Char('Rooms', compute='_computed_rooms_char')
     segmentation_id = fields.Many2many('res.partner.category',
