@@ -128,9 +128,7 @@
                 </div>
               </button>
             </div>
-            <!--
-                        <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;, &quot;size&quot;: [90, 90]}"/>
--->
+            <!--<field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;, &quot;size&quot;: [90, 90]}"/>-->
             <h2>
               <field name="name"/>
             </h2>
@@ -153,7 +151,7 @@
                 <field name="sales_channel"
                                     attrs="{'required':[('channel_type','in',('agency','operator'))], 'invisible':[('channel_type','not in',('agency','operator'))]}"
                                     domain="[('type','=',channel_type)]"
-                                    options="{'no_create': True,'no_open': True}"/>
+                                                                                    options="{'no_create': True,'no_open': True}"/>
                 <field name="segmentation_id" widget="many2many_tags" placeholder="Segmentation..."
                                     options="{'no_create': True,'no_open': True}" />
               </group>
@@ -326,6 +324,9 @@
                           <field name="virtual_room_id" on_change="1" options="{'no_create': True,'no_open': True}"
                                                            attrs="{'readonly':[('state','not in',('draft'))]}"/>
                           <field name="channel_type" attrs="{'required':[('reservation_type','not in',('staff','out'))]}"/>
+                          <field name="sales_channel" attrs="{'required':[('channel_type','in',('agency','operator'))], 'invisible':[('channel_type','not in',('agency','operator'))]}"
+                                                           domain="[('type','=',channel_type)]"
+                                                           options="{'no_create': True,'no_open': True}"/>
                         </group>
                         <group class="oe_subtotal_footer" style="margin-right: 20px; !important" colspan="2" name="reservation_total" string="Amounts">
                           <field name="amount_room" widget="monetary" options="{'currency_field': 'currency_id'}"/>

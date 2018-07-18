@@ -31,3 +31,4 @@ class IneCode(models.Model):
           ('agency', 'Agencia'),
           ('operator', 'Touroperador'),
           ], 'Sales Channel', required=True)
+    comision = fields.Float(u'Comisión', (4, 2))
