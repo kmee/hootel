@@ -26,7 +26,7 @@ from openerp import models, fields, api
 class IneCode(models.Model):
     _name = 'sales_channel'
 
-    channel = fields.Char('Channel Name', required=True)
+    name = fields.Char('Channel Name', required=True)
     type = fields.Selection([
           ('agency', 'Agencia'),
           ('operator', 'Touroperador'),

@@ -24,7 +24,7 @@
           <sheet>
             <group name="group_top">
               <group name="group_left">
-                <field name="channel"/>
+                <field name="name"/>
                 <field name="type"/>
               </group>
             </group>
@@ -37,7 +37,7 @@
       <field name="model">sales_channel</field>
       <field name="arch" type="xml">
         <tree>
-          <field name="channel"/>
+          <field name="name"/>
           <field name="type"/>
         </tree>
       </field>
