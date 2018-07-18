@@ -474,6 +474,12 @@
                     <filter string="Phone"
                                 domain="[('channel_type', '=', 'phone')]"
                                  />
+                     <filter string="Agencia"
+                                 domain="[('channel_type', '=', 'agency')]"
+                                  />
+                  <filter string="Touroperador"
+                                  domain="[('channel_type', '=', 'operator')]"
+                                   />
                     <separator/>
                     <filter string="Still to be paid"
                                 domain="[('folio_id.invoices_amount','&gt;',0)]"
