@@ -330,6 +330,7 @@ class HotelReservation(models.Model):
         ('agency', 'Agencia'),
         ('operator', 'Touroperador'),
         ], 'Sales Channel')
+    sales_channel = fields.Many2one(related='folio_id.sales_channel')
     last_updated_res = fields.Datetime('Last Updated')
     folio_pending_amount = fields.Monetary(related='folio_id.invoices_amount')
     segmentation_id = fields.Many2many(related='folio_id.segmentation_id')

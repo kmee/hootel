@@ -3,19 +3,19 @@
   <data>
     <!-- Action to open sales channel Codes list -->
     <act_window
-                                id="action_sales_channel"
-                                name="Canales de Venta"
-                                res_model="sales_channel"
-                                view_mode="tree,form"
-                            />
+      id="action_sales_channel"
+      name="Canales de Venta"
+      res_model="sales_channel"
+      view_mode="tree,form"/>
+
     <!-- Menu item to open sales channel Codes list -->
     <menuitem
-                                id="menu_sales_channel"
-                                name="Canales de Venta"
-                                parent="hotel.configuration_others"
-                                sequence="4"
-                                action="action_sales_channel"
-                            />
+      id="menu_sales_channel"
+      name="Canales de Venta"
+      parent="hotel.configuration_others"
+      sequence="4"
+      action="action_sales_channel"/>
+
     <record id="view_form_sales_channel" model="ir.ui.view">
       <field name="name">Canales de Venta Form</field>
       <field name="model">sales_channel</field>
@@ -32,6 +32,7 @@
         </form>
       </field>
     </record>
+
     <record id="view_tree_sales_channel" model="ir.ui.view">
       <field name="name">Canales de Venta Tree</field>
       <field name="model">sales_channel</field>
@@ -42,6 +43,7 @@
         </tree>
       </field>
     </record>
+    
     <!-- FIX WRONG VIEW TO COSTUMER COMPANY css in Div problem-->
     <record id="view_partner_form" model="ir.ui.view">
       <field name="model">res.partner</field>
