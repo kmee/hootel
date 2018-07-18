@@ -152,7 +152,8 @@
                 <field name="channel_type" attrs="{'required':[('reservation_type','=','normal')]}"/>
                 <field name="sales_channel"
                                     attrs="{'required':[('channel_type','in',('agency','operator'))], 'invisible':[('channel_type','not in',('agency','operator'))]}"
-                                    domain="[('type','=',channel_type)]"/>
+                                    domain="[('type','=',channel_type)]"
+                                    options="{'no_create': True,'no_open': True}"/>
                 <field name="segmentation_id" widget="many2many_tags" placeholder="Segmentation..."
                                     options="{'no_create': True,'no_open': True}" />
               </group>

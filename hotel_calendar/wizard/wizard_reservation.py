@@ -112,8 +112,12 @@ class FolioWizard(models.TransientModel):
     channel_type = fields.Selection([
         ('door', 'Door'),
         ('mail', 'Mail'),
-        ('phone', 'Phone')
+        ('phone', 'Phone'),
+        ('agency', 'Agencia'),
+        ('operator', 'Touroperador'),
     ], string='Sales Channel',  default=_get_default_channel_type)
+    sales_channel = fields.Many2one('sales_channel', 'Proveedor')
+
     virtual_room_wizard_ids = fields.Many2many('hotel.virtual.room.wizard',
                                       string="Virtual Rooms")
     call_center = fields.Boolean(default=_get_default_center_user)
@@ -132,7 +136,7 @@ class FolioWizard(models.TransientModel):
             self.email = customer.email
             self.mobile = customer.mobile
             self.partner_internal_comment = customer.comment
-    
+
     @api.onchange('autoassign')
     def create_reservations(self):
         self.ensure_one()
@@ -293,6 +297,8 @@ class FolioWizard(models.TransientModel):
                         'virtual_room_id': line.virtual_room_id.id,
                         'to_read': line.to_read, #REFACT: wubook module
                         'to_assign': line.to_assign,
+                        'sales_channel': self.sales_channel.id,
+
                     }))
         for line in self.service_wizard_ids:
             services.append((0, False, {
@@ -304,6 +310,7 @@ class FolioWizard(models.TransientModel):
         vals = {
                 'partner_id': self.partner_id.id,
                 'channel_type': self.channel_type,
+                'sales_channel': self.sales_channel.id,
                 'room_lines': reservations,
                 'service_lines': services,
                 'internal_comment': self.internal_comment,
@@ -350,7 +357,7 @@ class VirtualRoomWizars(models.TransientModel):
                                default=_get_default_checkout)
     can_confirm = fields.Boolean(compute="_can_confirm")
 
-    def _can_confirm(self):        
+    def _can_confirm(self):
         for vroom in self:
             date_start = date_utils.get_datetime(vroom.checkin)
             date_end = date_utils.get_datetime(vroom.checkout)
@@ -597,12 +604,9 @@ class ServiceWizard(models.TransientModel):
                             pricelist=pricelist_id,
                             uom=self.product_id.uom_id.id)
             self.price_unit = prod.price
-            
+
     @api.depends('price_unit', 'product_uom_qty', 'discount')
     def _compute_amount(self):
         for ser in self:
             total = (ser.price_unit * ser.product_uom_qty)
             ser.price_total = total - (total * ser.discount) / 100
-
-        
-    
