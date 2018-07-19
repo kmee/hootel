@@ -63,6 +63,7 @@
         'data/email_template_cancel.xml',
         'data/email_template_reserv.xml',
         'data/email_template_exit.xml',
+        'data/sales_channel.csv'
     ],
     'css': ['static/src/css/room_kanban.css'],
     'auto_install': False,
