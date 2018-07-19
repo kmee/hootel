@@ -47,8 +47,7 @@ class TestHotelWubook(TestHotel):
         @api.model
         def wubook_create_wubook_issue(self, section, message, wmessage,
                                        wid=False, dfrom=False, dto=False):
-            _logger.info("ISSUE CREATED:\n\t- %s\n\t--- %s" %
-                         (section, message))
+            _logger.info("ISSUE CREATED:\n\t- %s\n\t--- %s", section, message)
 
         cls.env['wubook']._patch_method('create_wubook_issue',
                                         wubook_create_wubook_issue)
@@ -92,7 +91,7 @@ class TestHotelWubook(TestHotel):
         cls.env['wubook']._patch_method('push_restrictions', wubook_ommit)
 
     def create_wubook_booking(self, creator, checkin, partner, rinfo,
-                              channel=0, notes='', amount=None):
+                              channel=0, notes=''):
         rcode = randint(100000, 999999)
         crcode = randint(100000, 999999)
         brate = randint(100000, 999999)
@@ -205,7 +204,7 @@ class TestHotelWubook(TestHotel):
             'channel_data': {},
             'room_opportunities': 0,
             'customer_zip': partner.zip,
-            'amount': amount or total_amount,
+            'amount': total_amount,
             'id_woodoo': id_woodoo,
             'cc_info': 1,
             'customer_language_iso': 'es'

@@ -462,16 +462,16 @@ class TestWubook(TestHotelWubook):
             ('wrid', 'in', processed_rids)
         ], order='id ASC')
         for nreserv in nreservs:
-            self.assertTrue(nreservs[0].overbooking,
-                            "Overbooking don't handled")
+            self.assertTrue(nreserv.overbooking, "Overbooking don't handled")
 
-    def text_booking_no_taxes(self):
+    def text_invalid_booking_amount(self):
         now_utc_dt = date_utils.now()
         checkin_utc_dt = now_utc_dt + timedelta(days=3)
         checkin_dt = date_utils.dt_as_timezone(checkin_utc_dt,
                                                self.tz_hotel)
 
         # Create Reservation
+        num_issues = self.env['wubook.issue'].search_count([])
         nbook = self.create_wubook_booking(
             self.user_hotel_manager,
             checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
@@ -479,23 +479,21 @@ class TestWubook(TestHotelWubook):
             {
                 self.hotel_vroom_special.wrid: {
                     'occupancy': [2],   # 2 Reservation Line
-                    'dayprices': [13.5, 13.5]   # 2 Days
+                    'dayprices': [15.0, 15.0]   # 2 Days
                 }
-            }, channel=self.wubook_channel_test.wid, amount=30.0)
+            }, channel=self.wubook_channel_test.wid)
+        nbook['amount'] = 30.75
         wbooks = [nbook]
         processed_rids, errors, checkin_utc_dt, checkout_utc_dt = \
             self.env['wubook'].sudo().generate_reservations(wbooks)
         self.assertEqual(len(processed_rids), 1, "Reservation not found")
         self.assertFalse(errors, "Reservation errors")
+        self.assertNotEqual(self.env['wubook.issue'].search_count([]), num_issues)
 
     def test_overbooking(self):
         now_utc_dt = date_utils.now()
         checkin_utc_dt = now_utc_dt + timedelta(days=3)
-        checkin_dt = date_utils.dt_as_timezone(checkin_utc_dt,
-                                               self.tz_hotel)
-        checkout_utc_dt = checkin_utc_dt + timedelta(days=2)
-        date_diff = date_utils.date_diff(checkin_utc_dt, checkout_utc_dt,
-                                         hours=False) + 1
+        checkin_dt = date_utils.dt_as_timezone(checkin_utc_dt, self.tz_hotel)
 
         # Invalid Occupancy
         wbooks = [
@@ -555,8 +553,6 @@ class TestWubook(TestHotelWubook):
         checkout_dt = date_utils.dt_as_timezone(checkout_utc_dt,
                                                 self.tz_hotel)
         vroom_restr_item_obj = self.env['hotel.virtual.room.restriction.item']
-
-        _logger.info("=== ESCRIBE EN ID MMMM: %d" % self.restriction_default_id)
 
         vrooms = [self.hotel_vroom_budget, self.hotel_vroom_special]
         values = self.create_wubook_rooms_values(
