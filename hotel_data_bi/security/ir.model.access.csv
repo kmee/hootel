@@ -11,3 +11,4 @@ access_hotel_folio_export_data,hotel_folio.export_data,hotel.model_hotel_folio,h
 access_wubook_channel_info,wubook_channel_info,hotel_wubook_proto.model_wubook_channel_info,hotel_data_bi.group_hotel_export_data,1,0,0,0
 access_hotel_wubook,hotel_room,hotel_wubook_proto.model_wubook_channel_info,hotel_data_bi.group_hotel_export_data,1,0,0,0
 access_hotel_room,hotel_room_line.export_data,hotel.model_hotel_room,hotel_data_bi.group_hotel_export_data,1,0,0,0
+access_sales_channel,hotel_sales_channel_data,hotel.model_sales_channel,hotel_data_bi.group_hotel_export_data,1,0,0,0
