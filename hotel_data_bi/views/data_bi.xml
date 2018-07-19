@@ -39,9 +39,9 @@
                               </group>
                           </group>
 	                    </group>
-	                    <!-- <div>
+	                    <div>
 	                           <button name="export_data_bi" class="oe_form_button_save btn btn-primary btn-sm" type="object" string="Generate Conexion"/>
-	                    </div> -->
+	                    </div>
 	                </sheet>
 	            </form>
 	        </field>

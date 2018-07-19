@@ -85,9 +85,9 @@ class Data_Bi(models.Model):
             archivo == 14 'Estado Reservas'
         fechafoto = start date to take data
         """
-        fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
+        #fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
         # Change this to local test
-        # fechafoto=date.today()
+        fechafoto=date.today()
         # fechafoto=date(2018, 01, 01)
 
         _logger.warning("Init Export Data_Bi Module")
@@ -108,8 +108,9 @@ class Data_Bi(models.Model):
 
         dic_canal = []  # Diccionario con los Canales
         canal_array_txt = ['Puerta', 'E-Mail', u'Teléfono', 'Call-Center',
-                           'Web']
-        canal_array = ['door', 'mail', 'phone', 'call', 'web']
+                           'Web', 'Agencia', 'Touroperador']
+        canal_array = ['door', 'mail', 'phone', 'call',
+                       'web', 'agency', 'operator']
         for i in range(0, len(canal_array)):
             dic_canal.append({'ID_Hotel': compan.id_hotel,
                               'ID_Canal': i,
@@ -258,10 +259,41 @@ class Data_Bi(models.Model):
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'902',
                              'Descripcion': 'Expedia Sin Comisión'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'903',
+                             'Descripcion': 'Puerta'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'904',
+                             'Descripcion': 'E-Mail'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'905',
+                             'Descripcion': u'Teléfono'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'906',
+                             'Descripcion': u'Call-Center'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'907',
+                             'Descripcion': u'Agencia'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'907',
+                             'Descripcion': u'Touroperador'})
+
+
+
         for linea in lineas:
             dic_clientes.append({'ID_Hotel': compan.id_hotel,
                                  'ID_Cliente': linea.wid,
                                  'Descripcion': linea.name})
+        lineas = self.env['sales_channel'].search([])
+        id_cli_count = 700
+        for linea in lineas:
+            dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                                 'ID_Cliente': id_cli_count,
+                                 'Descripcion': linea.name})
+            id_cli_count += 1
+
+
+
 # ID_Reserva numérico Código único de la reserva
 # ID_Hotel numérico Código del Hotel
 # ID_EstadoReserva numérico Código del estado de la reserva
