@@ -1221,6 +1221,8 @@ class WuBook(models.AbstractModel):
                                dates_checkout, book):
         # Generate Reservation Day Lines
         reservation_lines = []
+        has_taxes_included = (sum(brday['price'] for brday in broom['roomdays']) == book['amount'])
+
         tprice = 0.0
         for brday in broom['roomdays']:
             wndate = date_utils.get_datetime(
@@ -1231,12 +1233,23 @@ class WuBook(models.AbstractModel):
                                   dates_checkin[0],
                                   dates_checkout[0] - timedelta(days=1),
                                   hours=False) == 0:
+                if has_taxes_included:
+                    dayprice = brday['price']
+                else:
+                    # FIXME: This apply I.V.A. 10% taxes... only valid for Spain!
+                    dayprice = brday['price'] + brday['price'] * 0.1
                 reservation_lines.append((0, False, {
-                    'date': wndate.strftime(
-                        DEFAULT_SERVER_DATE_FORMAT),
-                    'price': brday['price']
+                    'date': wndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                    'price': dayprice,
                 }))
-                tprice += brday['price']
+                tprice += dayprice
+
+        if tprice != book['amount']:
+            self.create_wubook_issue(
+                'wubook',
+                "Invalid reservation total price! %.2f != %.2f" % (tprice, book['amount']),
+                '', wid=book['reservation_code'])
+
         persons = vroom.wcapacity
         if 'ancillary' in broom and 'guests' in broom['ancillary']:
             persons = broom['ancillary']['guests']
