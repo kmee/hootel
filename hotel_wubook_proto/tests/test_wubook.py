@@ -465,6 +465,29 @@ class TestWubook(TestHotelWubook):
             self.assertTrue(nreservs[0].overbooking,
                             "Overbooking don't handled")
 
+    def text_booking_no_taxes(self):
+        now_utc_dt = date_utils.now()
+        checkin_utc_dt = now_utc_dt + timedelta(days=3)
+        checkin_dt = date_utils.dt_as_timezone(checkin_utc_dt,
+                                               self.tz_hotel)
+
+        # Create Reservation
+        nbook = self.create_wubook_booking(
+            self.user_hotel_manager,
+            checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+            self.partner_2,
+            {
+                self.hotel_vroom_special.wrid: {
+                    'occupancy': [2],   # 2 Reservation Line
+                    'dayprices': [13.5, 13.5]   # 2 Days
+                }
+            }, channel=self.wubook_channel_test.wid, amount=30.0)
+        wbooks = [nbook]
+        processed_rids, errors, checkin_utc_dt, checkout_utc_dt = \
+            self.env['wubook'].sudo().generate_reservations(wbooks)
+        self.assertEqual(len(processed_rids), 1, "Reservation not found")
+        self.assertFalse(errors, "Reservation errors")
+
     def test_overbooking(self):
         now_utc_dt = date_utils.now()
         checkin_utc_dt = now_utc_dt + timedelta(days=3)

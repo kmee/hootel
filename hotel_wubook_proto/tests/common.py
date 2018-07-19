@@ -92,7 +92,7 @@ class TestHotelWubook(TestHotel):
         cls.env['wubook']._patch_method('push_restrictions', wubook_ommit)
 
     def create_wubook_booking(self, creator, checkin, partner, rinfo,
-                              channel=0, notes=''):
+                              channel=0, notes='', amount=None):
         rcode = randint(100000, 999999)
         crcode = randint(100000, 999999)
         brate = randint(100000, 999999)
@@ -205,7 +205,7 @@ class TestHotelWubook(TestHotel):
             'channel_data': {},
             'room_opportunities': 0,
             'customer_zip': partner.zip,
-            'amount': total_amount,
+            'amount': amount or total_amount,
             'id_woodoo': id_woodoo,
             'cc_info': 1,
             'customer_language_iso': 'es'
