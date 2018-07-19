@@ -1451,6 +1451,12 @@ class WuBook(models.AbstractModel):
                         dates_checkout,
                         book,
                     )
+                    if vals['price_unit'] != book['amount']:
+                        self.create_wubook_issue(
+                            'reservation',
+                            "Invalid reservation total price! %.2f != %.2f" % (vals['price_unit'], book['amount']),
+                            '', wid=book['reservation_code'])
+
                     free_rooms = hotel_vroom_obj.check_availability_virtual_room(
                         checkin_str,
                         checkout_str,
