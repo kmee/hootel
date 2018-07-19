@@ -1,11 +1,6 @@
 "id","type","name","comision"
-<<<<<<< HEAD
 "__export__.sales_channel_1","agency","CNTravel","20"
 "__export__.sales_channel_2","agency","Interrías","21"
-=======
-"__export__.sales_channel_1","agency","CNTravel","0"
-"__export__.sales_channel_2","agency","Interrías","0"
->>>>>>> 510598f1f850d3c7e92c0be161361ec19575032a
 "__export__.sales_channel_3","agency","Jumbo Tours","0"
 "__export__.sales_channel_4","agency","Urbis","0"
 "__export__.sales_channel_5","agency","Tourico","0"
