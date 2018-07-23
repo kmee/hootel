@@ -108,8 +108,9 @@ class Data_Bi(models.Model):
 
         dic_canal = []  # Diccionario con los Canales
         canal_array_txt = ['Puerta', 'E-Mail', u'Teléfono', 'Call-Center',
-                           'Web']
-        canal_array = ['door', 'mail', 'phone', 'call', 'web']
+                           'Web', 'Agencia', 'Touroperador']
+        canal_array = ['door', 'mail', 'phone', 'call',
+                       'web', 'agency', 'operator']
         for i in range(0, len(canal_array)):
             dic_canal.append({'ID_Hotel': compan.id_hotel,
                               'ID_Canal': i,
@@ -235,6 +236,7 @@ class Data_Bi(models.Model):
                 'Nro_Habitaciones': 1})
 
         lineas = self.env['res.partner.category'].search([])
+        canales_venta = self.env['sales_channel'].search([])
         dic_segmentos = []  # Diccionario con Segmentación
         for linea in lineas:
             if linea.parent_id.name:
@@ -245,7 +247,7 @@ class Data_Bi(models.Model):
                                           'ascii', 'xmlcharrefreplace')})
 
         lineas = self.env['wubook.channel.info'].search([])
-        dic_clientes = []  # Diccionario con Clientes (OTAs)
+        dic_clientes = []  # Diccionario con Clientes (OTAs y agencias)
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'0',
                              'Descripcion': 'Ninguno'})
@@ -258,10 +260,37 @@ class Data_Bi(models.Model):
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'902',
                              'Descripcion': 'Expedia Sin Comisión'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'903',
+                             'Descripcion': 'Puerta'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'904',
+                             'Descripcion': 'E-Mail'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'905',
+                             'Descripcion': u'Teléfono'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'906',
+                             'Descripcion': u'Call-Center'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'907',
+                             'Descripcion': u'Agencia'})
+        dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                             'ID_Cliente': u'908',
+                             'Descripcion': u'Touroperador'})
+
         for linea in lineas:
             dic_clientes.append({'ID_Hotel': compan.id_hotel,
                                  'ID_Cliente': linea.wid,
                                  'Descripcion': linea.name})
+        lineas = self.env['sales_channel'].search([])
+        id_cli_count = 700
+        for linea in lineas:
+            dic_clientes.append({'ID_Hotel': compan.id_hotel,
+                                 'ID_Cliente': id_cli_count,
+                                 'Descripcion': linea.name})
+            id_cli_count += 1
+
 # ID_Reserva numérico Código único de la reserva
 # ID_Hotel numérico Código del Hotel
 # ID_EstadoReserva numérico Código del estado de la reserva
@@ -361,15 +390,15 @@ class Data_Bi(models.Model):
                                         precio_comision = comision1 + comision2
                                         channel_c = 901
                                     else:
-                                        _logger.warning(
+                                        _logger.error(
                                            "---- " +
                                            linea.reservation_id.partner_id.name
                                            + " ----")
                                         _logger.critical(
-                                            "Expedia Tarifa No Contemplada : "
+                                            "Exp. PRO Tarifa No Contemplada : "
                                             + jsonRate)
                                 else:
-                                    _logger.warning(
+                                    _logger.error(
                                         "---- " +
                                         linea.reservation_id.partner_id.name +
                                         " ----")
@@ -404,6 +433,31 @@ class Data_Bi(models.Model):
                     precio_iva = (precio_neto*10/100)
                     precio_neto -= precio_iva
             else:
+                if linea.reservation_id.channel_type == 'door':
+                    channel_c = 903
+                elif linea.reservation_id.channel_type == 'mail':
+                    channel_c = 904
+                elif linea.reservation_id.channel_type == 'phone':
+                    channel_c = 905
+                elif linea.reservation_id.channel_type == 'call':
+                    channel_c = 906
+                elif linea.reservation_id.channel_type == 'agency':
+                    channel_c = 907
+                elif linea.reservation_id.channel_type == 'operator':
+                    channel_c = 908
+                if (channel_c == 907 or channel_c == 908):
+                    # Buscamos el nombre en los canales
+                    line_sales = next((
+                        x for x in canales_venta if x.name ==
+                        linea.reservation_id.sales_channel.name), False)
+                    if line_sales:
+                        # Buscamos en el listado
+                        line_descipcion = next((
+                            item for item in dic_clientes if
+                            item["Descripcion"] == line_sales.name), False)
+                        if line_descipcion:
+                            channel_c = line_descipcion['ID_Cliente']
+
                 precio_iva = (precio_neto*10/100)
                 precio_neto -= precio_iva
 

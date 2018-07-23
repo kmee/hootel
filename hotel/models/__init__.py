@@ -32,4 +32,5 @@ from . import inherit_res_partner
 from . import inherit_sale_order_line
 from . import inherit_sale_order
 from . import inherited_mail_compose_message
+from . import hotel_sales_channel
 #~ from . import hotel_dashboard

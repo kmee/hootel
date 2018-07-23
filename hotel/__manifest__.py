@@ -55,6 +55,7 @@
         'views/virtual_room_views.xml',
         'views/cardex.xml',
         'views/virtual_room_availability.xml',
+        'views/hotel_sales_channel.xml',
         # 'views/hotel_dashboard.xml',
         'views/inherit_web_assets_backend.xml',
         'data/cron_jobs.xml',
@@ -62,6 +63,7 @@
         'data/email_template_cancel.xml',
         'data/email_template_reserv.xml',
         'data/email_template_exit.xml',
+        'data/sales_channel.csv'
     ],
     'css': ['static/src/css/room_kanban.css'],
     'auto_install': False,

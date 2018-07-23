@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <!-- Action to open sales channel Codes list -->
+    <act_window
+          id="action_sales_channel"
+          name="Canales de Venta"
+          res_model="sales_channel"
+          view_mode="tree,form"/>
+    <!-- Menu item to open sales channel Codes list -->
+
+    <menuitem
+          id="menu_sales_channel"
+          name="Canales de Venta"
+          parent="hotel.configuration_others"
+          sequence="4"
+          action="action_sales_channel"/>
+
+    <record id="view_form_sales_channel" model="ir.ui.view">
+      <field name="name">Canales de Venta Form</field>
+      <field name="model">sales_channel</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group name="group_top">
+              <group name="group_left">
+                <field name="name"/>
+                <field name="type"/>
+                <field name="comision"/>
+              </group>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_tree_sales_channel" model="ir.ui.view">
+      <field name="name">Canales de Venta Tree</field>
+      <field name="model">sales_channel</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="type"/>
+          <field name="comision"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="sales_channel_search" model="ir.ui.view">
+      <field name="name">Canales de Venta Search</field>
+      <field name="model">sales_channel</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="name"/>
+          <field name="type"/>
+          <field name="comision"/>
+          <filter string="Agencias"
+              domain="[('type','=','agency')]"/>
+          <filter string="Touroperadores"
+              domain="[('type','=','operator')]"/>
+        </search>
+      </field>
+    </record>
+
+    <record id="sales_channel_folio_search" model="ir.ui.view">
+      <field name="name">Canales de Venta Search in Folio</field>
+      <field name="model">hotel.folio</field>
+      <field name="arch" type="xml">
+        <search>
+          <filter string="Call Center"
+              domain="[('channel_type', '=', 'call')]"/>
+          <filter string="Web"
+              domain="[('channel_type', '=', 'web')]"/>
+          <filter string="Door"
+              domain="[('channel_type', '=', 'door')]"/>
+          <filter string="Mail"
+              domain="[('channel_type', '=', 'mail')]"/>
+          <filter string="Phone"
+              domain="[('channel_type', '=', 'phone')]"/>
+          <filter string="Agencias"
+              domain="[('channel_type', '=', 'agency')]"/>
+          <filter string="Touroperadores"
+              domain="[('channel_type', '=', 'operator')]"/>
+        </search>
+      </field>
+    </record>
+
+    <!-- FIX WRONG VIEW TO COSTUMER COMPANY css in Div problem-->
+    <record id="view_partner_form" model="ir.ui.view">
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//div[@class='o_row']" position="replace">
+          <div class="company_o_row">
+            <field name="parent_id" placeholder="Empresa" domain="[('is_company', '=', True)]" context="{'default_is_company': True, 'default_supplier': supplier, 'default_customer': customer}" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+            <field name="company_name" attrs="{'invisible': ['|', '|', ('company_name', '=', False), ('company_name', '=', ''), ('is_company', '=', True)]}"/>
+            <button name="create_company" type="object" string="Create company" class="btn btn-sm oe_edit_only fa fa-external-link btn btn-link " attrs="{'invisible': ['|', '|', ('is_company','=', True), ('company_name', '=', ''), ('company_name', '=', False)]}"/>
+          </div>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</openerp>

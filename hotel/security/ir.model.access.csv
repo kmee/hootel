@@ -61,3 +61,6 @@ access_product_product_manager,product.product.manager,product.model_product_pro
 acess_hotel_service_type,hotel.service_type.user,model_hotel_service_type,hotel.group_hotel_user,1,0,0,0
 acess_hotel_service_type_call,hotel.service_type.call,model_hotel_service_type,hotel.group_hotel_call,1,0,0,0
 acess_hotel_service_type_manager,hotel.service_type.manager,model_hotel_service_type,hotel.group_hotel_manager,1,1,1,1
+access_sales_channel_manager,hotel.sales_channel_manager,model_sales_channel,hotel.group_hotel_manager,1,1,1,1
+access_sales_channel_user,hotel.sales_channel_user,model_sales_channel,hotel.group_hotel_user,1,0,0,0
+access_sales_channel_call,hotel.sales_channel_call,model_sales_channel,hotel.group_hotel_call,1,0,0,0

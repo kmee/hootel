@@ -214,13 +214,17 @@
                                 <field name="partner_internal_comment" string="Partner Note"/>
                                 <field name="cancelled_reason" attrs="{'invisible':[('state','not in',('cancelled'))]}"/>
                             </group>
-                            <group colspan="4" string="Reservation Details" name="reservation_details">
+                            <group colspan="5" string="Reservation Details" name="reservation_details">
                                 <field name="name"/>
                                 <field name="adults"/>
                                 <field name="children"/>
                                 <field name="virtual_room_id" on_change="1" options="{'no_create': True,'no_open': True}"
                                        attrs="{'readonly':[('state','not in',('draft'))]}"/>
                                 <field name="channel_type" attrs="{'required':[('reservation_type','not in',('staff','out'))]}"/>
+                                <field name="sales_channel"
+                                                    attrs="{'required':[('channel_type','in',('agency','operator'))], 'invisible':[('channel_type','not in',('agency','operator'))]}"
+                                                    domain="[('type','=',channel_type)]"
+                                                    options="{'no_create': True,'no_open': True}"/>
                             </group>
                             <group class="oe_subtotal_footer" style="margin-right: 20px; !important" colspan="2" name="reservation_total" string="Amounts"  attrs="{'invisible':[('folio_id','=', False)]}">
                                 <field name="amount_room" widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -470,6 +474,12 @@
                     <filter string="Phone"
                                 domain="[('channel_type', '=', 'phone')]"
                                  />
+                     <filter string="Agencia"
+                                 domain="[('channel_type', '=', 'agency')]"
+                                  />
+                  <filter string="Touroperador"
+                                  domain="[('channel_type', '=', 'operator')]"
+                                   />
                     <separator/>
                     <filter string="Still to be paid"
                                 domain="[('folio_id.invoices_amount','&gt;',0)]"
