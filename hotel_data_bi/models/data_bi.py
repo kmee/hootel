@@ -107,14 +107,12 @@ class Data_Bi(models.Model):
                                    'ascii', 'xmlcharrefreplace')})
 
         dic_canal = []  # Diccionario con los Canales
-        canal_array_txt = ['Puerta', 'E-Mail', u'Teléfono', 'Call-Center',
-                           'Web', 'Agencia', 'Touroperador']
-        canal_array = ['door', 'mail', 'phone', 'call',
-                       'web', 'agency', 'operator']
+        canal_array = ['Directo', 'OTA', 'Call-Center', 'Agencia',
+                       'Touroperador']
         for i in range(0, len(canal_array)):
             dic_canal.append({'ID_Hotel': compan.id_hotel,
                               'ID_Canal': i,
-                              'Descripcion': canal_array_txt[i]})
+                              'Descripcion': canal_array[i]})
 
         dic_hotel = []  # Diccionario con el/los nombre de los hoteles
         dic_hotel.append({'ID_Hotel': compan.id_hotel,
@@ -334,20 +332,18 @@ class Data_Bi(models.Model):
             elif len(linea.reservation_id.partner_id.category_id) > 0:
                 id_segmen = linea.reservation_id.partner_id.category_id[0].id
 
-            chanel_r = 0
-            if linea.reservation_id.channel_type:
-                chanel_r = canal_array.index(linea.reservation_id.channel_type)
-
             precio_dto = 0
             if linea.reservation_id.discount != 0:
                 precio_dto = linea.price * linea.reservation_id.discount/100
 
+            chanel_r = 0
             channel_c = 0
             precio_comision = 0
             precio_iva = 0
             precio_neto = linea.price
             if linea.reservation_id.wrid:
                 if linea.reservation_id.wchannel_id.wid:
+                    chanel_r = 1
                     channel_c = int(linea.reservation_id.wchannel_id.wid)
                     if channel_c == 1:
                         # Expedia.
@@ -430,21 +426,28 @@ class Data_Bi(models.Model):
                 else:
                     # Direct From Wubook (Web)
                     channel_c = 999
+                    chanel_r = 0  # Web in Chanel
                     precio_iva = (precio_neto*10/100)
                     precio_neto -= precio_iva
             else:
                 if linea.reservation_id.channel_type == 'door':
                     channel_c = 903
+                    chanel_r = 0
                 elif linea.reservation_id.channel_type == 'mail':
                     channel_c = 904
+                    chanel_r = 0
                 elif linea.reservation_id.channel_type == 'phone':
                     channel_c = 905
+                    chanel_r = 0
                 elif linea.reservation_id.channel_type == 'call':
                     channel_c = 906
+                    chanel_r = 2
                 elif linea.reservation_id.channel_type == 'agency':
                     channel_c = 907
+                    chanel_r = 3
                 elif linea.reservation_id.channel_type == 'operator':
                     channel_c = 908
+                    chanel_r = 4
                 if (channel_c == 907 or channel_c == 908):
                     # Buscamos el nombre en los canales
                     line_sales = next((
