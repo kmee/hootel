@@ -62,29 +62,6 @@
       </field>
     </record>
 
-    <record id="sales_channel_folio_search" model="ir.ui.view">
-      <field name="name">Canales de Venta Search in Folio</field>
-      <field name="model">hotel.folio</field>
-      <field name="arch" type="xml">
-        <search>
-          <filter string="Call Center"
-              domain="[('channel_type', '=', 'call')]"/>
-          <filter string="Web"
-              domain="[('channel_type', '=', 'web')]"/>
-          <filter string="Door"
-              domain="[('channel_type', '=', 'door')]"/>
-          <filter string="Mail"
-              domain="[('channel_type', '=', 'mail')]"/>
-          <filter string="Phone"
-              domain="[('channel_type', '=', 'phone')]"/>
-          <filter string="Agencias"
-              domain="[('channel_type', '=', 'agency')]"/>
-          <filter string="Touroperadores"
-              domain="[('channel_type', '=', 'operator')]"/>
-        </search>
-      </field>
-    </record>
-
     <!-- FIX WRONG VIEW TO COSTUMER COMPANY css in Div problem-->
     <record id="view_partner_form" model="ir.ui.view">
       <field name="model">res.partner</field>
