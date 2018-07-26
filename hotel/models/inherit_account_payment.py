@@ -51,7 +51,6 @@ class AccountPayment(models.Model):
             }
         return_vals = {
             'journal_id': journal.id,
-            'date': date,
             'line_ids': [(0,0,return_line_vals)],
             }
         return_pay = self.env['payment.return'].create(return_vals)

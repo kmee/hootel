@@ -432,7 +432,8 @@ class HotelReservation(models.Model):
                 _logger.info(res.amount_reservation)
                 _logger.info('---------------------------')
 
-    @api.depends('reservation_lines.price', 'discount_fixed', 'discount', 'product_uom_qty', 'tax_id')
+    @api.depends('reservation_lines.price', 'discount_fixed', 'discount', 'product_uom_qty', 'tax_id',
+        'service_line_ids.price_total')
     def _computed_amount_reservation(self):
         _logger.info('_computed_amount_reservation')
         for res in self:
