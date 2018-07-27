@@ -25,7 +25,7 @@ import xlsxwriter
 import base64
 from odoo import api, fields, models, _
 from openerp.exceptions import except_orm, UserError, ValidationError
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
 
 
 class CallCenterReportWizard(models.TransientModel):
@@ -46,6 +46,8 @@ class CallCenterReportWizard(models.TransientModel):
 
     @api.model
     def _export(self):
+        date_format = "%d-%m-%Y"
+        time_format = "%H:%M"
         file_data = StringIO()
         workbook = xlsxwriter.Workbook(file_data, {
             'strings_to_numbers': True,
@@ -78,11 +80,15 @@ class CallCenterReportWizard(models.TransientModel):
 
         worksheet.write('A1', _('Ficha'), xls_cell_format_header)
         worksheet.write('B1', _('Fecha de Pedido'), xls_cell_format_header)
-        worksheet.write('C1', _('Checkin'), xls_cell_format_header)
-        worksheet.write('D1', _('Checkout'), xls_cell_format_header)
-        worksheet.write('E1', _('Producto'), xls_cell_format_header)
-        worksheet.write('F1', _('Creado por'), xls_cell_format_header)
-        worksheet.write('G1', _('Total'), xls_cell_format_header)
+        worksheet.write('C1', _('Cliente'), xls_cell_format_header)
+        worksheet.write('D1', _('Producto'), xls_cell_format_header)
+        worksheet.write('E1', _('Noches/Uds'), xls_cell_format_header)
+        worksheet.write('F1', _('Adultos'), xls_cell_format_header)
+        worksheet.write('G1', _('Checkin'), xls_cell_format_header)
+        worksheet.write('H1', _('In-Hora'), xls_cell_format_header)
+        worksheet.write('I1', _('Checkout'), xls_cell_format_header)
+        worksheet.write('J1', _('Creado por'), xls_cell_format_header)
+        worksheet.write('K1', _('Total'), xls_cell_format_header)
 
         worksheet.set_column('B:B', 20)
         worksheet.set_column('C:C', 20)
@@ -101,16 +107,23 @@ class CallCenterReportWizard(models.TransientModel):
         offset = 1
         total_reservation_amount = 0.0
         for k_res, v_res in enumerate(reservations):
+            checkin_date = datetime.strptime(v_res.checkin, DEFAULT_SERVER_DATETIME_FORMAT)
+            checkout_date = datetime.strptime(v_res.checkout, DEFAULT_SERVER_DATETIME_FORMAT)
             worksheet.write(k_res+offset, 0, v_res.folio_id.name)
             worksheet.write(k_res+offset, 1, v_res.folio_id.date_order,
                             xls_cell_format_date)
-            worksheet.write(k_res+offset, 2, v_res.checkin,
+            worksheet.write(k_res+offset, 2, v_res.partner_id.name)
+            worksheet.write(k_res+offset, 3, v_res.virtual_room_id.name)
+            worksheet.write(k_res+offset, 4, v_res.nights)
+            worksheet.write(k_res+offset, 5, v_res.adults)
+            worksheet.write(k_res+offset, 6, checkin_date.strftime(date_format),
                             xls_cell_format_date)
-            worksheet.write(k_res+offset, 3, v_res.checkout,
+            worksheet.write(k_res+offset, 7, checkin_date.strftime(time_format),
                             xls_cell_format_date)
-            worksheet.write(k_res+offset, 4, v_res.product_id.name)
-            worksheet.write(k_res+offset, 5, v_res.create_uid.name)
-            worksheet.write(k_res+offset, 6, v_res.price_total,
+            worksheet.write(k_res+offset, 8, checkout_date.strftime(date_format),
+                            xls_cell_format_date)
+            worksheet.write(k_res+offset, 9, v_res.create_uid.name)
+            worksheet.write(k_res+offset, 10, v_res.price_total,
                             xls_cell_format_money)
             total_reservation_amount += v_res.price_total
 
@@ -126,11 +139,15 @@ class CallCenterReportWizard(models.TransientModel):
             worksheet.write(k_service+offset, 0, v_service.folio_id.name)
             worksheet.write(k_service+offset, 1, v_service.folio_id.date_order,
                             xls_cell_format_date)
-            worksheet.write(k_service+offset, 2, '')
-            worksheet.write(k_service+offset, 3, '')
-            worksheet.write(k_service+offset, 4, v_service.product_id.name)
-            worksheet.write(k_service+offset, 5, v_service .create_uid.name)
-            worksheet.write(k_service+offset, 6, v_service.price_total,
+            worksheet.write(k_service+offset, 2, v_service.folio_id.partner_id.name)
+            worksheet.write(k_service+offset, 3, v_service.product_id.name)
+            worksheet.write(k_service+offset, 4, v_service.product_uom_qty)
+            worksheet.write(k_service+offset, 5, '')
+            worksheet.write(k_service+offset, 6, '')
+            worksheet.write(k_service+offset, 7, '')
+            worksheet.write(k_service+offset, 8, '')
+            worksheet.write(k_service+offset, 9, v_service .create_uid.name)
+            worksheet.write(k_service+offset, 10, v_service.price_total,
                             xls_cell_format_money)
             total_service_amount += v_service.price_total
         offset += len(services)
@@ -141,20 +158,17 @@ class CallCenterReportWizard(models.TransientModel):
             line = k_line + offset
         if total_reservation_amount > 0:
             line += 1
-            worksheet.write(line, 4, _('TOTAL RESERVAS'))
-            worksheet.write(line, 5, total_reservation_amount,
+            worksheet.write(line, 9, _('TOTAL RESERVAS'))
+            worksheet.write(line, 10, total_reservation_amount,
                             xls_cell_format_money)
         if total_service_amount > 0:
             line += 1
-            worksheet.write(line, 4, _('TOTAL SERVICIOS'))
-            worksheet.write(line, 5, total_service_amount,
+            worksheet.write(line, 9, _('TOTAL SERVICIOS'))
+            worksheet.write(line, 10, total_service_amount,
                             xls_cell_format_money)
         line += 1
-        worksheet.write(line, 4, _('TOTAL'))
-        worksheet.write(
-            line,
-            5,
-            total_reservation_amount + total_service_amount,
+        worksheet.write(line, 9, _('TOTAL'))
+        worksheet.write(line, 10    , total_reservation_amount + total_service_amount,
             xls_cell_format_money)
 
         workbook.close()
