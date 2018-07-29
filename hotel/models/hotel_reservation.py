@@ -365,7 +365,7 @@ class HotelReservation(models.Model):
 
     def _compute_fix_total(self):
         for res in self:
-            if int(res.amount_discount) != int(res.price_total):
+            if abs(int(res.amount_discount) - int(res.price_total)) >= 1:
                 res.fix_total = True
             else:
                 res.fix_total = False
