@@ -72,6 +72,13 @@ class AccountInvoice(models.Model):
             raise ValidationError(vat_error)
         return super(AccountInvoice, self).action_invoice_open()
 
+    @api.multi
+    def unlink(self):
+        for invoice in self:
+            if invoice.number:
+                raise UserError(_('You cannot delete an invoice after it has been validated (and received a number). You can set it back to "Draft" state and modify its content, then re-confirm it.'))
+        return super(AccountInvoice, self).unlink()
+
     # ~ @api.multi
     # ~ def confirm_paid(self):
     #     ~ '''

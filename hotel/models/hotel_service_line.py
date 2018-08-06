@@ -175,29 +175,29 @@ class HotelServiceLine(models.Model):
         #                                                       ~ prod.taxes_id,
         #                                                       ~ self.tax_id)
 
-    @api.onchange('ser_checkin', 'ser_checkout')
-    def on_change_checkout(self):
-        '''
-        When you change checkin or checkout it will checked it
-        and update the qty of hotel service line
-        -----------------------------------------------------------------
-        @param self: object pointer
-        '''
-        now_utc_dt = date_utils.now()
-        if not self.ser_checkin:
-            self.ser_checkin = now_utc_dt.strftime(
-                DEFAULT_SERVER_DATETIME_FORMAT)
-        if not self.ser_checkout:
-            self.ser_checkout = now_utc_dt.strftime(
-                DEFAULT_SERVER_DATETIME_FORMAT)
-        chkin_utc_dt = date_utils.get_datetime(self.ser_checkin)
-        chkout_utc_dt = date_utils.get_datetime(self.ser_checkout)
-        if chkout_utc_dt < chkin_utc_dt:
-            raise UserError(_('Checkout must be greater or equal checkin date'))
-        if self.ser_checkin and self.ser_checkout:
-            diffDate = date_utils.date_diff(self.ser_checkin,
-                                            self.ser_checkout, hours=False) + 1
-            self.product_uom_qty = diffDate + 1
+    #~ @api.onchange('ser_checkin', 'ser_checkout')
+    #~ def on_change_checkout(self):
+        #~ '''
+        #~ When you change checkin or checkout it will checked it
+        #~ and update the qty of hotel service line
+        #~ -----------------------------------------------------------------
+        #~ @param self: object pointer
+        #~ '''
+        #~ now_utc_dt = date_utils.now()
+        #~ if not self.ser_checkin:
+            #~ self.ser_checkin = now_utc_dt.strftime(
+                #~ DEFAULT_SERVER_DATETIME_FORMAT)
+        #~ if not self.ser_checkout:
+            #~ self.ser_checkout = now_utc_dt.strftime(
+                #~ DEFAULT_SERVER_DATETIME_FORMAT)
+        #~ chkin_utc_dt = date_utils.get_datetime(self.ser_checkin)
+        #~ chkout_utc_dt = date_utils.get_datetime(self.ser_checkout)
+        #~ if chkout_utc_dt < chkin_utc_dt:
+            #~ raise UserError(_('Checkout must be greater or equal checkin date'))
+        #~ if self.ser_checkin and self.ser_checkout:
+            #~ diffDate = date_utils.date_diff(self.ser_checkin,
+                                            #~ self.ser_checkout, hours=False) + 1
+            #~ self.product_uom_qty = diffDate + 1
 
     @api.multi
     def button_confirm(self):

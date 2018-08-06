@@ -1412,6 +1412,7 @@ class WuBook(models.AbstractModel):
 
             reservations = []
             used_rooms = []
+            total_book_price = 0.0
             # Iterate booked rooms
             for broom in book['booked_rooms']:
                 vroom = hotel_vroom_obj.search([
@@ -1451,6 +1452,9 @@ class WuBook(models.AbstractModel):
                         dates_checkout,
                         book,
                     )
+
+                    total_book_price += vals['price_unit']
+
                     free_rooms = hotel_vroom_obj.check_availability_virtual_room(
                         checkin_str,
                         checkout_str,
@@ -1533,6 +1537,11 @@ class WuBook(models.AbstractModel):
                     'reservation',
                     "Reservation Splitted",
                     '', wid=rcode)
+            if total_book_price != book['amount']:
+                self.create_wubook_issue(
+                    'reservation',
+                    "Invalid reservation total price! %.2f != %.2f" % (vals['price_unit'], book['amount']),
+                    '', wid=book['reservation_code'])
 
             # Create Folio
             if not any(failed_reservations) and any(reservations):

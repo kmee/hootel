@@ -47,8 +47,7 @@ class TestHotelWubook(TestHotel):
         @api.model
         def wubook_create_wubook_issue(self, section, message, wmessage,
                                        wid=False, dfrom=False, dto=False):
-            _logger.info("ISSUE CREATED:\n\t- %s\n\t--- %s" %
-                         (section, message))
+            _logger.info("ISSUE CREATED:\n\t- %s\n\t--- %s", section, message)
 
         cls.env['wubook']._patch_method('create_wubook_issue',
                                         wubook_create_wubook_issue)

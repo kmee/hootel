@@ -168,6 +168,13 @@ class GlassofExporterWizard(models.TransientModel):
 
         nrow = 1
         for inv in account_invs:
+            if inv.partner_id.parent_id:
+                firstname = inv.partner_id.parent_id.firstname or ''
+                lastname = inv.partner_id.parent_id.lastnme or ''
+            else:
+                firstname = inv.partner_id.firstname or ''
+                lastname = inv.partner_id.lastname or ''
+                
             worksheet.write(nrow, 0, inv.number)
             worksheet.write(nrow, 1, inv.date_invoice, xls_cell_format_date)
             worksheet.write(nrow, 2, '')
@@ -175,9 +182,9 @@ class GlassofExporterWizard(models.TransientModel):
                             inv.partner_id.vat[:2] or '')
             worksheet.write(nrow, 4, inv.partner_id.vat and
                             inv.partner_id.vat[2:] or '')
-            worksheet.write(nrow, 5, inv.partner_id.lastname)
+            worksheet.write(nrow, 5, lastname)
             worksheet.write(nrow, 6, '')
-            worksheet.write(nrow, 7, inv.partner_id.firstname)
+            worksheet.write(nrow, 7, firstname)
             worksheet.write(nrow, 8, 705.0, xls_cell_format_odec)
             worksheet.write(nrow, 9, inv.amount_untaxed, xls_cell_format_money)
             if any(inv.tax_line_ids):
