@@ -416,6 +416,12 @@ class Data_Bi(models.Model):
                                         #     ' Inicial Price: '+
                                         #     str(linea.price))
                                     else:
+                                        precio_iva = round(
+                                            precio_neto-(precio_neto/1.10), 2)
+                                        precio_comision = round(precio_neto*(
+                                           100/float(100-18)) - precio_neto, 2)
+                                        precio_neto += precio_comision
+                                        channel_c = 902
                                         _logger.error(
                                            "---- " +
                                            linea.reservation_id.partner_id.name
@@ -424,6 +430,12 @@ class Data_Bi(models.Model):
                                             "Exp. PRO Tarifa No Contemplada : "
                                             + jsonRate)
                                 else:
+                                    precio_iva = round(
+                                        precio_neto-(precio_neto/1.10), 2)
+                                    precio_comision = round(precio_neto*(
+                                        100/float(100-18)) - precio_neto, 2)
+                                    precio_neto += precio_comision
+                                    channel_c = 902
                                     _logger.error(
                                         "---- " +
                                         linea.reservation_id.partner_id.name +
@@ -432,6 +444,12 @@ class Data_Bi(models.Model):
                                         "Expedia Tarifa No Contemplada : "
                                         + jsonRate)
                         else:
+                            precio_iva = round(
+                                precio_neto-(precio_neto/1.10), 2)
+                            precio_comision = round(precio_neto*(
+                                100/float(100-18)) - precio_neto, 2)
+                            precio_neto += precio_comision
+                            channel_c = 902
                             _logger.error("--------------------------- " +
                                           linea.reservation_id.partner_id.name
                                           + " No Json DATA for EXPEDIA rates")
