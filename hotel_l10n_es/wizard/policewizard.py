@@ -57,7 +57,7 @@ class Wizard(models.TransientModel):
                         and (line.partner_id.firstname is not False)
                         and (line.partner_id.lastname is not False)):
 
-                    if line.partner_id.documenttype in ["D", "P", "C"]:
+                    if len(line.partner_id.code_ine.code) == 5:
                         content += "2|"+line.partner_id.poldocument.upper(
                             ) + "||"
                     else:
@@ -67,7 +67,6 @@ class Wizard(models.TransientModel):
                     content += datetime.datetime.strptime(
                         line.partner_id.polexpedition,
                         "%Y-%m-%d").date().strftime("%Y%m%d") + "|"
-                    content += line.partner_id.firstname.upper() + "|"
                     apellidos = line.partner_id.lastname.split()
                     if len(apellidos) >= 2:
                         content += apellidos[0].upper() + "|"
@@ -78,6 +77,7 @@ class Wizard(models.TransientModel):
                     else:
                         content += apellidos[0].upper() + "|"
                     content += "|"
+                    content += line.partner_id.firstname.upper() + "|"
                     content += line.partner_id.gender.upper()[0] + "|"
                     content += datetime.datetime.strptime(
                         line.partner_id.birthdate_date,
