@@ -332,6 +332,27 @@ class Wizard(models.TransientModel):
                             movimientos[int(xx_dia[2])][6] -= 1
 
             for dia_x in xrange(1, last_day+1):
+                # Si la suma de los durmiendo es superior a pernoctaciones INE
+                suma_durmiendo = ((movimientos[dia_x][1]*2)
+                                  + movimientos[dia_x][2]
+                                  + movimientos[dia_x][3])
+                if suma_durmiendo > ine_pernoct_total[dia_x]:
+                    suma_durmiendo = (suma_durmiendo -
+                                      ine_pernoct_total[dia_x])
+                    if suma_durmiendo == 1:
+                        if movimientos[dia_x][2] > 0:
+                            # quitamos una individual
+                            movimientos[dia_x][2] -= 1
+                        elif movimientos[dia_x][3] > 0:
+                            # quitamos una otras
+                            movimientos[dia_x][3] -= 1
+                    elif suma_durmiendo == 2:
+                        if movimientos[dia_x][1] > 0:
+                            # quitamos una doble
+                            movimientos[dia_x][1] -= 1
+                        elif movimientos[dia_x][3] > 0:
+                            # quitamos una otras
+                            movimientos[dia_x][3] -= 1
                 habitaciones_m = ET.SubElement(habitaciones,
                                                "HABITACIONES_MOVIMIENTO")
                 ET.SubElement(habitaciones_m,
