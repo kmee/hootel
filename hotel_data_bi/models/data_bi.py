@@ -85,11 +85,13 @@ class Data_Bi(models.Model):
             archivo == 14 'Estado Reservas'
         fechafoto = start date to take data
         """
-        fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
+        # fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
         # Change this to local test
-        # fechafoto=date.today()
+        if type(fechafoto) is dict:
+            fechafoto = date.today()
+        else:
+            fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
         # fechafoto=date(2018, 01, 01)
-
         _logger.warning("Init Export Data_Bi Module")
 
         if not isinstance(archivo, int):
@@ -248,22 +250,22 @@ class Data_Bi(models.Model):
         dic_clientes = []  # Diccionario con Clientes (OTAs y agencias)
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'0',
-                             'Descripcion': 'Ninguno'})
+                             'Descripcion': u'Ninguno'})
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'999',
-                             'Descripcion': 'Web Propia'})
+                             'Descripcion': u'Web Propia'})
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'901',
-                             'Descripcion': 'Expedia Empaquedata'})
+                             'Descripcion': u'Expedia Empaquedata'})
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'902',
-                             'Descripcion': 'Expedia Sin Comisión'})
+                             'Descripcion': u'Expedia Sin Comisión'})
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'903',
-                             'Descripcion': 'Puerta'})
+                             'Descripcion': u'Puerta'})
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'904',
-                             'Descripcion': 'E-Mail'})
+                             'Descripcion': u'E-Mail'})
         dic_clientes.append({'ID_Hotel': compan.id_hotel,
                              'ID_Cliente': u'905',
                              'Descripcion': u'Teléfono'})
@@ -350,42 +352,76 @@ class Data_Bi(models.Model):
                         if linea.reservation_id.wbook_json:
                             jsonExp = json.loads(
                                 linea.reservation_id.wbook_json)
-                            jsonRate = jsonExp['booked_rooms'][0][
-                                'ancillary']['channel_rate_name']
+                            jsonBooked = jsonExp['booked_rooms'][0]
+                            if jsonBooked.get('ancillary').get(
+                                    'channel_rate_name') is not None:
+                                jsonRate = jsonBooked.get('ancillary').get(
+                                    'channel_rate_name')
+                            elif jsonBooked.get('roomdays')[0].get(
+                                    'ancillary').get(
+                                        'channel_rate_name') is not None:
+                                jsonRate = jsonBooked.get('roomdays')[0].get(
+                                    'ancillary').get('channel_rate_name')
+                            else:
+                                _logger.critical(
+                                    "EXPEDIA Tarifa No Contemplada : "
+                                    + jsonBooked)
+
                             jsonPay = jsonExp['channel_data']['pay_model']
-                            if jsonRate == "Standalone Room Only":
+                            if (jsonRate == "Standalone Room Only") or (
+                                    jsonRate == "Room Only"):
                                 # Expedia TIPO 1 Merchant
                                 if jsonPay == "merchant":
                                     # Expedia TIPO 1 Merchant
-                                    precio_iva = precio_neto-(precio_neto/1.10)
-                                    precio_comision = precio_neto*(
-                                        100/float(100-18)) - precio_neto
+                                    precio_iva = round(
+                                        precio_neto-(precio_neto/1.10), 2)
+                                    precio_comision = round(precio_neto*(
+                                        100/float(100-18)) - precio_neto, 2)
                                     precio_neto += precio_comision
                                     channel_c = 902
                                 else:
                                     # Expedia TIPO 1 Agency
-                                    precio_iva = precio_neto-(precio_neto/1.10)
+                                    precio_iva = round(
+                                        precio_neto-(precio_neto/1.10), 2)
                                     precio_neto -= precio_iva
-                                    precio_comision = precio_neto-(
-                                        precio_neto/1.18)
+                                    precio_comision = round(precio_neto-(
+                                        precio_neto/1.18), 2)
                                     precio_neto -= precio_comision
+                                    channel_c = 902
                             else:
                                 if jsonRate == "Package Room Only":
                                     if jsonPay == "merchant":
                                         # Expedia TIPO 2 Merchant EMPAQUETADA
                                         comision1 = 0
                                         comision2 = 0
-                                        precio_iva = precio_neto-(
-                                            precio_neto/1.10)
+                                        precio_iva = round(precio_neto-(
+                                            precio_neto/1.10), 2)
                                         comision1 = precio_neto*(
                                             100/float(100-18)) - precio_neto
-                                        precio_neto += comision1
+                                        precio_neto += round(comision1, 2)
                                         comision2 = precio_neto*(
                                             100/float(100-10)) - precio_neto
-                                        precio_neto += comision2
-                                        precio_comision = comision1 + comision2
+                                        precio_neto += round(comision2, 2)
+                                        precio_comision = round(
+                                            comision1 + comision2, 2)
                                         channel_c = 901
+
+                                        # _logger.critical(
+                                        #     "---- " +
+                                        #     linea.reservation_id.partner_id.name
+                                        #     + " ---iva: " +
+                                        #     str(precio_iva) + ' comision: '+
+                                        #     str(precio_comision) + ' Neto: '+
+                                        #     str(precio_neto) +
+                                        #     ' Inicial Price: '+
+                                        #     str(linea.price))
                                     else:
+                                        precio_iva = round(
+                                            precio_neto-(precio_neto/1.10), 2)
+                                        precio_comision = round(precio_neto*(
+                                           100/float(100-18)) - precio_neto, 2)
+                                        precio_neto += precio_comision
+                                        channel_c = 902
                                         _logger.error(
                                            "---- " +
                                            linea.reservation_id.partner_id.name
@@ -394,6 +430,12 @@ class Data_Bi(models.Model):
                                             "Exp. PRO Tarifa No Contemplada : "
                                             + jsonRate)
                                 else:
+                                    precio_iva = round(
+                                        precio_neto-(precio_neto/1.10), 2)
+                                    precio_comision = round(precio_neto*(
+                                        100/float(100-18)) - precio_neto, 2)
+                                    precio_neto += precio_comision
+                                    channel_c = 902
                                     _logger.error(
                                         "---- " +
                                         linea.reservation_id.partner_id.name +
@@ -402,6 +444,12 @@ class Data_Bi(models.Model):
                                         "Expedia Tarifa No Contemplada : "
                                         + jsonRate)
                         else:
+                            precio_iva = round(
+                                precio_neto-(precio_neto/1.10), 2)
+                            precio_comision = round(precio_neto*(
+                                100/float(100-18)) - precio_neto, 2)
+                            precio_neto += precio_comision
+                            channel_c = 902
                             _logger.error("--------------------------- " +
                                           linea.reservation_id.partner_id.name
                                           + " No Json DATA for EXPEDIA rates")
@@ -460,7 +508,6 @@ class Data_Bi(models.Model):
                             item["Descripcion"] == line_sales.name), False)
                         if line_descipcion:
                             channel_c = line_descipcion['ID_Cliente']
-
                 precio_iva = (precio_neto*10/100)
                 precio_neto -= precio_iva
 
