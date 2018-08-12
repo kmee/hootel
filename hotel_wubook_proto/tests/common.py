@@ -91,7 +91,7 @@ class TestHotelWubook(TestHotel):
         cls.env['wubook']._patch_method('push_restrictions', wubook_ommit)
 
     def create_wubook_booking(self, creator, checkin, partner, rinfo,
-                              channel=0, notes=''):
+                              channel=0, notes='', brooms_ancillary=None):
         rcode = randint(100000, 999999)
         crcode = randint(100000, 999999)
         brate = randint(100000, 999999)
@@ -159,6 +159,8 @@ class TestHotelWubook(TestHotel):
                     'room_id': k_room,
                     'roomdays': roomdays
                 })
+                if brooms_ancillary:
+                    booked_rooms[len(booked_rooms)-1]['ancillary'].update(brooms_ancillary)
                 if val > max_persons:
                     max_persons = val
 
