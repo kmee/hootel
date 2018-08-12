@@ -1218,7 +1218,15 @@ class WuBook(models.AbstractModel):
     def _generate_booking_vals(self, broom, checkin_str, checkout_str,
                                is_cancellation, wchannel_info, wstatus, crcode,
                                rcode, vroom, split_booking, dates_checkin,
-                               dates_checkout, book):
+                               dates_checkout, book, free_room, partner_id):
+        tax_inclusive = True
+        persons = vroom.wcapacity
+        if 'ancillary' in broom:
+            if 'guests' in broom['ancillary']:
+                persons = broom['ancillary']['guests']
+            if 'tax_inclusive' in broom['ancillary'] and not broom['ancillary']['tax_inclusive']:
+                _logger.info("--- Incoming Reservation without taxes included!")
+                tax_inclusive = False
         # Generate Reservation Day Lines
         reservation_lines = []
         tprice = 0.0
@@ -1231,15 +1239,21 @@ class WuBook(models.AbstractModel):
                                   dates_checkin[0],
                                   dates_checkout[0] - timedelta(days=1),
                                   hours=False) == 0:
+                if not tax_inclusive:
+                    taxes = free_room.taxes_id.compute_all(
+                        brday['price'],
+                        None,
+                        1,
+                        product=free_room.product_id, partner=partner_id)
+                    for tax in taxes['taxes']:
+                        room_day_price = brday['price'] + tax['amount']
+                else:
+                    room_day_price = brday['price']
                 reservation_lines.append((0, False, {
-                    'date': wndate.strftime(
-                        DEFAULT_SERVER_DATE_FORMAT),
-                    'price': brday['price']
+                    'date': wndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
+                    'price': room_day_price,
                 }))
-                tprice += brday['price']
-        persons = vroom.wcapacity
-        if 'ancillary' in broom and 'guests' in broom['ancillary']:
-            persons = broom['ancillary']['guests']
+                tprice += room_day_price
         vals = {
             'checkin': checkin_str,
             'checkout': checkout_str,
@@ -1257,7 +1271,9 @@ class WuBook(models.AbstractModel):
             'virtual_room_id': vroom.id,
             'splitted': split_booking,
             'wbook_json': json.dumps(book),
-            'wmodified': book['was_modified']
+            'wmodified': book['was_modified'],
+            'product_id': free_room and free_room.product_id.id,
+            'name': free_room and free_room.name,
         }
         _logger.info("===== CONTRUCT RESERV")
         _logger.info(vals)
@@ -1437,36 +1453,32 @@ class WuBook(models.AbstractModel):
                         DEFAULT_SERVER_DATETIME_FORMAT)
                     checkout_str = dates_checkout[0].strftime(
                         DEFAULT_SERVER_DATETIME_FORMAT)
-                    vals = self._generate_booking_vals(
-                        broom,
-                        checkin_str,
-                        checkout_str,
-                        is_cancellation,
-                        wchannel_info,
-                        bstatus,
-                        crcode,
-                        rcode,
-                        vroom,
-                        split_booking,
-                        dates_checkin,
-                        dates_checkout,
-                        book,
-                    )
-
-                    total_book_price += vals['price_unit']
-
                     free_rooms = hotel_vroom_obj.check_availability_virtual_room(
                         checkin_str,
                         checkout_str,
                         virtual_room_id=vroom.id,
                         notthis=used_rooms)
                     if any(free_rooms):
-                        vals.update({
-                            'product_id': free_rooms[0].product_id.id,
-                            'name': free_rooms[0].name,
-                        })
+                        vals = self._generate_booking_vals(
+                            broom,
+                            checkin_str,
+                            checkout_str,
+                            is_cancellation,
+                            wchannel_info,
+                            bstatus,
+                            crcode,
+                            rcode,
+                            vroom,
+                            split_booking,
+                            dates_checkin,
+                            dates_checkout,
+                            book,
+                            free_rooms[0],
+                            partner_id,
+                        )
                         reservations.append((0, False, vals))
                         used_rooms.append(free_rooms[0].id)
+                        total_book_price += vals['price_unit']
 
                         if split_booking:
                             if not split_booking_parent:
@@ -1506,10 +1518,10 @@ class WuBook(models.AbstractModel):
                                 (checkin_utc_dt, False),
                                 (checkout_utc_dt, False),
                                 book,
+                                vroom.room_ids[0],
+                                partner_id,
                             )
                             vals.update({
-                                'product_id':
-                                    vroom.room_ids[0].product_id.id,
                                 'name': vroom.name,
                                 'overbooking': True,
                             })
@@ -1540,7 +1552,7 @@ class WuBook(models.AbstractModel):
             if total_book_price != book['amount']:
                 self.create_wubook_issue(
                     'reservation',
-                    "Invalid reservation total price! %.2f != %.2f" % (vals['price_unit'], book['amount']),
+                    "Invalid reservation total price! %.2f != %.2f" % (total_book_price, book['amount']),
                     '', wid=book['reservation_code'])
 
             # Create Folio

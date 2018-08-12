@@ -606,3 +606,35 @@ class TestWubook(TestHotelWubook):
                     item.max_stay_arrival,
                     9,
                     "Hotel Wubook Invalid fetch room values")
+
+    def test_excluded_taxes(self):
+        now_utc_dt = date_utils.now()
+        checkin_utc_dt = now_utc_dt + timedelta(days=3)
+        checkin_dt = date_utils.dt_as_timezone(checkin_utc_dt, self.tz_hotel)
+
+        # Invalid Occupancy
+        wbooks = [
+            self.create_wubook_booking(
+                self.user_hotel_manager,
+                checkin_dt.strftime(DEFAULT_SERVER_DATETIME_FORMAT),
+                self.partner_2,
+                {
+                    self.hotel_vroom_budget.wrid: {
+                        'occupancy': [1],
+                        'dayprices': [15.0, 15.0]
+                    }
+                },
+                brooms_ancillary={
+                    "tax_inclusive": False,
+                    "taxes": 9.99,
+                    "fees": 0.0,
+                }
+            )]
+        processed_rids, errors, checkin_utc_dt, checkout_utc_dt = \
+            self.env['wubook'].sudo().generate_reservations(wbooks)
+        self.assertFalse(errors)
+        self.assertTrue(any(processed_rids))
+        nreserv = self.env['hotel.reservation'].search([
+            ('wrid', 'in', processed_rids)
+        ], order="id ASC", limit=1)
+        self.assertNotEqual(nreserv.amount_room, 30.0, "Invalid Prices!")
