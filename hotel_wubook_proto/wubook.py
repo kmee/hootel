@@ -1239,6 +1239,7 @@ class WuBook(models.AbstractModel):
                                   dates_checkin[0],
                                   dates_checkout[0] - timedelta(days=1),
                                   hours=False) == 0:
+                room_day_price = brday['price']
                 if not tax_inclusive:
                     taxes = free_room.taxes_id.compute_all(
                         brday['price'],
@@ -1246,9 +1247,7 @@ class WuBook(models.AbstractModel):
                         1,
                         product=free_room.product_id, partner=partner_id)
                     for tax in taxes['taxes']:
-                        room_day_price = brday['price'] + tax['amount']
-                else:
-                    room_day_price = brday['price']
+                        room_day_price += tax['amount']
                 reservation_lines.append((0, False, {
                     'date': wndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'price': room_day_price,
