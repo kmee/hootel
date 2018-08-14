@@ -35,21 +35,127 @@
 			/>
     <template id="report.kellys">
       <div class="page">
-        <h2>Listado de Limpieza</h2>
-        <div class="lista">
-          <t t-foreach="docs" t-as="o">
-            <div class="habitacion">
-              <span t-field="o.product_id"/>
+        <style>
+                    .titulo {
+                    	font-size: 1.5em;
+                    	text-align: center;
+                    }
+                    .marco {
+                    	border-radius: 47px 10px 47px 10px;
+                    	-moz-border-radius: 47px 10px 47px 10px;
+                    	-webkit-border-radius: 47px 10px 47px 10px;
+                    	border: 3px solid #000000;
+                    	padding: 10px 3px;
+                    	margin: 3px 0;
+                    	width: 100%;
+                    	text-align:center;
+                    }
+                    .client{
+                    	border-radius: 10px 0px 0px 10px;
+                    	-moz-border-radius: 10px 0px 0px 10px;
+                    	-webkit-border-radius: 10px 0px 0px 10px;
+                    	border: 1px solid #000000;
+                    	color: #FFFFFF;
+                    	background-color: rgba(0,0,0,0.50);
+                    }
+                    .exit{
+                    	border-radius: 10px 47px 47px 10px;
+                    	-moz-border-radius: 10px 47px 47px 10px;
+                    	-webkit-border-radius: 10px 47px 47px 10px;
+                    	border: 1px solid #000000;
+                    	padding: 20px 0p;
+                    	color: #FFFFFF;
+                    	background-color: #000000;
+                    }
+                    .pie{
+                    	font-size: 0.5em;
+                    }
+                    .tipo{
+                    	font-size: 1.5em
+                    }
+                    .notas{
+                    	background-color: #FFFFFF;
+                    	width: 90% !important;
+                    	margin: 3px 4px;
+                    	height: 2em;
+                    	color:#000000;
+                    	text-align:left;
+                    }
+                    .habitacion{
+                    	font-size: 2em;
+                    }
+                    .datos{
+                    	font-size:1.2em;
+                    }
+                    .section {
+                    	clear: both;
+                    	padding: 0px;
+                    	margin: 3px 0;
+                    }
+                    /*  COLUMN SETUP  */
+                    .col {
+                    	display: block;
+                    	float:left;
+                    	margin: 1% 0 1% 1.6%;
+                    }
+                    .col:first-child { margin-left: 0; }
+                    /*  GROUPING  */
+                    .group:before,
+                    .group:after { content:""; display:table; }
+                    .group:after { clear:both;}
+                    .group { zoom:1; /* For IE 6/7 */ }
+                    /*  GRID OF TWO  */
+                    .span_2_of_2 {
+                    	width: 100%;
+                    }
+                    .span_1_of_2 {
+                    	width: 49.2%;
+                    }
+                    /*  GO FULL WIDTH AT LESS THAN 480 PIXELS */
+                    @media only screen and (max-width: 480px) {
+                    	.col {
+                    		margin: 1% 0 1% 0%;
+                    	}
+                    }
+                    @media only screen and (max-width: 480px) {
+                    	.span_2_of_2, .span_1_of_2 { width: 100%; }
+                    }
+                  </style>
+          <div class="marco"  align="center">
+            <div class="titulo" align="center">Listado de Limpieza</div>
+            <t t-foreach="docs" t-as="o">
+              <div t-if="o.clean_type == 'client'" class="client section group">
+                <div class="habitacion col span_1_of_2">
+                  <span t-field="o.product_id"/>
+                </div>
+                <div class="tipo col span_1_of_2">
+                  <span t-field="o.clean_type"/>
+                </div>
+                <div class="datos col span_2_of_2">
+                  Del: <span t-field="o.checkin"/> al <span t-field="o.checkout"/>
+                </div>
+                <div class="notas col span_2_of_2" align="left">
+                  Notas:
+                </div>
+              </div>
+                <div t-if="o.clean_type == 'exit'" class="exit section group">
+                  <div class="habitacion col span_1_of_2">
+                    <span t-field="o.product_id"/>
+                  </div>
+                  <div class="tipo col span_1_of_2">
+                    <span t-field="o.clean_type"/>
+                  </div>
+                  <div class="datos col span_2_of_2">
+                    Del: <span t-field="o.checkin"/> al <span t-field="o.checkout"/>
+                  </div>
+                  <div class="notas col span_2_of_2" align="left">
+                    Notas:
+                  </div>
+                </div>
+              </t>
+                <div class="pie" style="font-size: 0.5em;">pie</div>
+              </div>
             </div>
-            <div class="checkin">
-              <span t-field="o.checkin"/>
-            </div>
-            <div class="checkout">
-              <span t-field="o.checkout"/>
-            </div>
-          </t>
-        </div>
-      </div>
-    </template>
-  </data>
-  </odoo>
+          </template>
+        </data>
+        </odoo>

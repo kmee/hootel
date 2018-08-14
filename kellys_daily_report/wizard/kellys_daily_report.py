@@ -18,14 +18,31 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from cStringIO import StringIO
 import datetime
 from datetime import datetime, date, time
-import xlsxwriter
-import base64
 from odoo import api, fields, models, _
 from openerp.exceptions import except_orm, UserError, ValidationError
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
+
+# Global variable to compute clean types
+date_start_g = datetime.now()
+
+
+class HotReserv(models.Model):
+    _inherit = 'hotel.reservation'
+
+    clean_type = fields.Char('Clean Type', compute='_compute_clean_type')
+
+    def _compute_clean_type(self):
+        # Compute if is a room to by cleaned
+        global date_start_g
+        for res in self:
+            if datetime.strptime(res.checkout[0:10],
+                                 "%Y-%m-%d") == datetime.strptime(date_start_g,
+                                                                  "%Y-%m-%d"):
+                res.clean_type = 'exit'
+            else:
+                res.clean_type = 'client'
 
 
 class KellysWizard(models.TransientModel):
@@ -40,6 +57,10 @@ class KellysWizard(models.TransientModel):
 
     @api.multi
     def check_report(self):
+        global date_start_g
+        date_start_g = self.date_start
+        # data = {}
+        # data['form'] = self.read(['date_start'])[0]
         rooms = self.env['hotel.reservation'].search(
             ['&', '&', ('checkin', '<=', self.date_start),
              ('checkout', '>=', self.date_start),
