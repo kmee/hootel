@@ -21,7 +21,6 @@
 import datetime
 from datetime import datetime, date, time
 from odoo import api, fields, models, _
-from openerp.exceptions import except_orm, UserError, ValidationError
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 
 # Global variable to compute clean types
@@ -32,6 +31,13 @@ class HotReserv(models.Model):
     _inherit = 'hotel.reservation'
 
     clean_type = fields.Char('Clean Type', compute='_compute_clean_type')
+    clean_date = fields.Date('Clean Type', compute='_compute_clean_date')
+
+    def _compute_clean_date(self):
+        # Compute if is a room to by cleaned
+        global date_start_g
+        for res in self:
+            res.clean_date = date_start_g
 
     def _compute_clean_type(self):
         # Compute if is a room to by cleaned
@@ -59,8 +65,7 @@ class KellysWizard(models.TransientModel):
     def check_report(self):
         global date_start_g
         date_start_g = self.date_start
-        # data = {}
-        # data['form'] = self.read(['date_start'])[0]
+
         rooms = self.env['hotel.reservation'].search(
             ['&', '&', ('checkin', '<=', self.date_start),
              ('checkout', '>=', self.date_start),
