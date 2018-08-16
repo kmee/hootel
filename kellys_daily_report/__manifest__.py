@@ -31,6 +31,7 @@
         'hotel',
     ],
     'data': [
+        'data/report_kellys_paperformat.xml',
         'wizard/kellys_daily_report.xml',
         'data/menus.xml',
     ],
