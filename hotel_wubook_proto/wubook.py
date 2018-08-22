@@ -1501,7 +1501,7 @@ class WuBook(models.AbstractModel):
                                 if split_booking_parent:
                                     del reservations[split_booking_parent-1:]
                                     if split_booking_parent in splitted_map:
-                                        del splitted_map[split_booking_parent-1]
+                                        del splitted_map[split_booking_parent]
                             # Can't found space for reservation
                             vals = self._generate_booking_vals(
                                 broom,
