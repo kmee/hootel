@@ -37,7 +37,8 @@ class VirtualRoomAvailability(models.Model):
         return -1
 
     wmax_avail = fields.Integer("Max. Wubook Avail",
-                                default=_default_wmax_avail)
+                                default=_default_wmax_avail,
+                                track_visibility='onchange')
     wpushed = fields.Boolean("WuBook Pushed", readonly=True, default=False)
 
     @api.constrains('avail')
@@ -48,7 +49,10 @@ class VirtualRoomAvailability(models.Model):
             self.date,
             virtual_room_id=self.virtual_room_id.id))
         max_avail = min(cavail,
-                        self.virtual_room_id.total_rooms_count)
+                        self.virtual_room_id.total_rooms_count,
+                        self.wmax_avail)
+        if self.wmax_avail >= 0:
+            max_avail = min(max_avail, self.wmax_avail)
         if self.avail > max_avail:
             self.env['wubook.issue'].sudo().create({
                 'section': 'avail',
