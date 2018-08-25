@@ -49,8 +49,8 @@ class VirtualRoomAvailability(models.Model):
             self.date,
             virtual_room_id=self.virtual_room_id.id))
         max_avail = min(cavail,
-                        self.virtual_room_id.total_rooms_count,
-                        self.wmax_avail)
+                        self.virtual_room_id.total_rooms_count)
+        # wmax_avail can be less than zero... check if can use it in "min"
         if self.wmax_avail >= 0:
             max_avail = min(max_avail, self.wmax_avail)
         if self.avail > max_avail:
