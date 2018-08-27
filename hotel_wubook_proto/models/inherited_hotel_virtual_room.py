@@ -35,7 +35,7 @@ class HotelVirtualRoom(models.Model):
 
     wscode = fields.Char("WuBook Short Code", readonly=True)
     wrid = fields.Char("WuBook Room ID", readonly=True)
-    wcapacity = fields.Integer("WuBook Capacity", default=1)
+    wcapacity = fields.Integer("WuBook Capacity", default=1, track_visibility='onchange')
 
     @api.constrains('wcapacity')
     def _check_wcapacity(self):
