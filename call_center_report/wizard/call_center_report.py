@@ -76,7 +76,7 @@ class CallCenterReportWizard(models.TransientModel):
             'bg_color': '#CCCCCC'
         })
 
-        worksheet = workbook.add_worksheet(_('Call Center Report'))
+        worksheet = workbook.add_worksheet(_('Call Center Report - Production'))
 
         worksheet.write('A1', _('Ficha'), xls_cell_format_header)
         worksheet.write('B1', _('Fecha de Pedido'), xls_cell_format_header)
@@ -169,6 +169,102 @@ class CallCenterReportWizard(models.TransientModel):
         line += 1
         worksheet.write(line, 9, _('TOTAL'))
         worksheet.write(line, 10    , total_reservation_amount + total_service_amount,
+            xls_cell_format_money)
+
+        worksheet = workbook.add_worksheet(_('Call Center Report - Sales'))
+
+        worksheet.write('A1', _('Estado'), xls_cell_format_header)
+        worksheet.write('B1', _('Ficha'), xls_cell_format_header)
+        worksheet.write('C1', _('Fecha de Pedido'), xls_cell_format_header)
+        worksheet.write('D1', _('Cliente'), xls_cell_format_header)
+        worksheet.write('E1', _('Producto'), xls_cell_format_header)
+        worksheet.write('F1', _('Noches/Uds'), xls_cell_format_header)
+        worksheet.write('G1', _('Adultos'), xls_cell_format_header)
+        worksheet.write('H1', _('Checkin'), xls_cell_format_header)
+        worksheet.write('I1', _('In-Hora'), xls_cell_format_header)
+        worksheet.write('J1', _('Checkout'), xls_cell_format_header)
+        worksheet.write('K1', _('Creado por'), xls_cell_format_header)
+        worksheet.write('L1', _('Total'), xls_cell_format_header)
+
+        worksheet.set_column('B:B', 20)
+        worksheet.set_column('C:C', 20)
+        worksheet.set_column('D:D', 20)
+        worksheet.set_column('E:E', 20)
+        worksheet.set_column('F:F', 13)
+
+        reservations_obj = self.env['hotel.reservation']
+        reservations = reservations_obj.search([
+            ('folio_id.date_order', '>=', self.date_start),
+            ('folio_id.date_order', '<=', self.date_end),
+            ('channel_type','=','call'),
+        ])
+        offset = 1
+        total_reservation_amount = 0.0
+        for k_res, v_res in enumerate(reservations):
+            checkin_date = datetime.strptime(v_res.checkin, DEFAULT_SERVER_DATETIME_FORMAT)
+            checkout_date = datetime.strptime(v_res.checkout, DEFAULT_SERVER_DATETIME_FORMAT)
+            worksheet.write(k_res+offset, 0, v_res.state)
+            worksheet.write(k_res+offset, 1, v_res.folio_id.name)
+            worksheet.write(k_res+offset, 2, v_res.folio_id.date_order,
+                            xls_cell_format_date)
+            worksheet.write(k_res+offset, 3, v_res.partner_id.name)
+            worksheet.write(k_res+offset, 4, v_res.virtual_room_id.name)
+            worksheet.write(k_res+offset, 5, v_res.nights)
+            worksheet.write(k_res+offset, 6, v_res.adults)
+            worksheet.write(k_res+offset, 7, checkin_date.strftime(date_format),
+                            xls_cell_format_date)
+            worksheet.write(k_res+offset, 8, checkin_date.strftime(time_format),
+                            xls_cell_format_date)
+            worksheet.write(k_res+offset, 9, checkout_date.strftime(date_format),
+                            xls_cell_format_date)
+            worksheet.write(k_res+offset, 10, v_res.create_uid.name)
+            worksheet.write(k_res+offset, 11, v_res.price_total,
+                            xls_cell_format_money)
+            total_reservation_amount += v_res.price_total
+
+        folio_ids = reservations.mapped('folio_id.id')
+        folios = self.env['hotel.folio'].browse(folio_ids)
+        services = self.env['hotel.service.line'].browse()
+        for folio in folios:
+            services += folio.service_lines.filtered(lambda r:
+                r.channel_type == 'call' and r.folio_id.invoices_amount < 1)
+        offset += len(reservations)
+        total_service_amount = k_line = 0.0
+        for k_service, v_service in enumerate(services):
+            worksheet.write(k_service+offset, 1, v_service.folio_id.state)
+            worksheet.write(k_service+offset, 1, v_service.folio_id.name)
+            worksheet.write(k_service+offset, 2, v_service.folio_id.date_order,
+                            xls_cell_format_date)
+            worksheet.write(k_service+offset, 3, v_service.folio_id.partner_id.name)
+            worksheet.write(k_service+offset, 4, v_service.product_id.name)
+            worksheet.write(k_service+offset, 5, v_service.product_uom_qty)
+            worksheet.write(k_service+offset, 6, '')
+            worksheet.write(k_service+offset, 7, '')
+            worksheet.write(k_service+offset, 8, '')
+            worksheet.write(k_service+offset, 9, '')
+            worksheet.write(k_service+offset, 10, v_service .create_uid.name)
+            worksheet.write(k_service+offset, 11, v_service.price_total,
+                            xls_cell_format_money)
+            total_service_amount += v_service.price_total
+        offset += len(services)
+        if total_reservation_amount == 0 and total_service_amount == 0:
+            raise UserError(_('No Hay reservas de Call Center'))
+        line = offset
+        if k_line:
+            line = k_line + offset
+        if total_reservation_amount > 0:
+            line += 1
+            worksheet.write(line, 10, _('TOTAL RESERVAS'))
+            worksheet.write(line, 11, total_reservation_amount,
+                            xls_cell_format_money)
+        if total_service_amount > 0:
+            line += 1
+            worksheet.write(line, 10, _('TOTAL SERVICIOS'))
+            worksheet.write(line, 11, total_service_amount,
+                            xls_cell_format_money)
+        line += 1
+        worksheet.write(line, 10, _('TOTAL'))
+        worksheet.write(line, 11    , total_reservation_amount + total_service_amount,
             xls_cell_format_money)
 
         workbook.close()
