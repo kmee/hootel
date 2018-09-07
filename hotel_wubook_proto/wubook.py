@@ -1241,13 +1241,15 @@ class WuBook(models.AbstractModel):
                                   hours=False) == 0:
                 room_day_price = brday['price']
                 if not tax_inclusive:
-                    taxes = free_room.taxes_id.compute_all(
-                        brday['price'],
-                        None,
-                        1,
-                        product=free_room.product_id, partner=partner_id)
-                    for tax in taxes['taxes']:
-                        room_day_price += tax['amount']
+                    # FIXME: Hard-Coded Tax 10%
+                    room_day_price = self.env.user.company_id.currency_id.round(room_day_price * 1.1)
+                    # taxes = free_room.taxes_id.compute_all(
+                    #     brday['price'],
+                    #     None,
+                    #     1,
+                    #     product=free_room.product_id, partner=partner_id)
+                    # for tax in taxes['taxes']:
+                    #     room_day_price += tax['amount']
                 reservation_lines.append((0, False, {
                     'date': wndate.strftime(DEFAULT_SERVER_DATE_FORMAT),
                     'price': room_day_price,
