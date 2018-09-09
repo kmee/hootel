@@ -1240,7 +1240,7 @@ class WuBook(models.AbstractModel):
                                   dates_checkout[0] - timedelta(days=1),
                                   hours=False) == 0:
                 # FIXME: Hard-Coded Tax 10%
-                room_day_price = self.env.user.company_id.currency_id.round(brday['price'] * 1.1) if not tax_inclusive else brday['price']
+                room_day_price = round(brday['price'] * 1.1, 2) if not tax_inclusive else brday['price']
                 # if not tax_inclusive:
                 #     taxes = free_room.taxes_id.compute_all(
                 #         brday['price'],
