@@ -332,10 +332,8 @@ class HotelReservation(models.Model):
         if not any(fromReservs) or not any(toReservs):
             raise ValidationError(_("Invalid swap parameters"))
 
-        maxFromPersons = max(
-            fromReservs.mapped(lambda x: x.adults + x.children))
-        maxToPersons = max(
-            toReservs.mapped(lambda x: x.adults + x.children))
+        maxFromPersons = max(fromReservs.mapped(lambda x: x.adults))
+        maxToPersons = max(toReservs.mapped(lambda x: x.adults))
 
         fromRoomProduct = fromReservs[0].product_id
         toRoomProduct = toReservs[0].product_id
