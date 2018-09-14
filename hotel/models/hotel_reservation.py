@@ -862,18 +862,15 @@ class HotelReservation(models.Model):
                             product_id=None)
         return True
 
-    @api.onchange('adults', 'children', 'product_id')
+    @api.constrains('adults', 'product_id')
     def check_capacity(self):
         if self.product_id:
             room = self.env['hotel.room'].search([
                 ('product_id', '=', self.product_id.id)
             ])
-            persons = self.adults + self.children
-            if room.capacity < persons:
-                self.adults = room.capacity
-                self.children = 0
+            if room.capacity < self.adults:
                 raise UserError(
-                    _('%s people do not fit in this room! ;)') % (persons))
+                    _('%s people do not fit in this room! ;)') % (self.adults))
 
     @api.onchange('virtual_room_id')
     def on_change_virtual_room_id(self):
