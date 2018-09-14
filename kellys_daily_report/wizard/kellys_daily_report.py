@@ -27,48 +27,96 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 date_start_g = datetime.now()
 
 
-class HotReserv(models.Model):
-    _inherit = 'hotel.reservation'
-
-    clean_type = fields.Char('Clean Type', compute='_compute_clean_type')
-    clean_date = fields.Date('Clean Type', compute='_compute_clean_date')
-
-    def _compute_clean_date(self):
-        # Compute if is a room to by cleaned
-        global date_start_g
-        for res in self:
-            res.clean_date = date_start_g
-
-    def _compute_clean_type(self):
-        # Compute if is a room to by cleaned
-        global date_start_g
-        for res in self:
-            if datetime.strptime(res.checkout[0:10],
-                                 "%Y-%m-%d") == datetime.strptime(date_start_g,
-                                                                  "%Y-%m-%d"):
-                res.clean_type = 'exit'
-            else:
-                res.clean_type = 'client'
-
-
 class KellysWizard(models.TransientModel):
     _name = 'kellys'
 
     @api.model
     def _get_default_date_start(self):
-        return datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
+        global date_start_g
+        if not date_start_g:
+            date_start_g = datetime.now()
+        return date_start_g.strftime(DEFAULT_SERVER_DATE_FORMAT)
+
+    @api.model
+    def _get_default_habitaciones(self):
+        global date_start_g
+        if not date_start_g:
+            date_start_g = datetime.now()
+        dates = datetime.strftime(date_start_g, "%Y-%m-%d")
+        grids = self.env['hotel.room'].search([], order='hcal_sequence ASC')
+        grids2 = self.env['kellysrooms']
+        listid = []
+        for x in grids:
+            rooms = self.env['hotel.reservation'].search(
+                ['&', '&', ('checkin', '<=', dates),
+                 ('checkout', '>=', dates),
+                 ('state', '<>', 'cancelled'),
+                 ('product_id', '=', x.product_id.id)
+                 ],)
+            tipos = False
+            if len(rooms) != 0:
+                if len(rooms) == 2:
+                    tipos = 1
+                else:
+                    if rooms[0].checkin[:10] == dates:
+                        tipos = 2
+                    elif rooms[0].checkout[:10] == dates:
+                        tipos = 1
+                    else:
+                        tipos = 3
+            if tipos is not False:
+                listid.append(grids2.create(
+                    {'habitacion': rooms[0].product_id.name,
+                     'habitacionid': rooms[0].product_id.id,
+                     'tipo': tipos,
+                     'notas': '',
+                     'checkin': rooms[0].checkin[:10],
+                     'checkout': rooms[0].checkout[:10],
+                     'kelly': 5,
+                     'clean_date': date_start_g.date()
+                     }).id)
+        grids2 = self.env['kellysrooms'].search([('id', 'in', listid)])
+        return grids2
 
     date_start = fields.Date("Kellys Date Report",
                              default=_get_default_date_start)
+    habitaciones = fields.Many2many('kellysrooms', string="Limpieza:",
+                                    default=_get_default_habitaciones)
+
+    @api.onchange('date_start')
+    def onchange_date_start(self):
+        nuevas = _get_default_habitaciones(self)
+        # Debug Stop -------------------
+        import wdb; wdb.set_trace()
+        # Debug Stop -------------------
+        self.habitaciones = nuevas
+        return
 
     @api.multi
     def check_report(self):
         global date_start_g
-        date_start_g = self.date_start
+        date_start_g = datetime.strptime(self.date_start,
+                                         DEFAULT_SERVER_DATE_FORMAT)
 
-        rooms = self.env['hotel.reservation'].search(
-            ['&', '&', ('checkin', '<=', self.date_start),
-             ('checkout', '>=', self.date_start),
-             ('state', '<>', 'cancelled'),
-             ],)
+        rooms = self.env['kellysrooms'].search([('id', 'in',
+                                                 self.habitaciones.ids)])
         return self.env['report'].get_action(rooms, 'report.kellys')
+
+
+class KellysRooms(models.TransientModel):
+    _name = 'kellysrooms'
+
+    habitacion = fields.Char('Habitacion')
+    habitacionid = fields.Integer('Habitacion ID')
+    tipo = fields.Selection([(1, 'Salida'), (2, 'Revisar'), (3, 'Cliente')],
+                            string='Limpiar como')
+    notas = fields.Char('Notas limpieza')
+    checkin = fields.Char('Entrada')
+    checkout = fields.Char('Salida')
+    kelly = fields.Char('Asignado a:')
+    kelly = fields.Selection([(1, 'Externa 1'), (2, 'Externa 2'),
+                              (3, 'Externa 3'), (4, 'Externa 4'),
+                              (5, 'P.Propio 1'), (6, 'P.Propio 2'),
+                              (7, 'P.Propio 3'), (8, 'P.Propio 4'),
+                              ], string='Asignado a:')
+    clean_date = fields.Date('Clean Date')

@@ -11,8 +11,8 @@
             <field name="orientation">Portrait</field>
             <field name="margin_top">1</field>
             <field name="margin_bottom">3</field>
-            <field name="margin_left">1</field>
-            <field name="margin_right">1</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
             <field name="header_line" eval="False"/>
             <field name="header_spacing">1</field>
             <field name="dpi">201</field>

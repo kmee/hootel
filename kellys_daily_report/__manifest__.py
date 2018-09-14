@@ -20,11 +20,11 @@
 ##############################################################################
 
 {
-    'name': 'Kellys Daily Report',
-    'version': '1.2',
+    'name': 'Hotel Kellys Daily Report',
+    'version': '1.3',
     'author': "Jose Luis Algara Toledo <osotranquilo@gmail.com>",
     'website': 'https://www.aldahotels.com',
-    'category': 'hotel report',
+    'category': 'hotel report kellys',
     'summary': "Export daily report in PDF format",
     'description': "Kellys Daily Report",
     'depends': [
