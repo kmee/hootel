@@ -61,10 +61,19 @@ class KellysWizard(models.TransientModel):
                 else:
                     if rooms[0].checkin[:10] == dates:
                         tipos = 2
+                        # Revisar
                     elif rooms[0].checkout[:10] == dates:
                         tipos = 1
+                        # Salida
                     else:
                         tipos = 3
+                        # Cliente
+                        if rooms[0].reservation_type == 'staff':
+                            tipos = 4
+                            # Staff
+                if rooms[0].reservation_type == 'out':
+                    tipos = 5
+                    # Averiada
             if tipos is not False:
                 listid.append(grids2.create(
                     {'habitacion': rooms[0].product_id.name,
@@ -80,14 +89,10 @@ class KellysWizard(models.TransientModel):
 
     @api.multi
     def check_report(self):
-        # Debug Stop -------------------
-        # import wdb; wdb.set_trace()
-        # Debug Stop -------------------
         rooms = self.env['kellysrooms'].search([('id', 'in',
                                                  self.habitaciones.ids)],
                                                order='kelly ASC')
         return self.env['report'].get_action(rooms, 'report.kellys')
-
 
 
 class KellysRooms(models.TransientModel):
@@ -95,7 +100,8 @@ class KellysRooms(models.TransientModel):
 
     habitacion = fields.Char('Habitacion')
     habitacionid = fields.Integer('Habitacion ID')
-    tipo = fields.Selection([(1, 'Salida'), (2, 'Revisar'), (3, 'Cliente')],
+    tipo = fields.Selection([(1, 'Salida'), (2, 'Revisar'), (3, 'Cliente'),
+                             (4, 'Staff'), (5, 'Averia')],
                             string='Limpiar como')
     notas = fields.Char('Notas limpieza')
     checkin = fields.Char('Entrada')

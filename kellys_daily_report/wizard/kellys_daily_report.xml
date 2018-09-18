@@ -5,7 +5,7 @@
       <field name="model">kellysrooms</field>
       <field name="name">kellysrooms.tree.view</field>
       <field name="arch" type="xml">
-        <tree colors="blue: tipo == 3; green: tipo == 2; red: tipo == 1" editable="top" create="false">
+        <tree colors="black: tipo == 5; orange: tipo == 4; blue: tipo == 3; green: tipo == 2; red: tipo == 1" editable="top" create="false">
           <field name="habitacion" />
           <field name="tipo" />
           <field name="notas" />
@@ -180,7 +180,16 @@
                 <span t-field="o.notas" />
               </div>
             </div>
-
+            <div t-if="o.tipo == 4" class="client section group">
+              <div class="habitacion col span_1_of_2">
+                <span t-field="o.habitacion"/>
+              </div>
+              <div class="tipo col span_1_of_2">STAFF</div>
+              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
+              <div class="notas col span_2_of_2" align="left">
+                <span t-field="o.notas" />
+              </div>
+            </div>
           </t>
           <div class="pie">Impreso el <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y a las %H:%M')"/> Habitaciones: <t t-esc="totalkelly" /></div>
 
