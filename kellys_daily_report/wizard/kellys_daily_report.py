@@ -23,26 +23,27 @@ from datetime import datetime, date, time
 from odoo import api, fields, models, _
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 
-# Global variable to compute clean types
-date_start_g = datetime.now()
-
 
 class KellysWizard(models.TransientModel):
     _name = 'kellys'
 
     @api.model
-    def _get_default_date_start(self):
-        global date_start_g
-        if not date_start_g:
-            date_start_g = datetime.now()
-        return date_start_g.strftime(DEFAULT_SERVER_DATE_FORMAT)
-
-    @api.model
     def _get_default_habitaciones(self):
-        global date_start_g
-        if not date_start_g:
-            date_start_g = datetime.now()
-        dates = datetime.strftime(date_start_g, "%Y-%m-%d")
+        return self.calculalimpiar(datetime.now())
+
+    date_start = fields.Date("Fecha del listado", default=datetime.now())
+    habitaciones = fields.Many2many('kellysrooms', string="Limpieza:",
+                                    default=_get_default_habitaciones)
+
+    @api.multi
+    def calculate_report(self):
+        self.habitaciones = self.calculalimpiar(
+            datetime.strptime(self.date_start, "%Y-%m-%d"))
+        return
+
+    @api.multi
+    def calculalimpiar(self, fechalimpieza=datetime.now()):
+        dates = datetime.strftime(fechalimpieza, "%Y-%m-%d")
         grids = self.env['hotel.room'].search([], order='hcal_sequence ASC')
         grids2 = self.env['kellysrooms']
         listid = []
@@ -72,35 +73,20 @@ class KellysWizard(models.TransientModel):
                      'notas': '',
                      'checkin': rooms[0].checkin[:10],
                      'checkout': rooms[0].checkout[:10],
-                     'kelly': 5,
-                     'clean_date': date_start_g.date()
+                     # 'kelly': 5,
+                     'clean_date': fechalimpieza
                      }).id)
-        grids2 = self.env['kellysrooms'].search([('id', 'in', listid)])
-        return grids2
-
-    date_start = fields.Date("Kellys Date Report",
-                             default=_get_default_date_start)
-    habitaciones = fields.Many2many('kellysrooms', string="Limpieza:",
-                                    default=_get_default_habitaciones)
-
-    @api.onchange('date_start')
-    def onchange_date_start(self):
-        nuevas = _get_default_habitaciones(self)
-        # Debug Stop -------------------
-        import wdb; wdb.set_trace()
-        # Debug Stop -------------------
-        self.habitaciones = nuevas
-        return
+        return self.env['kellysrooms'].search([('id', 'in', listid)])
 
     @api.multi
     def check_report(self):
-        global date_start_g
-        date_start_g = datetime.strptime(self.date_start,
-                                         DEFAULT_SERVER_DATE_FORMAT)
-
+        # Debug Stop -------------------
+        # import wdb; wdb.set_trace()
+        # Debug Stop -------------------
         rooms = self.env['kellysrooms'].search([('id', 'in',
                                                  self.habitaciones.ids)])
         return self.env['report'].get_action(rooms, 'report.kellys')
+
 
 
 class KellysRooms(models.TransientModel):
@@ -113,10 +99,5 @@ class KellysRooms(models.TransientModel):
     notas = fields.Char('Notas limpieza')
     checkin = fields.Char('Entrada')
     checkout = fields.Char('Salida')
-    kelly = fields.Char('Asignado a:')
-    kelly = fields.Selection([(1, 'Externa 1'), (2, 'Externa 2'),
-                              (3, 'Externa 3'), (4, 'Externa 4'),
-                              (5, 'P.Propio 1'), (6, 'P.Propio 2'),
-                              (7, 'P.Propio 3'), (8, 'P.Propio 4'),
-                              ], string='Asignado a:')
+    kelly = fields.Many2one('kellysnames', string='Asignado a:')
     clean_date = fields.Date('Clean Date')

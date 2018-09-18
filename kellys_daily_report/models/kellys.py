@@ -2,7 +2,8 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2018 Alexandre Díaz <dev@redneboa.es>
+#    Copyright (C) 2018 Alda Hotels <informatica@aldahotels.com>
+#                       Jose Luis Algara <osotranquilo@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,5 +19,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import models
-from . import wizard
+from openerp import models, fields, api
+
+
+class KellysNames(models.Model):
+    _name = 'kellysnames'
+
+    name = fields.Char('Limpiador/a')

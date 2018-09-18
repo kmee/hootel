@@ -15,26 +15,34 @@
         </tree>
       </field>
     </record>
+    <!--Import assets-->
+    <template id="assets_backend" name="custom assets" inherit_id="web.assets_backend">
+      <xpath expr="." position="inside">
+        <link rel="stylesheet" href="/kellys_daily_report/static/src/css/kellys_daily_report.css"/>
+      </xpath>
+    </template>
     <record model="ir.ui.view" id="kellys_report_view">
       <field name="name">kellys.daily.report.view</field>
       <field name="model">kellys</field>
       <field name="arch" type="xml">
         <form string="kellys Daily Report" >
-          <group>
-            <group>
-              <field name="date_start" required="1" />
+          <sheet>
+              <group string="Generar PDF de limpieza a fecha:" colspan="2">
+                <field name="date_start"/>
+                <button name="calculate_report" string="Recalcular" type="object" class="oe_highlight" />
+                <!-- <field name="date_start" readonly="1" /> -->
             </group>
-          </group>
-          <group>
             <group>
-              <field name="habitaciones" />
+              <group>
+                <field name="habitaciones" />
+              </group>
             </group>
-          </group>
-          <footer>
-            <button name="check_report" string="Generate Report" type="object" class="oe_highlight" />
+            <footer>
+              <button name="check_report" string="Imprimir" type="object" class="oe_highlight" />
 					or
 					<button string="Close" class="oe_link" special="cancel" />
-          </footer>
+            </footer>
+          </sheet>
         </form>
       </field>
     </record>
@@ -58,87 +66,87 @@
     <template id="report.kellys">
       <div class="page">
         <style>
-                                                      .titulo {
-                                                      	font-size: 1.2em;
-                                                      	text-align: center;
-                                                      }
-                                                      .marco {
-                                                      	border-radius: 47px 10px 10px 10px;
-                                                      	-moz-border-radius: 47px 10px 10px 10px;
-                                                      	-webkit-border-radius: 47px 10px 10px 10px;
-                                                      	border: 3px solid #000000;
-                                                      	padding: 10px 3px;
-                                                      	margin: 3px 0;
-                                                      	width: 100%;
-                                                      	text-align:center;
-                                                      }
-                                                      .client{
-                                                      	border-radius: 10px;
-                                                      	-moz-border-radius: 10px;
-                                                      	-webkit-border-radius: 10px;
-                                                      	border: 1px solid #000000;
-                                                      	color: #000000;
-                                                      	background-color: #FFFFFF;
-                                                      }
-                                                      .exit{
-                                                      	border-radius: 20px 47px 47px 10px;
-                                                      	-moz-border-radius: 20px 47px 47px 10px;
-                                                      	-webkit-border-radius: 20px 47px 47px 10px;
-                                                      	border: 2px solid #000000;
-                                                      	padding: 20px 0p;
-                                                      	color: #000000;
-                                                      	background-color: #FFFFFF;
-                                                      }
-                                                      .revise{
-                                                      	padding: 20px 0p;
-                                                      	color: #000000;
-                                                      	background-color: #FFFFFF;
-                                                      }
-                                                      .pie{
-                                                      	font-size: 0.5em;
-                                                      }
-                                                      .tipo{
-                                                      	font-size: 1.2em;
-                                                        font-weight:bold;
-                                                      }
-                                                      .notas{
-                                                      	width: 90% !important;
-                                                      	margin: 3px 4px;
-                                                      	color:#000000;
-                                                      	text-align:left;
-                                                        font-size: 1em;
-                                                      }
-                                                      .habitacion{
-                                                      	font-size: 1.2em;
-                                                      }
-                                                      .datos{
-                                                      	font-size: 0.8em;
-                                                      }
-                                                      .section {
-                                                      	clear: both;
-                                                      	padding: 0px;
-                                                      	margin: 3px 0;
-                                                      }
-                                                      /*  COLUMN SETUP  */
-                                                      .col {
-                                                      	display: block;
-                                                      	float:left;
-                                                      	margin: 1% 0 1% 1.6%;
-                                                      }
-                                                      .col:first-child { margin-left: 0; }
-                                                      /*  GROUPING  */
-                                                      .group:before,
-                                                      .group:after { content:""; display:table; }
-                                                      .group:after { clear:both;}
-                                                      .group { zoom:1; /* For IE 6/7 */ }
-                                                      /*  GRID OF TWO  */
-                                                      .span_2_of_2 {
-                                                      	width: 100%;
-                                                      }
-                                                      .span_1_of_2 {
-                                                      	width: 49.2%;
-                                                      }
-                                                    </style>
+                                                                          .titulo {
+                                                                          	font-size: 1.2em;
+                                                                          	text-align: center;
+                                                                          }
+                                                                          .marco {
+                                                                          	border-radius: 47px 10px 10px 10px;
+                                                                          	-moz-border-radius: 47px 10px 10px 10px;
+                                                                          	-webkit-border-radius: 47px 10px 10px 10px;
+                                                                          	border: 3px solid #000000;
+                                                                          	padding: 10px 3px;
+                                                                          	margin: 3px 0;
+                                                                          	width: 100%;
+                                                                          	text-align:center;
+                                                                          }
+                                                                          .client{
+                                                                          	border-radius: 10px;
+                                                                          	-moz-border-radius: 10px;
+                                                                          	-webkit-border-radius: 10px;
+                                                                          	border: 1px solid #000000;
+                                                                          	color: #000000;
+                                                                          	background-color: #FFFFFF;
+                                                                          }
+                                                                          .exit{
+                                                                          	border-radius: 20px 47px 47px 10px;
+                                                                          	-moz-border-radius: 20px 47px 47px 10px;
+                                                                          	-webkit-border-radius: 20px 47px 47px 10px;
+                                                                          	border: 2px solid #000000;
+                                                                          	padding: 20px 0p;
+                                                                          	color: #000000;
+                                                                          	background-color: #FFFFFF;
+                                                                          }
+                                                                          .revise{
+                                                                          	padding: 20px 0p;
+                                                                          	color: #000000;
+                                                                          	background-color: #FFFFFF;
+                                                                          }
+                                                                          .pie{
+                                                                          	font-size: 0.5em;
+                                                                          }
+                                                                          .tipo{
+                                                                          	font-size: 1.2em;
+                                                                            font-weight:bold;
+                                                                          }
+                                                                          .notas{
+                                                                          	width: 90% !important;
+                                                                          	margin: 3px 4px;
+                                                                          	color:#000000;
+                                                                          	text-align:left;
+                                                                            font-size: 1em;
+                                                                          }
+                                                                          .habitacion{
+                                                                          	font-size: 1.2em;
+                                                                          }
+                                                                          .datos{
+                                                                          	font-size: 0.8em;
+                                                                          }
+                                                                          .section {
+                                                                          	clear: both;
+                                                                          	padding: 0px;
+                                                                          	margin: 3px 0;
+                                                                          }
+                                                                          /*  COLUMN SETUP  */
+                                                                          .col {
+                                                                          	display: block;
+                                                                          	float:left;
+                                                                          	margin: 1% 0 1% 1.6%;
+                                                                          }
+                                                                          .col:first-child { margin-left: 0; }
+                                                                          /*  GROUPING  */
+                                                                          .group:before,
+                                                                          .group:after { content:""; display:table; }
+                                                                          .group:after { clear:both;}
+                                                                          .group { zoom:1; /* For IE 6/7 */ }
+                                                                          /*  GRID OF TWO  */
+                                                                          .span_2_of_2 {
+                                                                          	width: 100%;
+                                                                          }
+                                                                          .span_1_of_2 {
+                                                                          	width: 49.2%;
+                                                                          }
+                                                                        </style>
           <div class="marco"  align="center">
             <t t-foreach="docs" t-as="o">
               <t t-if= "o_index == 0">
@@ -151,53 +159,56 @@
                 <span t-field="o.habitacion"/>
               </div>
               <div class="tipo col span_1_of_2">
-                                                                            CLIENTE
-                                                                          </div>
+                                                                                                            CLIENTE
+                                                                                                          </div>
                 <div class="datos col span_2_of_2">
-                                                                                    Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
-                                                                                    al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/>
+                                                                                                                        Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
+                                                                                                                        al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/>
                 </div>
                 <div class="notas col span_2_of_2" align="left">
                   <span t-field="o.notas" />
+                  <span t-field="o.kelly" />
                 </div>
+              </div>
+              <div t-if="o.tipo == 1" class="exit section group">
+                <div class="habitacion col span_1_of_2">
+                  <span t-field="o.habitacion"/>
                 </div>
-                <div t-if="o.tipo == 1" class="exit section group">
+                <div class="tipo col span_1_of_2">
+                                                                                                                                  SALIDA
+                                                                                                                                </div>
+                  <div class="datos col span_2_of_2">
+                                                                                                                                              Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
+                                                                                                                                              al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/>
+                  </div>
+                  <div class="notas col span_2_of_2" align="left">
+                    <span t-field="o.notas" />
+                    <span t-field="o.kelly" />
+                  </div>
+                </div>
+                <div t-if="o.tipo == 2" class="revise section group">
                   <div class="habitacion col span_1_of_2">
                     <span t-field="o.habitacion"/>
                   </div>
                   <div class="tipo col span_1_of_2">
-                                                                                              SALIDA
-                                                                                            </div>
+                                                                                                                                                      REVISAR
+                                                                                                                                                    </div>
                     <div class="datos col span_2_of_2">
-                                                                                                      Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
-                                                                                                      al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/>
+                                                                                                                                                                  Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
+                                                                                                                                                                  al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/>
                     </div>
                     <div class="notas col span_2_of_2" align="left">
                       <span t-field="o.notas" />
-                    </div>
-                    </div>
-                    <div t-if="o.tipo == 2" class="revise section group">
-                      <div class="habitacion col span_1_of_2">
-                        <span t-field="o.habitacion"/>
-                      </div>
-                      <div class="tipo col span_1_of_2">
-                                                                                                              REVISAR
-                                                                                                            </div>
-                        <div class="datos col span_2_of_2">
-                                                                                                                      Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
-                                                                                                                      al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/>
-                        </div>
-                        <div class="notas col span_2_of_2" align="left">
-                          <span t-field="o.notas" />
-                        </div>
-                        </div>
-                      </t>
-                      <div class="pie">
-                                                                                                            Impreso el <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y a las %H:%M')"/>
-                                                                                                            Habitaciones: <t t-esc="len(docs)" />
-                      </div>
+                      <span t-field="o.kelly" />
                     </div>
                   </div>
-                </template>
-              </data>
-              </odoo>
+                </t>
+                <div class="pie">
+                                                                                                                                                Impreso el <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y a las %H:%M')"/>
+                                                                                                                                                Habitaciones: <t t-esc="len(docs)" />
+                </div>
+              </div>
+            </div>
+          </template>
+        </data>
+        </odoo>
