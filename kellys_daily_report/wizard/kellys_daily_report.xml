@@ -27,15 +27,13 @@
       <field name="arch" type="xml">
         <form string="kellys Daily Report" >
           <sheet>
-              <group string="Generar PDF de limpieza a fecha:" colspan="2">
-                <field name="date_start"/>
-                <button name="calculate_report" string="Recalcular" type="object" class="oe_highlight" />
-                <!-- <field name="date_start" readonly="1" /> -->
+            <group string="Generar PDF de limpieza a fecha:" col="1" colspan="1">
+              <field name="date_start"/>
+              <button name="calculate_report" string="Recalcular" type="object" class="oe_highlight" />
+              <!-- <field name="date_start" readonly="1" /> -->
             </group>
-            <group>
-              <group>
+            <group colspan="4">
                 <field name="habitaciones" />
-              </group>
             </group>
             <footer>
               <button name="check_report" string="Imprimir" type="object" class="oe_highlight" />
@@ -66,148 +64,126 @@
     <template id="report.kellys">
       <div class="page">
         <style>
-                                                                          .titulo {
-                                                                          	font-size: 1.2em;
-                                                                          	text-align: center;
-                                                                          }
-                                                                          .marco {
-                                                                          	border-radius: 47px 10px 10px 10px;
-                                                                          	-moz-border-radius: 47px 10px 10px 10px;
-                                                                          	-webkit-border-radius: 47px 10px 10px 10px;
-                                                                          	border: 3px solid #000000;
-                                                                          	padding: 10px 3px;
-                                                                          	margin: 3px 0;
-                                                                          	width: 100%;
-                                                                          	text-align:center;
-                                                                          }
-                                                                          .client{
-                                                                          	border-radius: 10px;
-                                                                          	-moz-border-radius: 10px;
-                                                                          	-webkit-border-radius: 10px;
-                                                                          	border: 1px solid #000000;
-                                                                          	color: #000000;
-                                                                          	background-color: #FFFFFF;
-                                                                          }
-                                                                          .exit{
-                                                                          	border-radius: 20px 47px 47px 10px;
-                                                                          	-moz-border-radius: 20px 47px 47px 10px;
-                                                                          	-webkit-border-radius: 20px 47px 47px 10px;
-                                                                          	border: 2px solid #000000;
-                                                                          	padding: 20px 0p;
-                                                                          	color: #000000;
-                                                                          	background-color: #FFFFFF;
-                                                                          }
-                                                                          .revise{
-                                                                          	padding: 20px 0p;
-                                                                          	color: #000000;
-                                                                          	background-color: #FFFFFF;
-                                                                          }
-                                                                          .pie{
-                                                                          	font-size: 0.5em;
-                                                                          }
-                                                                          .tipo{
-                                                                          	font-size: 1.2em;
-                                                                            font-weight:bold;
-                                                                          }
-                                                                          .notas{
-                                                                          	width: 90% !important;
-                                                                          	margin: 3px 4px;
-                                                                          	color:#000000;
-                                                                          	text-align:left;
-                                                                            font-size: 1em;
-                                                                          }
-                                                                          .habitacion{
-                                                                          	font-size: 1.2em;
-                                                                          }
-                                                                          .datos{
-                                                                          	font-size: 0.8em;
-                                                                          }
-                                                                          .section {
-                                                                          	clear: both;
-                                                                          	padding: 0px;
-                                                                          	margin: 3px 0;
-                                                                          }
-                                                                          /*  COLUMN SETUP  */
-                                                                          .col {
-                                                                          	display: block;
-                                                                          	float:left;
-                                                                          	margin: 1% 0 1% 1.6%;
-                                                                          }
-                                                                          .col:first-child { margin-left: 0; }
-                                                                          /*  GROUPING  */
-                                                                          .group:before,
-                                                                          .group:after { content:""; display:table; }
-                                                                          .group:after { clear:both;}
-                                                                          .group { zoom:1; /* For IE 6/7 */ }
-                                                                          /*  GRID OF TWO  */
-                                                                          .span_2_of_2 {
-                                                                          	width: 100%;
-                                                                          }
-                                                                          .span_1_of_2 {
-                                                                          	width: 49.2%;
-                                                                          }
-                                                                        </style>
-          <div class="marco"  align="center">
-            <t t-foreach="docs" t-as="o">
-              <t t-if= "o_index == 0">
-                <div class="titulo" align="center">Habitaciones<br/>
-                <span t-field="o.clean_date" t-field-options='{"format": "d MMMM Y"}'/>
-              </div>
+          .titulo {
+          	font-size: 1.2em;
+          	text-align: center;}
+          .marco {
+          	border-radius: 47px 10px 10px 10px;
+          	-moz-border-radius: 47px 10px 10px 10px;
+          	-webkit-border-radius: 47px 10px 10px 10px;
+          	border: 3px solid #000000;
+          	padding: 10px 3px;
+          	margin: 3px 0;
+          	width: 100%;
+          	text-align:center;}
+          .client{
+          	border-radius: 10px;
+          	-moz-border-radius: 10px;
+          	-webkit-border-radius: 10px;
+          	border: 1px solid #000000;
+          	color: #000000;
+          	background-color: #FFFFFF;}
+          .exit{
+          	border-radius: 20px 47px 47px 10px;
+          	-moz-border-radius: 20px 47px 47px 10px;
+          	-webkit-border-radius: 20px 47px 47px 10px;
+          	border: 2px solid #000000;
+          	padding: 20px 0p;
+          	color: #000000;
+          	background-color: #FFFFFF;}
+          .revise{
+          	padding: 20px 0p;
+          	color: #000000;
+          	background-color: #FFFFFF;}
+          .pie{font-size: 0.65em;
+            margin: 0 0 4em 0}
+          .tipo{
+          	font-size: 1.2em;
+            font-weight:bold;}
+          .notas{
+          	width: 90% !important;
+          	margin: 3px 4px;
+          	color:#000000;
+          	text-align:left;
+            font-size: 1em;}
+          .habitacion{font-size: 1.2em;}
+          .datos{font-size: 0.8em;}
+          .section {
+          	clear: both;
+          	padding: 0px;
+          	margin: 3px 0;}
+          /*  COLUMN SETUP  */
+          .col {
+          	display: block;
+          	float:left;
+          	margin: 1% 0 1% 1.6%;}
+          .col:first-child { margin-left: 0; }
+          /*  GROUPING  */
+          .group:before,
+          .group:after { content:""; display:table; }
+          .group:after { clear:both;}
+          .group { zoom:1; /* For IE 6/7 */ }
+          /*  GRID OF TWO  */
+          .span_2_of_2 {width: 100%;}
+          .span_1_of_2 {width: 49.2%;}
+        </style>
+          <t t-set="actualkelly" t-value="False"/>
+          <t t-set="espie" t-value="False"/>
+          <t t-set="totalkelly" t-value="0"/>
+          <t t-foreach="docs" t-as="o">
+            <t t-if="actualkelly != o.kelly">
+              <t t-if= "o_index != 0">
+                <t t-set="espie" t-value="True"/>
+              </t>
+              <t t-set="actualkelly" t-value="o.kelly"/>
+              <t t-if="espie == True">
+                <t t-set="espie" t-value="False"/>
+                <div class="pie">Impreso el <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y a las %H:%M')"/> Habitaciones: <t t-esc="totalkelly" /></div>
+                <t t-set="totalkelly" t-value="0"/>
+                <p style="page-break-before:always;"> </p>
+              </t>
+              <div class="marco"  align="center">
+                <div class="titulo" align="center"><span t-field="o.kelly" /><br/>
+                  Habitaciones<br/>
+                  <span t-field="o.clean_date" t-field-options='{"format": "d MMMM Y"}'/>
+                </div>
+                </div>
             </t>
+            <t t-set="totalkelly" t-value="totalkelly + 1"/>
+            <div t-if="o.tipo == 1" class="exit section group">
+              <div class="habitacion col span_1_of_2">
+                <span t-field="o.habitacion"/>
+              </div>
+              <div class="tipo col span_1_of_2">SALIDA</div>
+              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
+              <div class="notas col span_2_of_2" align="left">
+                <span t-field="o.notas" />
+              </div>
+            </div>
+            <div t-if="o.tipo == 2" class="revise section group">
+              <div class="habitacion col span_1_of_2">
+                <span t-field="o.habitacion"/>
+              </div>
+              <div class="tipo col span_1_of_2">REVISAR</div>
+              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
+              <div class="notas col span_2_of_2" align="left">
+                <span t-field="o.notas" />
+              </div>
+            </div>
             <div t-if="o.tipo == 3" class="client section group">
               <div class="habitacion col span_1_of_2">
                 <span t-field="o.habitacion"/>
               </div>
-              <div class="tipo col span_1_of_2">
-                                                                                                            CLIENTE
-                                                                                                          </div>
-                <div class="datos col span_2_of_2">
-                                                                                                                        Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
-                                                                                                                        al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/>
-                </div>
-                <div class="notas col span_2_of_2" align="left">
-                  <span t-field="o.notas" />
-                  <span t-field="o.kelly" />
-                </div>
+              <div class="tipo col span_1_of_2">CLIENTE</div>
+              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
+              <div class="notas col span_2_of_2" align="left">
+                <span t-field="o.notas" />
               </div>
-              <div t-if="o.tipo == 1" class="exit section group">
-                <div class="habitacion col span_1_of_2">
-                  <span t-field="o.habitacion"/>
-                </div>
-                <div class="tipo col span_1_of_2">
-                                                                                                                                  SALIDA
-                                                                                                                                </div>
-                  <div class="datos col span_2_of_2">
-                                                                                                                                              Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
-                                                                                                                                              al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/>
-                  </div>
-                  <div class="notas col span_2_of_2" align="left">
-                    <span t-field="o.notas" />
-                    <span t-field="o.kelly" />
-                  </div>
-                </div>
-                <div t-if="o.tipo == 2" class="revise section group">
-                  <div class="habitacion col span_1_of_2">
-                    <span t-field="o.habitacion"/>
-                  </div>
-                  <div class="tipo col span_1_of_2">
-                                                                                                                                                      REVISAR
-                                                                                                                                                    </div>
-                    <div class="datos col span_2_of_2">
-                                                                                                                                                                  Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>
-                                                                                                                                                                  al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/>
-                    </div>
-                    <div class="notas col span_2_of_2" align="left">
-                      <span t-field="o.notas" />
-                      <span t-field="o.kelly" />
-                    </div>
-                  </div>
-                </t>
-                <div class="pie">
-                                                                                                                                                Impreso el <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y a las %H:%M')"/>
-                                                                                                                                                Habitaciones: <t t-esc="len(docs)" />
-                </div>
-              </div>
+            </div>
+
+          </t>
+          <div class="pie">Impreso el <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y a las %H:%M')"/> Habitaciones: <t t-esc="totalkelly" /></div>
+
             </div>
           </template>
         </data>
