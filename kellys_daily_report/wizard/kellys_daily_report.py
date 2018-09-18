@@ -84,7 +84,8 @@ class KellysWizard(models.TransientModel):
         # import wdb; wdb.set_trace()
         # Debug Stop -------------------
         rooms = self.env['kellysrooms'].search([('id', 'in',
-                                                 self.habitaciones.ids)])
+                                                 self.habitaciones.ids)],
+                                               order='kelly ASC')
         return self.env['report'].get_action(rooms, 'report.kellys')
 
 
