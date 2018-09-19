@@ -155,7 +155,7 @@
                 <span t-field="o.habitacion"/>
               </div>
               <div class="tipo col span_1_of_2">SALIDA</div>
-              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
+              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/> al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
               <div class="notas col span_2_of_2" align="left">
                 <span t-field="o.notas" />
               </div>
@@ -165,7 +165,7 @@
                 <span t-field="o.habitacion"/>
               </div>
               <div class="tipo col span_1_of_2">REVISAR</div>
-              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
+              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/> al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
               <div class="notas col span_2_of_2" align="left">
                 <span t-field="o.notas" />
               </div>
@@ -175,7 +175,7 @@
                 <span t-field="o.habitacion"/>
               </div>
               <div class="tipo col span_1_of_2">CLIENTE</div>
-              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
+              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/> al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
               <div class="notas col span_2_of_2" align="left">
                 <span t-field="o.notas" />
               </div>
@@ -185,7 +185,7 @@
                 <span t-field="o.habitacion"/>
               </div>
               <div class="tipo col span_1_of_2">STAFF</div>
-              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/>al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
+              <div class="datos col span_2_of_2">Del <span t-field="o.checkin" t-field-options='{"format": "d MMMM"}'/> al <span t-field="o.checkout" t-field-options='{"format": "d MMMM"}'/></div>
               <div class="notas col span_2_of_2" align="left">
                 <span t-field="o.notas" />
               </div>
