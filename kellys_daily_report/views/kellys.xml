@@ -19,10 +19,10 @@
     <menuitem
       id="menu_hotel_kellys_names"
       name="Personal de limieza"
-      parent="hotel.configuration_others"
+      parent="hotel.menu_hotel_room"
       action="names_kellys_act"
       groups="hotel.group_hotel_user,hotel.group_hotel_manager"
-      sequence="5"
+      sequence="45"
       />
   </data>
 </odoo>
