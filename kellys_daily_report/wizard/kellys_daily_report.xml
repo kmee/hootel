@@ -6,11 +6,11 @@
       <field name="name">kellysrooms.tree.view</field>
       <field name="arch" type="xml">
         <tree colors="black: tipo == 5; orange: tipo == 4; blue: tipo == 3; green: tipo == 2; red: tipo == 1" editable="top" create="false">
-          <field name="habitacion" />
+          <field name="habitacion" readonly="1"/>
           <field name="tipo" />
           <field name="notas" />
-          <field name="checkin" />
-          <field name="checkout" />
+          <field name="checkin" readonly="1"/>
+          <field name="checkout" readonly="1"/>
           <field name="kelly" />
         </tree>
       </field>
@@ -37,8 +37,8 @@
             </group>
             <footer>
               <button name="check_report" string="Imprimir" type="object" class="oe_highlight" />
-					or
-					<button string="Close" class="oe_link" special="cancel" />
+					<!-- or
+					<button string="Close" class="oe_link" special="cancel" /> -->
             </footer>
           </sheet>
         </form>
