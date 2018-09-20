@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<odoo>
+  <data>
+    <template id="assets_backend" name="custom assets" inherit_id="web.assets_backend">
+      <xpath expr="." position="inside">
+        <script type="text/javascript" src="/door_code/static/src/css/door_code_calcule.js">
+        </script>
+      </xpath>
+    </template>
+    <record model="ir.ui.view" id="hotel_door_code_view">
+      <field name="name">door_code.view</field>
+      <field name="model">door_code</field>
+      <field name="arch" type="xml">
+        <form string="Door Code Generator" >
+          <sheet>
+            <group>
+              <group>
+                <field name="date_start" required="1" />
+                <field name="date_end" required="1" />
+              </group>
+            </group>
+            <group>
+              <field name="door_code" readonly="1"/>
+            </group>
+            <group>
+              <button onclick="myFunction()" class="oe_highlight" string="Try it" name="myFunction()"/>
+              <p id="semana">Hola
+                                              </p>
+              <p id="codigo">Mundo
+                                              </p>
+            </group>
+            <footer>
+              <button name="check_code" string="Generate Code" type="object" class="oe_highlight" />
+            </footer>
+          </sheet>
+        </form>
+      </field>
+    </record>
+    <act_window
+			id="door_code_act"
+			name="Door Code Generator"
+			res_model="door_code"
+			view_mode="form"
+	/>
+  </data>
+  </odoo>
