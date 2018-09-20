@@ -21,7 +21,7 @@
 
 {
     'name': 'Hotel Door Codes',
-    'version': '1.0',
+    'version': '1.1',
     'author': "Jose Luis Algara Toledo <osotranquilo@gmail.com>",
     'website': 'https://www.aldahotels.com',
     'category': 'hotel code',
@@ -37,8 +37,6 @@
     'qweb': [],
     'test': [
     ],
-    'js': ['static/src/css/door_code_calcule.js'],
-
     'installable': True,
     'auto_install': False,
     'application': False,

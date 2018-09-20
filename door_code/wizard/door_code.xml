@@ -1,12 +1,6 @@
 <?xml version="1.0" ?>
 <odoo>
   <data>
-    <template id="assets_backend" name="custom assets" inherit_id="web.assets_backend">
-      <xpath expr="." position="inside">
-        <script type="text/javascript" src="/door_code/static/src/css/door_code_calcule.js">
-        </script>
-      </xpath>
-    </template>
     <record model="ir.ui.view" id="hotel_door_code_view">
       <field name="name">door_code.view</field>
       <field name="model">door_code</field>
@@ -21,13 +15,6 @@
             </group>
             <group>
               <field name="door_code" readonly="1"/>
-            </group>
-            <group>
-              <button onclick="myFunction()" class="oe_highlight" string="Try it" name="myFunction()"/>
-              <p id="semana">Hola
-                                              </p>
-              <p id="codigo">Mundo
-                                              </p>
             </group>
             <footer>
               <button name="check_code" string="Generate Code" type="object" class="oe_highlight" />

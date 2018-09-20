@@ -62,8 +62,9 @@ class DoorCodeWizard(models.TransientModel):
         # d = datetime.strptime(self.date_start,DEFAULT_SERVER_DATE_FORMAT)
         # d = datetime.now()
         # d.strftime('%s.%%06d') % d.microsecond
+        codes = 'Codigo de entrada: ' + self.doorcode4(self.date_start)
         return self.write({
-             'door_code': self.doorcode4(self.date_start)
+             'door_code': codes
              })
 
              # Debug Stop -------------------
