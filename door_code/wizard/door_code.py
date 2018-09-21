@@ -46,7 +46,7 @@ class DoorCodeWizard(models.TransientModel):
     date_end = fields.Date("Fin del periodo",
                            default=_get_default_date_start)
 
-    door_code = fields.Char('Codigo para la puerta')
+    door_code = fields.Html('Codigo para la puerta')
 
     @api.multi
     def doorcode4(self, fecha):
@@ -59,14 +59,32 @@ class DoorCodeWizard(models.TransientModel):
 
     @api.multi
     def check_code(self):
-        # d = datetime.strptime(self.date_start,DEFAULT_SERVER_DATE_FORMAT)
-        # d = datetime.now()
-        # d.strftime('%s.%%06d') % d.microsecond
-        codes = 'Codigo de entrada: ' + self.doorcode4(self.date_start)
+        # Debug Stop -------------------
+        #import wdb; wdb.set_trace()
+        # Debug Stop -------------------
+        entrada = datetime.strptime(
+            self.date_start, DEFAULT_SERVER_DATE_FORMAT)
+        if datetime.weekday(entrada) == 0:
+            entrada = entrada + timedelta(days=1)
+        salida = datetime.strptime(
+            self.date_end, DEFAULT_SERVER_DATE_FORMAT)
+        if datetime.weekday(salida) == 0:
+            salida = salida - timedelta(days=1)
+        codes = ('Codigo de entrada: ' +
+                 '<strong><span style="font-size: 2em;">' +
+                 self.doorcode4(self.date_start) +
+                 '</span></strong>')
+        while entrada <= salida:
+            if datetime.weekday(entrada) == 0:
+                codes += ("<br>" +
+                          'Cambiara el Lunes ' +
+                          datetime.strftime(entrada, "%d-%m-%Y") +
+                          ' a: <strong><span style="font-size: 2em;">' +
+                          self.doorcode4(datetime.strftime(
+                              entrada, "%Y-%m-%d")) +
+                          '</span></strong>')
+            entrada = entrada + timedelta(days=1)
+
         return self.write({
              'door_code': codes
              })
-
-             # Debug Stop -------------------
-             #import wdb; wdb.set_trace()
-             # Debug Stop -------------------
