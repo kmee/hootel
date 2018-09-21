@@ -62,6 +62,7 @@ class DoorCodeWizard(models.TransientModel):
         # Debug Stop -------------------
         #import wdb; wdb.set_trace()
         # Debug Stop -------------------
+        compan = self.env.user.company_id
         entrada = datetime.strptime(
             self.date_start, DEFAULT_SERVER_DATE_FORMAT)
         if datetime.weekday(entrada) == 0:
@@ -72,7 +73,9 @@ class DoorCodeWizard(models.TransientModel):
             salida = salida - timedelta(days=1)
         codes = ('Codigo de entrada: ' +
                  '<strong><span style="font-size: 2em;">' +
+                 compan.precode +
                  self.doorcode4(self.date_start) +
+                 compan.postcode +
                  '</span></strong>')
         while entrada <= salida:
             if datetime.weekday(entrada) == 0:
@@ -80,8 +83,10 @@ class DoorCodeWizard(models.TransientModel):
                           'Cambiara el Lunes ' +
                           datetime.strftime(entrada, "%d-%m-%Y") +
                           ' a: <strong><span style="font-size: 2em;">' +
+                          compan.precode +
                           self.doorcode4(datetime.strftime(
                               entrada, "%Y-%m-%d")) +
+                          compan.postcode +
                           '</span></strong>')
             entrada = entrada + timedelta(days=1)
 

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Odoo, Open Source Management Solution
-#    Copyright (C) 2018 Jose Luis Algara Toledo <osotranquilo@gmail.com>
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2017 Alda Hotels <informatica@aldahotels.com>
+#                       Jose Luis Algara <osotranquilo@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,28 +19,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-{
-    'name': 'Hotel Door Codes',
-    'version': '1.2',
-    'author': "Jose Luis Algara Toledo <osotranquilo@gmail.com>",
-    'website': 'https://www.aldahotels.com',
-    'category': 'hotel code',
-    'summary': "Generate Hotel door codes, in Pseudo random system",
-    'description': "Hotel Door Codes",
-    'depends': [
-        'hotel', 'hotel_l10n_es'
-    ],
-    'data': [
-        'wizard/door_code.xml',
-        'data/menus.xml',
-        'views/inherit_res_company.xml',
-    ],
-    'qweb': [],
-    'test': [
-    ],
-    'installable': True,
-    'auto_install': False,
-    'application': False,
-    'license': 'AGPL-3',
-}
+from . import inherit_res_company
