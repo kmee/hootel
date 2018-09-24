@@ -35,6 +35,7 @@
         'data/menus.xml',
         'views/inherit_res_company.xml',
         'views/inherit_hotel_reservation.xml',
+        'views/inherit_report_viajero.xml',
     ],
     'qweb': [],
     'test': [
