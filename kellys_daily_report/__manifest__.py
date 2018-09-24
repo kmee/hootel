@@ -20,24 +20,27 @@
 ##############################################################################
 
 {
-    'name': 'Kellys Daily Report',
-    'version': '1.2',
+    'name': 'Hotel Kellys Daily Report',
+    'version': '1.3',
     'author': "Jose Luis Algara Toledo <osotranquilo@gmail.com>",
     'website': 'https://www.aldahotels.com',
-    'category': 'hotel report',
+    'category': 'hotel report kellys',
     'summary': "Export daily report in PDF format",
     'description': "Kellys Daily Report",
     'depends': [
         'hotel',
     ],
     'data': [
+        'security/ir.model.access.csv',
         'data/report_kellys_paperformat.xml',
         'wizard/kellys_daily_report.xml',
+        'views/kellys.xml',
         'data/menus.xml',
     ],
     'qweb': [],
     'test': [
     ],
+    'css': ['static/src/css/kellys_daily_report.css'],
 
     'installable': True,
     'auto_install': False,
