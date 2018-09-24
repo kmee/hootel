@@ -34,6 +34,7 @@
         'wizard/door_code.xml',
         'data/menus.xml',
         'views/inherit_res_company.xml',
+        'views/inherit_hotel_reservation.xml',
     ],
     'qweb': [],
     'test': [
