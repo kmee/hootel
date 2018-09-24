@@ -25,5 +25,5 @@ from openerp import models, fields, api
 class Inherit_res_company(models.Model):
     _inherit = 'res.company'
 
-    precode = fields.Char('Characters before the door code')
-    postcode = fields.Char('Characters after the code')
+    precode = fields.Char('Characters before the door code', default='')
+    postcode = fields.Char('Characters after the code', default='')
