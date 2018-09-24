@@ -51,18 +51,19 @@ class DoorCodeWizard(models.TransientModel):
     @api.multi
     def doorcode4(self, fecha):
         # Calculate de Door Code... need a date in String format "%Y-%m-%d"
+        compan = self.env.user.company_id
         d = datetime.strptime(fecha, DEFAULT_SERVER_DATE_FORMAT)
         dia_semana = datetime.weekday(d)  # Dias a restar y ponerlo en lunes
         d = d - timedelta(days=dia_semana)
         dtxt = d.strftime('%s.%%06d') % d.microsecond
-        return dtxt[4:8]
+        dtxt = compan.precode + dtxt[4:8] + compan.postcode
+        return dtxt
 
     @api.multi
     def check_code(self):
         # Debug Stop -------------------
         #import wdb; wdb.set_trace()
         # Debug Stop -------------------
-        compan = self.env.user.company_id
         entrada = datetime.strptime(
             self.date_start, DEFAULT_SERVER_DATE_FORMAT)
         if datetime.weekday(entrada) == 0:
@@ -73,9 +74,7 @@ class DoorCodeWizard(models.TransientModel):
             salida = salida - timedelta(days=1)
         codes = ('Codigo de entrada: ' +
                  '<strong><span style="font-size: 2em;">' +
-                 compan.precode +
                  self.doorcode4(self.date_start) +
-                 compan.postcode +
                  '</span></strong>')
         while entrada <= salida:
             if datetime.weekday(entrada) == 0:
@@ -83,10 +82,8 @@ class DoorCodeWizard(models.TransientModel):
                           'Cambiara el Lunes ' +
                           datetime.strftime(entrada, "%d-%m-%Y") +
                           ' a: <strong><span style="font-size: 2em;">' +
-                          compan.precode +
                           self.doorcode4(datetime.strftime(
                               entrada, "%Y-%m-%d")) +
-                          compan.postcode +
                           '</span></strong>')
             entrada = entrada + timedelta(days=1)
 
