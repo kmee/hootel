@@ -58,14 +58,14 @@ class DoorCodeWizard(models.TransientModel):
             self.date_end, DEFAULT_SERVER_DATE_FORMAT)
         if datetime.weekday(salida) == 0:
             salida = salida - timedelta(days=1)
-        codes = ('Codigo de entrada: ' +
+        codes = ('Código de entrada: ' +
                  '<strong><span style="font-size: 2em;">' +
                  self.doorcode4(self.date_start) +
                  '</span></strong>')
         while entrada <= salida:
             if datetime.weekday(entrada) == 0:
                 codes += ("<br>" +
-                          'Cambiara el Lunes ' +
+                          'Cambiará el Lunes ' +
                           datetime.strftime(entrada, "%d-%m-%Y") +
                           ' a: <strong><span style="font-size: 2em;">' +
                           self.doorcode4(datetime.strftime(
