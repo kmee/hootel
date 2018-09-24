@@ -1642,8 +1642,6 @@ class WuBook(models.AbstractModel):
                 lambda x: x.virtual_room_id.id == vroom.id)
             days = []
             for vroom_avail in vroom_avails:
-                vroom_avail.with_context({
-                    'wubook_action': False}).write({'wpushed': True})
                 wavail = vroom_avail.avail
                 if wavail > vroom_avail.wmax_avail:
                     wavail = vroom_avail.wmax_avail
@@ -1657,6 +1655,8 @@ class WuBook(models.AbstractModel):
                     # 'booked': vroom_avail.booked and 1 or 0,
                 })
             avails.append({'id': vroom.wrid, 'days': days})
+            vroom_avails.with_context({
+                'wubook_action': False}).write({'wpushed': True})
         _logger.info("UPDATING AVAILABILITY IN WUBOOK...")
         _logger.info(avails)
         if any(avails):
@@ -1665,10 +1665,10 @@ class WuBook(models.AbstractModel):
 
     @api.model
     def push_priceplans(self):
+        now_str = date_utils.now(hours=False).strftime(DEFAULT_SERVER_DATE_FORMAT)
         unpushed = self.env['product.pricelist.item'].search([
             ('wpushed', '=', False),
-            ('date_start', '>=', date_utils.now(hours=False).strftime(
-                DEFAULT_SERVER_DATE_FORMAT))
+            ('date_start', '>=', now_str)
         ], order="date_start ASC")
         if any(unpushed):
             date_start = date_utils.get_datetime(
@@ -1685,24 +1685,24 @@ class WuBook(models.AbstractModel):
                 ('active', '=', True)
             ])
             for pr in pricelist_ids:
-                prices.update({pr.wpid: {}})
-                unpushed_pl = self.env['product.pricelist.item'].search(
-                    [('wpushed', '=', False), ('pricelist_id', '=', pr.id)])
-                product_tmpl_ids = unpushed_pl.mapped('product_tmpl_id')
-                for pt_id in product_tmpl_ids:
-                    vroom = self.env['hotel.virtual.room'].search([
-                        ('product_id.product_tmpl_id', '=', pt_id.id)
-                    ], limit=1)
-                    if vroom:
-                        prices[pr.wpid].update({vroom.wrid: []})
-                        for i in range(0, days_diff):
-                            prod = vroom.product_id.with_context({
-                                'quantity': 1,
-                                'pricelist': pr.id,
-                                'date': (date_start + timedelta(days=i)).
-                                        strftime(DEFAULT_SERVER_DATE_FORMAT),
-                                })
-                            prices[pr.wpid][vroom.wrid].append(prod.price)
+                unpushed_pl = unpushed.filtered(lambda x: x.pricelist_id.id == pr.id)
+                if any(unpushed_pl):
+                    prices.update({pr.wpid: {}})
+                    product_tmpl_ids = unpushed_pl.mapped('product_tmpl_id')
+                    for pt_id in product_tmpl_ids:
+                        vroom = self.env['hotel.virtual.room'].search([
+                            ('product_id.product_tmpl_id', '=', pt_id.id)
+                        ], limit=1)
+                        if vroom:
+                            prices[pr.wpid].update({vroom.wrid: []})
+                            for i in range(0, days_diff):
+                                prod = vroom.product_id.with_context({
+                                    'quantity': 1,
+                                    'pricelist': pr.id,
+                                    'date': (date_start + timedelta(days=i)).
+                                            strftime(DEFAULT_SERVER_DATE_FORMAT),
+                                    })
+                                prices[pr.wpid][vroom.wrid].append(prod.price)
             _logger.info("UPDATING PRICES IN WUBOOK...")
             _logger.info(prices)
             for k_pk, v_pk in prices.iteritems():
