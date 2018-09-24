@@ -24,16 +24,6 @@ from odoo import api, fields, models, _
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
-class HotReserv(models.Model):
-    _inherit = 'hotel.reservation'
-
-    door_code = fields.Char('Clean Type', compute='_compute_door_code')
-
-    def _compute_door_code(self):
-        # Compute door code
-        return
-
-
 class DoorCodeWizard(models.TransientModel):
     _name = 'door_code'
 
@@ -45,7 +35,6 @@ class DoorCodeWizard(models.TransientModel):
                              default=_get_default_date_start)
     date_end = fields.Date("Fin del periodo",
                            default=_get_default_date_start)
-
     door_code = fields.Html('Codigo para la puerta')
 
     @api.multi
@@ -61,9 +50,6 @@ class DoorCodeWizard(models.TransientModel):
 
     @api.multi
     def check_code(self):
-        # Debug Stop -------------------
-        #import wdb; wdb.set_trace()
-        # Debug Stop -------------------
         entrada = datetime.strptime(
             self.date_start, DEFAULT_SERVER_DATE_FORMAT)
         if datetime.weekday(entrada) == 0:
