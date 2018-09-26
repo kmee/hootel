@@ -50,7 +50,7 @@ class Inherit_hotel_reservation(models.Model):
             if datetime.weekday(salida) == 0:
                 salida = salida - timedelta(days=1)
             codes = (u'Código de entrada: ' +
-                     '<strong><span style="font-size: 2em;">' +
+                     '<strong><span style="font-size: 1.4em;">' +
                      res.doorcode4(datetime.strftime(entrada, "%Y-%m-%d")) +
                      '</span></strong>')
             while entrada <= salida:
@@ -58,7 +58,7 @@ class Inherit_hotel_reservation(models.Model):
                     codes += ("<br>" +
                               u'Cambiará el Lunes ' +
                               datetime.strftime(entrada, "%d-%m-%Y") +
-                              ' a: <strong><span style="font-size: 2em;">' +
+                              ' a: <strong><span style="font-size: 1.4em;">' +
                               res.doorcode4(datetime.strftime(
                                   entrada, "%Y-%m-%d")) +
                               '</span></strong>')
