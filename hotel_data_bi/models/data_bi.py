@@ -475,7 +475,9 @@ class Data_Bi(models.Model):
                     # Direct From Wubook (Web)
                     channel_c = 999
                     chanel_r = 0  # Web in Chanel
-                    precio_iva = (precio_neto*10/100)
+                    # precio_iva = (precio_neto*10/100)
+                    precio_iva = round(
+                        precio_neto-(precio_neto/1.10), 2)
                     precio_neto -= precio_iva
             else:
                 if linea.reservation_id.channel_type == 'door':
@@ -508,7 +510,9 @@ class Data_Bi(models.Model):
                             item["Descripcion"] == line_sales.name), False)
                         if line_descipcion:
                             channel_c = line_descipcion['ID_Cliente']
-                precio_iva = (precio_neto*10/100)
+                # precio_iva = (precio_neto*10/100)
+                precio_iva = round(
+                    precio_neto-(precio_neto/1.10), 2)
                 precio_neto -= precio_iva
 
             dic_reservas.append({
