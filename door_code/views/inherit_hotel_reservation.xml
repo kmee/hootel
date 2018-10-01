@@ -9,7 +9,7 @@
       <field name="inherit_id" ref="hotel.view_hotel_reservation_form" />
       <field name="arch" type="xml">
         <xpath expr="//page[@name='others']" position="after">
-          <page name="doorcode" string="Codigos entrada">
+          <page name="doorcode" string="Códigos entrada">
             <group>
               <field name="door_codes" />
             </group>
