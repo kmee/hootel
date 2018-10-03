@@ -155,7 +155,7 @@ class Data_Bi(models.Model):
 
             dic_tipo_habitacion.append({
                 'ID_Hotel': compan.id_hotel,
-                'ID_Tipo_Habitacion': i['product_id'][0],
+                'ID_Tipo_Habitacion': i['id'],
                 'Descripcion': i['product_id'][1].encode(
                     'ascii', 'xmlcharrefreplace'),
                 'Estancias': room.get_capacity()})
@@ -207,33 +207,26 @@ class Data_Bi(models.Model):
                                       'ascii', 'xmlcharrefreplace')})
 
         dic_bloqueos = []  # Diccionario con Bloqueos
-        # lineas = self.env['hotel.reservation.line'].search(
-        #     ['&', ('date', '>=', fechafoto),
-        #      ('reservation_id.reservation_type', '<>', 'normal'),
-        #      ], order="date")
-        # lineas = self.env['hotel.reservation.line'].search(
-        #     ['&', ('date', '>=', fechafoto),
-        #      ('reservation_id.reservation_type', '<>', 'normal')
-        #      ], order="date")
         lineas = self.env['hotel.reservation.line'].search(
             ['&', ('create_date', '>=',
                    date(fechafoto.year, 1, 1).strftime('%Y-%m-%d')),
              ('reservation_id.reservation_type', '<>', 'normal')],
             order="date")
         for linea in lineas:
-            if linea.reservation_id.reservation_type == 'out':
-                id_m_b = 1
-            else:
-                id_m_b = 0
-            dic_bloqueos.append({
-                'ID_Hotel': compan.id_hotel,
-                'Fecha_desde': linea.date,
-                'Fecha_hasta': (datetime.strptime(linea.date, "%Y-%m-%d") +
-                                timedelta(days=1)).strftime("%Y-%m-%d"),
-                'ID_Tipo_Habitacion':
-                linea.reservation_id.virtual_room_id.product_id.id,
-                'ID_Motivo_Bloqueo': id_m_b,
-                'Nro_Habitaciones': 1})
+            if linea.reservation_id.state != 'cancelled':
+                if linea.reservation_id.reservation_type == 'out':
+                    id_m_b = 1
+                else:
+                    id_m_b = 0
+                dic_bloqueos.append({
+                    'ID_Hotel': compan.id_hotel,
+                    'Fecha_desde': linea.date,
+                    'Fecha_hasta': (datetime.strptime(linea.date, "%Y-%m-%d") +
+                                    timedelta(days=1)).strftime("%Y-%m-%d"),
+                    'ID_Tipo_Habitacion':
+                    linea.reservation_id.virtual_room_id.product_id.id,
+                    'ID_Motivo_Bloqueo': id_m_b,
+                    'Nro_Habitaciones': 1})
 
         lineas = self.env['res.partner.category'].search([])
         canales_venta = self.env['sales_channel'].search([])
@@ -405,16 +398,6 @@ class Data_Bi(models.Model):
                                         precio_comision = round(
                                             comision1 + comision2, 2)
                                         channel_c = 901
-
-                                        # _logger.critical(
-                                        #     "---- " +
-                                        #     linea.reservation_id.partner_id.name
-                                        #     + " ---iva: " +
-                                        #     str(precio_iva) + ' comision: '+
-                                        #     str(precio_comision) + ' Neto: '+
-                                        #     str(precio_neto) +
-                                        #     ' Inicial Price: '+
-                                        #     str(linea.price))
                                     else:
                                         precio_iva = round(
                                             precio_neto-(precio_neto/1.10), 2)
@@ -515,6 +498,11 @@ class Data_Bi(models.Model):
                     precio_neto-(precio_neto/1.10), 2)
                 precio_neto -= precio_iva
 
+            habitduerme = self.env['hotel.room'].search(
+                [('product_id.id', '=', linea.reservation_id.product_id.id)])
+            habitduermeid = habitduerme.price_virtual_room.id
+            habitreservoid = linea.reservation_id.virtual_room_id.id
+
             dic_reservas.append({
                 'ID_Reserva': linea.reservation_id.folio_id.id,
                 'ID_Hotel': compan.id_hotel,
@@ -528,9 +516,8 @@ class Data_Bi(models.Model):
                 'Salida': (datetime.strptime(linea.date, "%Y-%m-%d") +
                            timedelta(days=1)).strftime("%Y-%m-%d"),
                 'Noches': 1,
-                'ID_TipoHabitacion':
-                linea.reservation_id.virtual_room_id.product_id.id,
-                'ID_HabitacionDuerme': linea.reservation_id.product_id.id,
+                'ID_TipoHabitacion': habitreservoid,
+                'ID_HabitacionDuerme': habitduermeid,
                 'ID_Regimen': 0,
                 'Adultos': linea.reservation_id.adults,
                 'Menores': linea.reservation_id.children,
