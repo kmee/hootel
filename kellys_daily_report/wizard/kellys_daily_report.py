@@ -34,6 +34,15 @@ class KellysWizard(models.TransientModel):
     date_start = fields.Date("Fecha del listado", default=datetime.now())
     habitaciones = fields.Many2many('kellysrooms', string="Limpieza:",
                                     default=_get_default_habitaciones)
+    order = fields.Selection([
+        ('kelly ASC', 'Calendario'),
+        ('kelly ASC, tipo ASC', 'Limpiar como... y orden en el Calendario'),
+        ('kelly ASC, tipo ASC, checkin ASC',
+         'Limpiar como... y Hora de entrada'),
+        ], 'Orden de impresión',
+        default='kelly ASC, tipo ASC, checkin ASC',
+        required=True,
+        help='Establece el orden en el que se imprimira el listado')
 
     @api.multi
     def calculate_report(self):
@@ -53,25 +62,38 @@ class KellysWizard(models.TransientModel):
                  ('checkout', '>=', dates),
                  ('state', '<>', 'cancelled'),
                  ('product_id', '=', x.product_id.id)
-                 ],)
+                 ], order='checkin ASC')
             tipos = False
             if len(rooms) != 0:
                 if len(rooms) == 2:
                     tipos = 1
+                    # Salida y etrada
+                    checkinhour = rooms[1].checkin
+                    checkouthour = rooms[1].checkout[:10]
                 else:
                     if rooms[0].checkin[:10] == dates:
-                        tipos = 2
+                        checkinhour = rooms[0].checkin
+                        checkouthour = rooms[0].checkout[:10]
+                        tipos = 3
                         # Revisar
                     elif rooms[0].checkout[:10] == dates:
+                        checkinhour = 'no prevista'
+                        checkouthour = ''
                         tipos = 1
                         # Salida
                     else:
-                        tipos = 3
+                        checkinhour = rooms[0].checkin[:10]
+                        checkouthour = rooms[0].checkout[:10]
+                        tipos = 2
                         # Cliente
                         if rooms[0].reservation_type == 'staff':
+                            checkinhour = rooms[0].checkin[:10]
+                            checkouthour = rooms[0].checkout[:10]
                             tipos = 4
                             # Staff
                 if rooms[0].reservation_type == 'out':
+                    checkinhour = rooms[0].checkin[:10]
+                    checkouthour = rooms[0].checkout[:10]
                     tipos = 5
                     # Averiada
             if tipos is not False:
@@ -80,8 +102,10 @@ class KellysWizard(models.TransientModel):
                      'habitacionid': rooms[0].product_id.id,
                      'tipo': tipos,
                      'notas': '',
-                     'checkin': rooms[0].checkin[:10],
-                     'checkout': rooms[0].checkout[:10],
+                     'checkin': checkinhour,
+                     # 'checkin': rooms[0].checkin[:10],
+                     # 'checkout': rooms[0].checkout[:10],
+                     'checkout': checkouthour,
                      # 'kelly': 5,
                      'clean_date': fechalimpieza
                      }).id)
@@ -91,7 +115,7 @@ class KellysWizard(models.TransientModel):
     def check_report(self):
         rooms = self.env['kellysrooms'].search([('id', 'in',
                                                  self.habitaciones.ids)],
-                                               order='kelly ASC')
+                                               order=self.order)
         return self.env['report'].get_action(rooms, 'report.kellys')
 
 
@@ -100,7 +124,7 @@ class KellysRooms(models.TransientModel):
 
     habitacion = fields.Char('Habitacion')
     habitacionid = fields.Integer('Habitacion ID')
-    tipo = fields.Selection([(1, 'Salida'), (2, 'Revisar'), (3, 'Cliente'),
+    tipo = fields.Selection([(1, 'Salida'), (2, 'Cliente'), (3, 'Revisar'),
                              (4, 'Staff'), (5, 'Averia')],
                             string='Limpiar como')
     notas = fields.Char('Notas limpieza')
