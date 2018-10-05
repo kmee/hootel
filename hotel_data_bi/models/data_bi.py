@@ -164,7 +164,7 @@ class Data_Bi(models.Model):
                 'ID_Hotel': compan.id_hotel,
                 'Hasta_Fecha':
                 (date.today() + timedelta(days=365 * 3)).strftime("%Y-%m-%d"),
-                'ID_Tipo_Habitacion': i['product_id'][0],
+                'ID_Tipo_Habitacion': i['id'],
                 'Nro_Habitaciones': len(room.room_ids)})
 
 # Budget
@@ -223,8 +223,10 @@ class Data_Bi(models.Model):
                     'Fecha_desde': linea.date,
                     'Fecha_hasta': (datetime.strptime(linea.date, "%Y-%m-%d") +
                                     timedelta(days=1)).strftime("%Y-%m-%d"),
+                    # 'ID_Tipo_Habitacion':
+                    # linea.reservation_id.virtual_room_id.product_id.id,
                     'ID_Tipo_Habitacion':
-                    linea.reservation_id.virtual_room_id.product_id.id,
+                    linea.reservation_id.virtual_room_id.id,
                     'ID_Motivo_Bloqueo': id_m_b,
                     'Nro_Habitaciones': 1})
 
