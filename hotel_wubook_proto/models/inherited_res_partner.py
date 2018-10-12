@@ -25,7 +25,7 @@ class ResPartner(models.Model):
 
     _inherit = 'res.partner'
 
-    unconfirmed = fields.Boolean('Unconfirmed', default=False)
+    unconfirmed = fields.Boolean('Unconfirmed', default=True)
 
     @api.multi
     def write(self, vals):
