@@ -324,8 +324,8 @@ class CallCenterReportWizard(models.TransientModel):
 
         offset += len(reservations)
         
-        if total_reservation_amount == 0 and total_service_amount == 0:
-            raise UserError(_('No Hay reservas de Call Center'))
+        #~ if total_reservation_amount == 0 and total_service_amount == 0:
+            #~ raise UserError(_('No Hay reservas de Call Center'))
         line = offset
         if k_line:
             line = k_line + offset
