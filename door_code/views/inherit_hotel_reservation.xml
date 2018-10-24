@@ -12,6 +12,8 @@
           <page name="doorcode" string="Códigos entrada">
             <group>
               <field name="door_codes" />
+              <field name="box_number" />
+              <field name="box_code" />
             </group>
           </page>
         </xpath>

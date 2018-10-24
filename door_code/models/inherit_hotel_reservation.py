@@ -67,3 +67,5 @@ class Inherit_hotel_reservation(models.Model):
 
     door_codes = fields.Html(u'Códigos de entrada',
                              compute='_compute_door_codes')
+    box_number = fields.Integer ('Numero de Caja')
+    box_code = fields.Char ('Cod. Caja')

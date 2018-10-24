@@ -1116,8 +1116,11 @@ class HotelReservation(models.Model):
         _logger.info('confirm')
         hotel_folio_obj = self.env['hotel.folio']
         hotel_reserv_obj = self.env['hotel.reservation']
+        user = self.env['res.users'].browse(self.env.uid)
         for r in self:
             vals = {}
+            if user.has_group('hotel.group_hotel_call'):
+                vals.update({'channel_type': 'call'})
             if r.cardex_ids:
                 vals.update({'state': 'booking'})
             else:
