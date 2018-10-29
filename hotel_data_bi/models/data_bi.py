@@ -317,219 +317,229 @@ class Data_Bi(models.Model):
              ('reservation_id.reservation_type', '=', 'normal')],
             order="date")
         for linea in lineas:
-            id_estado_r = linea.reservation_id.state
+            if linea.price > 0:
+                id_estado_r = linea.reservation_id.state
 
-            id_codeine = 0
-            if linea.reservation_id.partner_id.code_ine.code:
-                id_codeine = linea.reservation_id.partner_id.code_ine.code
+                id_codeine = 0
+                if linea.reservation_id.partner_id.code_ine.code:
+                    id_codeine = linea.reservation_id.partner_id.code_ine.code
 
-            id_segmen = 0
-            if len(linea.reservation_id.segmentation_id) > 0:
-                id_segmen = linea.reservation_id.segmentation_id[0].id
-            elif len(linea.reservation_id.partner_id.category_id) > 0:
-                id_segmen = linea.reservation_id.partner_id.category_id[0].id
+                id_segmen = 0
+                if len(linea.reservation_id.segmentation_id) > 0:
+                    id_segmen = linea.reservation_id.segmentation_id[0].id
+                elif len(linea.reservation_id.partner_id.category_id) > 0:
+                    id_segmen = (
+                        linea.reservation_id.partner_id.category_id[0].id)
 
-            precio_dto = 0
-            if linea.reservation_id.discount != 0:
-                precio_dto = linea.price * linea.reservation_id.discount/100
+                precio_dto = 0
+                if linea.reservation_id.discount != 0:
+                    precio_dto = linea.price * (
+                        linea.reservation_id.discount/100)
 
-            chanel_r = 0
-            channel_c = 0
-            precio_comision = 0
-            precio_iva = 0
-            precio_neto = linea.price
-            if linea.reservation_id.wrid:
-                if linea.reservation_id.wchannel_id.wid:
-                    chanel_r = 1
-                    channel_c = int(linea.reservation_id.wchannel_id.wid)
-                    if channel_c == 1:
-                        # Expedia.
-                        if linea.reservation_id.wbook_json:
-                            jsonExp = json.loads(
-                                linea.reservation_id.wbook_json)
-                            jsonBooked = jsonExp['booked_rooms'][0]
-                            if jsonBooked.get('ancillary').get(
-                                    'channel_rate_name') is not None:
-                                jsonRate = jsonBooked.get('ancillary').get(
-                                    'channel_rate_name')
-                            elif jsonBooked.get('roomdays')[0].get(
-                                    'ancillary').get(
+                chanel_r = 0
+                channel_c = 0
+                precio_comision = 0
+                precio_iva = 0
+                precio_neto = linea.price
+                if linea.reservation_id.wrid:
+                    if linea.reservation_id.wchannel_id.wid:
+                        chanel_r = 1
+                        channel_c = int(linea.reservation_id.wchannel_id.wid)
+                        if channel_c == 1:
+                            # Expedia.
+                            if linea.reservation_id.wbook_json:
+                                jsonExp = json.loads(
+                                    linea.reservation_id.wbook_json)
+                                jsonBooked = jsonExp['booked_rooms'][0]
+                                if jsonBooked.get('ancillary').get(
                                         'channel_rate_name') is not None:
-                                jsonRate = jsonBooked.get('roomdays')[0].get(
-                                    'ancillary').get('channel_rate_name')
-                            else:
-                                _logger.critical(
-                                    "EXPEDIA Tarifa No Contemplada : "
-                                    + jsonBooked)
-
-                            jsonPay = jsonExp['channel_data']['pay_model']
-                            if (jsonRate == "Standalone Room Only") or (
-                                    jsonRate == "Room Only"):
-                                # Expedia TIPO 1 Merchant
-                                if jsonPay == "merchant":
-                                    # Expedia TIPO 1 Merchant
-                                    precio_iva = round(
-                                        precio_neto-(precio_neto/1.10), 2)
-                                    precio_comision = round(precio_neto*(
-                                        100/float(100-18)) - precio_neto, 2)
-                                    precio_neto += precio_comision
-                                    channel_c = 902
+                                    jsonRate = jsonBooked.get('ancillary').get(
+                                        'channel_rate_name')
+                                elif jsonBooked.get('roomdays')[0].get(
+                                        'ancillary').get(
+                                            'channel_rate_name') is not None:
+                                    jsonRate = jsonBooked.get(
+                                        'roomdays')[0].get(
+                                        'ancillary').get('channel_rate_name')
                                 else:
-                                    # Expedia TIPO 1 Agency
-                                    precio_iva = round(
-                                        precio_neto-(precio_neto/1.10), 2)
-                                    precio_neto -= precio_iva
-                                    precio_comision = round(precio_neto-(
-                                        precio_neto/1.18), 2)
-                                    precio_neto -= precio_comision
-                                    channel_c = 902
-                            else:
-                                if jsonRate == "Package Room Only":
+                                    _logger.critical(
+                                        "EXPEDIA Tarifa No Contemplada : "
+                                        + jsonBooked)
+
+                                jsonPay = jsonExp['channel_data']['pay_model']
+                                if (jsonRate == "Standalone Room Only") or (
+                                        jsonRate == "Room Only"):
+                                    # Expedia TIPO 1 Merchant
                                     if jsonPay == "merchant":
-                                        # Expedia TIPO 2 Merchant EMPAQUETADA
-                                        comision1 = 0
-                                        comision2 = 0
-                                        precio_iva = round(precio_neto-(
-                                            precio_neto/1.10), 2)
-                                        comision1 = precio_neto*(
-                                            100/float(100-18)) - precio_neto
-                                        precio_neto += round(comision1, 2)
-                                        comision2 = precio_neto*(
-                                            100/float(100-10)) - precio_neto
-                                        precio_neto += round(comision2, 2)
-                                        precio_comision = round(
-                                            comision1 + comision2, 2)
-                                        channel_c = 901
+                                        # Expedia TIPO 1 Merchant
+                                        precio_iva = round(
+                                            precio_neto-(precio_neto/1.10), 2)
+                                        precio_comision = round(precio_neto*(
+                                            100/float(100-18)) - precio_neto,
+                                                                2)
+                                        precio_neto += precio_comision
+                                        channel_c = 902
+                                    else:
+                                        # Expedia TIPO 1 Agency
+                                        precio_iva = round(
+                                            precio_neto-(precio_neto/1.10), 2)
+                                        precio_neto -= precio_iva
+                                        precio_comision = round(precio_neto-(
+                                            precio_neto/1.18), 2)
+                                        precio_neto -= precio_comision
+                                        channel_c = 902
+                                else:
+                                    if jsonRate == "Package Room Only":
+                                        if jsonPay == "merchant":
+                                            # Expedia TIPO2 MerchantEMPAQUETADA
+                                            comision1 = 0
+                                            comision2 = 0
+                                            precio_iva = round(precio_neto-(
+                                                precio_neto/1.10), 2)
+                                            comision1 = precio_neto*(
+                                                100/float(100-18)
+                                                ) - precio_neto
+                                            precio_neto += round(comision1, 2)
+                                            comision2 = precio_neto*(
+                                                100/float(100-10)
+                                                ) - precio_neto
+                                            precio_neto += round(comision2, 2)
+                                            precio_comision = round(
+                                                comision1 + comision2, 2)
+                                            channel_c = 901
+                                        else:
+                                            precio_iva = round(
+                                                precio_neto-(precio_neto/1.10
+                                                             ), 2)
+                                            precio_comision = round(
+                                                precio_neto*(100/float(
+                                                    100-18)) - precio_neto, 2)
+                                            precio_neto += precio_comision
+                                            channel_c = 902
+                                            _logger.error(
+                                               "---- " +
+                                               linea.reservation_id.partner_id.name
+                                               + " ----")
+                                            _logger.critical(
+                                                "Exp. PRO Tarifa No Contemplada : "
+                                                + jsonRate)
                                     else:
                                         precio_iva = round(
                                             precio_neto-(precio_neto/1.10), 2)
                                         precio_comision = round(precio_neto*(
-                                           100/float(100-18)) - precio_neto, 2)
+                                            100/float(100-18)
+                                            ) - precio_neto, 2)
                                         precio_neto += precio_comision
                                         channel_c = 902
                                         _logger.error(
-                                           "---- " +
-                                           linea.reservation_id.partner_id.name
-                                           + " ----")
+                                            "---- " +
+                                            linea.reservation_id.partner_id.name +
+                                            " ----")
                                         _logger.critical(
-                                            "Exp. PRO Tarifa No Contemplada : "
+                                            "Expedia Tarifa No Contemplada : "
                                             + jsonRate)
-                                else:
-                                    precio_iva = round(
-                                        precio_neto-(precio_neto/1.10), 2)
-                                    precio_comision = round(precio_neto*(
-                                        100/float(100-18)) - precio_neto, 2)
-                                    precio_neto += precio_comision
-                                    channel_c = 902
-                                    _logger.error(
-                                        "---- " +
-                                        linea.reservation_id.partner_id.name +
-                                        " ----")
-                                    _logger.critical(
-                                        "Expedia Tarifa No Contemplada : "
-                                        + jsonRate)
-                        else:
-                            precio_iva = round(
-                                precio_neto-(precio_neto/1.10), 2)
-                            precio_comision = round(precio_neto*(
-                                100/float(100-18)) - precio_neto, 2)
-                            precio_neto += precio_comision
-                            channel_c = 902
-                            _logger.error("--------------------------- " +
-                                          linea.reservation_id.partner_id.name
-                                          + " No Json DATA for EXPEDIA rates")
-                    elif channel_c == 2:
-                        # Booking.
-                        precio_comision = (precio_neto*15/100)
-                        precio_neto -= precio_comision
-                        precio_iva = (precio_neto*10/100)
-                        precio_neto -= precio_iva
-                    elif channel_c == 9:
-                        # Hotelbeds
-                        precio_comision = (precio_neto*20/100)
-                        precio_neto -= precio_comision
-                        precio_iva = (precio_neto*10/100)
-                        precio_neto -= precio_iva
-                    elif channel_c == 11:
-                        # HRS
-                        precio_comision = (precio_neto*20/100)
-                        precio_neto -= precio_comision
-                        precio_iva = (precio_neto*10/100)
+                            else:
+                                precio_iva = round(
+                                    precio_neto-(precio_neto/1.10), 2)
+                                precio_comision = round(precio_neto*(
+                                    100/float(100-18)) - precio_neto, 2)
+                                precio_neto += precio_comision
+                                channel_c = 902
+                                _logger.error("--------------------------- " +
+                                              linea.reservation_id.partner_id.name
+                                              + " No Json DATA for EXPEDIA rates")
+                        elif channel_c == 2:
+                            # Booking.
+                            precio_comision = (precio_neto*15/100)
+                            precio_neto -= precio_comision
+                            precio_iva = (precio_neto*10/100)
+                            precio_neto -= precio_iva
+                        elif channel_c == 9:
+                            # Hotelbeds
+                            precio_comision = (precio_neto*20/100)
+                            precio_neto -= precio_comision
+                            precio_iva = (precio_neto*10/100)
+                            precio_neto -= precio_iva
+                        elif channel_c == 11:
+                            # HRS
+                            precio_comision = (precio_neto*20/100)
+                            precio_neto -= precio_comision
+                            precio_iva = (precio_neto*10/100)
+                            precio_neto -= precio_iva
+                    else:
+                        # Direct From Wubook (Web)
+                        channel_c = 999
+                        chanel_r = 0  # Web in Chanel
+                        # precio_iva = (precio_neto*10/100)
+                        precio_iva = round(
+                            precio_neto-(precio_neto/1.10), 2)
                         precio_neto -= precio_iva
                 else:
-                    # Direct From Wubook (Web)
-                    channel_c = 999
-                    chanel_r = 0  # Web in Chanel
+                    if linea.reservation_id.channel_type == 'door':
+                        channel_c = 903
+                        chanel_r = 0
+                    elif linea.reservation_id.channel_type == 'mail':
+                        channel_c = 904
+                        chanel_r = 0
+                    elif linea.reservation_id.channel_type == 'phone':
+                        channel_c = 905
+                        chanel_r = 0
+                    elif linea.reservation_id.channel_type == 'call':
+                        channel_c = 906
+                        chanel_r = 2
+                    elif linea.reservation_id.channel_type == 'agency':
+                        channel_c = 907
+                        chanel_r = 3
+                    elif linea.reservation_id.channel_type == 'operator':
+                        channel_c = 908
+                        chanel_r = 4
+                    if (channel_c == 907 or channel_c == 908):
+                        # Buscamos el nombre en los canales
+                        line_sales = next((
+                            x for x in canales_venta if x.name ==
+                            linea.reservation_id.sales_channel.name), False)
+                        if line_sales:
+                            # Buscamos en el listado
+                            line_descipcion = next((
+                                item for item in dic_clientes if
+                                item["Descripcion"] == line_sales.name), False)
+                            if line_descipcion:
+                                channel_c = line_descipcion['ID_Cliente']
                     # precio_iva = (precio_neto*10/100)
                     precio_iva = round(
                         precio_neto-(precio_neto/1.10), 2)
                     precio_neto -= precio_iva
-            else:
-                if linea.reservation_id.channel_type == 'door':
-                    channel_c = 903
-                    chanel_r = 0
-                elif linea.reservation_id.channel_type == 'mail':
-                    channel_c = 904
-                    chanel_r = 0
-                elif linea.reservation_id.channel_type == 'phone':
-                    channel_c = 905
-                    chanel_r = 0
-                elif linea.reservation_id.channel_type == 'call':
-                    channel_c = 906
-                    chanel_r = 2
-                elif linea.reservation_id.channel_type == 'agency':
-                    channel_c = 907
-                    chanel_r = 3
-                elif linea.reservation_id.channel_type == 'operator':
-                    channel_c = 908
-                    chanel_r = 4
-                if (channel_c == 907 or channel_c == 908):
-                    # Buscamos el nombre en los canales
-                    line_sales = next((
-                        x for x in canales_venta if x.name ==
-                        linea.reservation_id.sales_channel.name), False)
-                    if line_sales:
-                        # Buscamos en el listado
-                        line_descipcion = next((
-                            item for item in dic_clientes if
-                            item["Descripcion"] == line_sales.name), False)
-                        if line_descipcion:
-                            channel_c = line_descipcion['ID_Cliente']
-                # precio_iva = (precio_neto*10/100)
-                precio_iva = round(
-                    precio_neto-(precio_neto/1.10), 2)
-                precio_neto -= precio_iva
 
-            habitduerme = self.env['hotel.room'].search(
-                [('product_id.id', '=', linea.reservation_id.product_id.id)])
-            habitduermeid = habitduerme.price_virtual_room.id
-            habitreservoid = linea.reservation_id.virtual_room_id.id
+                habitduerme = self.env['hotel.room'].search(
+                    [('product_id.id', '=', linea.reservation_id.product_id.id)])
+                habitduermeid = habitduerme.price_virtual_room.id
+                habitreservoid = linea.reservation_id.virtual_room_id.id
 
-            dic_reservas.append({
-                'ID_Reserva': linea.reservation_id.folio_id.id,
-                'ID_Hotel': compan.id_hotel,
-                'ID_EstadoReserva': estado_array.index(id_estado_r),
-                'FechaVenta': linea.reservation_id.create_date[0:10],
-                'ID_Segmento': id_segmen,
-                'ID_Cliente': channel_c,
-                'ID_Canal': chanel_r,
-                'FechaExtraccion': date.today().strftime('%Y-%m-%d'),
-                'Entrada': linea.date,
-                'Salida': (datetime.strptime(linea.date, "%Y-%m-%d") +
-                           timedelta(days=1)).strftime("%Y-%m-%d"),
-                'Noches': 1,
-                'ID_TipoHabitacion': habitreservoid,
-                'ID_HabitacionDuerme': habitduermeid,
-                'ID_Regimen': 0,
-                'Adultos': linea.reservation_id.adults,
-                'Menores': linea.reservation_id.children,
-                'Cunas': 0,
-                'PrecioDiario': precio_neto,
-                'PrecioComision': precio_comision,
-                'PrecioIva': precio_iva,
-                'PrecioDto': precio_dto,
-                'ID_Tarifa': linea.reservation_id.pricelist_id.id,
-                'ID_Pais': id_codeine})
+                dic_reservas.append({
+                    'ID_Reserva': linea.reservation_id.folio_id.id,
+                    'ID_Hotel': compan.id_hotel,
+                    'ID_EstadoReserva': estado_array.index(id_estado_r),
+                    'FechaVenta': linea.reservation_id.create_date[0:10],
+                    'ID_Segmento': id_segmen,
+                    'ID_Cliente': channel_c,
+                    'ID_Canal': chanel_r,
+                    'FechaExtraccion': date.today().strftime('%Y-%m-%d'),
+                    'Entrada': linea.date,
+                    'Salida': (datetime.strptime(linea.date, "%Y-%m-%d") +
+                               timedelta(days=1)).strftime("%Y-%m-%d"),
+                    'Noches': 1,
+                    'ID_TipoHabitacion': habitreservoid,
+                    'ID_HabitacionDuerme': habitduermeid,
+                    'ID_Regimen': 0,
+                    'Adultos': linea.reservation_id.adults,
+                    'Menores': linea.reservation_id.children,
+                    'Cunas': 0,
+                    'PrecioDiario': precio_neto,
+                    'PrecioComision': precio_comision,
+                    'PrecioIva': precio_iva,
+                    'PrecioDto': precio_dto,
+                    'ID_Tarifa': linea.reservation_id.pricelist_id.id,
+                    'ID_Pais': id_codeine})
 
         dic_export = []  # Diccionario con todo lo necesario para exportar.
         if (archivo == 0) or (archivo == 1):
