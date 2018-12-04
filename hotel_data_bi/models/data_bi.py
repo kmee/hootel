@@ -34,6 +34,11 @@ def get_years():
     return year_list
 
 
+def inv_percent(amount, percent):
+    """Return the amount to which a percentage was applied."""
+    return round(amount*(100/float(100-percent)) - amount, 2)
+
+
 class Data_Bi(models.Model):
     """Management and export data for MopSolution MyDataBI."""
 
@@ -85,13 +90,12 @@ class Data_Bi(models.Model):
             archivo == 14 'Estado Reservas'
         fechafoto = start date to take data
         """
-        # fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
-        # Change this to local test
+
         if type(fechafoto) is dict:
             fechafoto = date.today()
         else:
             fechafoto = datetime.strptime(fechafoto, '%Y-%m-%d').date()
-        # fechafoto=date(2018, 01, 01)
+
         _logger.warning("Init Export Data_Bi Module")
 
         if not isinstance(archivo, int):
@@ -232,6 +236,7 @@ class Data_Bi(models.Model):
 
         lineas = self.env['res.partner.category'].search([])
         canales_venta = self.env['sales_channel'].search([])
+
         dic_segmentos = []  # Diccionario con Segmentación
         for linea in lineas:
             if linea.parent_id.name:
@@ -316,6 +321,15 @@ class Data_Bi(models.Model):
                    date(fechafoto.year, 1, 1).strftime('%Y-%m-%d')),
              ('reservation_id.reservation_type', '=', 'normal')],
             order="date")
+        # New sistem only send more of 60 days pased....
+        # lineas = self.env['hotel.reservation.line'].search(
+        #     ['&', ('create_date', '>=',
+        #            date(fechafoto.year, 1, 1).strftime('%Y-%m-%d')),
+        #      ('date', '>=',
+        #       (fechafoto - timedelta(days=60)).strftime('%Y-%m-%d')),
+        #      ('reservation_id.reservation_type', '=', 'normal')],
+        #     order="date")
+
         for linea in lineas:
             if linea.price > 0:
                 id_estado_r = linea.reservation_id.state
@@ -336,8 +350,8 @@ class Data_Bi(models.Model):
                     precio_dto = linea.price * (
                         linea.reservation_id.discount/100)
 
-                chanel_r = 0
-                channel_c = 0
+                chanel_r = 0  # For Canal
+                channel_c = 0  # For Cliente
                 precio_comision = 0
                 precio_iva = 0
                 precio_neto = linea.price
@@ -366,88 +380,69 @@ class Data_Bi(models.Model):
                                         "EXPEDIA Tarifa No Contemplada : "
                                         + jsonBooked)
 
-                                jsonPay = jsonExp['channel_data']['pay_model']
-                                if (jsonRate == "Standalone Room Only") or (
-                                        jsonRate == "Room Only"):
-                                    # Expedia TIPO 1 Merchant
-                                    if jsonPay == "merchant":
-                                        # Expedia TIPO 1 Merchant
-                                        precio_iva = round(
-                                            precio_neto-(precio_neto/1.10), 2)
-                                        precio_comision = round(precio_neto*(
-                                            100/float(100-18)) - precio_neto,
-                                                                2)
-                                        precio_neto += precio_comision
-                                        channel_c = 902
-                                    else:
-                                        # Expedia TIPO 1 Agency
-                                        precio_iva = round(
-                                            precio_neto-(precio_neto/1.10), 2)
-                                        precio_neto -= precio_iva
-                                        precio_comision = round(precio_neto-(
-                                            precio_neto/1.18), 2)
-                                        precio_neto -= precio_comision
-                                        channel_c = 902
-                                else:
-                                    if jsonRate == "Package Room Only":
-                                        if jsonPay == "merchant":
-                                            # Expedia TIPO2 MerchantEMPAQUETADA
-                                            comision1 = 0
-                                            comision2 = 0
-                                            precio_iva = round(precio_neto-(
-                                                precio_neto/1.10), 2)
-                                            comision1 = precio_neto*(
-                                                100/float(100-18)
-                                                ) - precio_neto
-                                            precio_neto += round(comision1, 2)
-                                            comision2 = precio_neto*(
-                                                100/float(100-10)
-                                                ) - precio_neto
-                                            precio_neto += round(comision2, 2)
-                                            precio_comision = round(
-                                                comision1 + comision2, 2)
-                                            channel_c = 901
-                                        else:
-                                            precio_iva = round(
-                                                precio_neto-(precio_neto/1.10
-                                                             ), 2)
-                                            precio_comision = round(
-                                                precio_neto*(100/float(
-                                                    100-18)) - precio_neto, 2)
-                                            precio_neto += precio_comision
-                                            channel_c = 902
-                                            _logger.error(
-                                               "---- " +
-                                               linea.reservation_id.partner_id.name
-                                               + " ----")
-                                            _logger.critical(
-                                                "Exp. PRO Tarifa No Contemplada : "
-                                                + jsonRate)
-                                    else:
-                                        precio_iva = round(
-                                            precio_neto-(precio_neto/1.10), 2)
-                                        precio_comision = round(precio_neto*(
-                                            100/float(100-18)
-                                            ) - precio_neto, 2)
-                                        precio_neto += precio_comision
-                                        channel_c = 902
-                                        _logger.error(
-                                            "---- " +
-                                            linea.reservation_id.partner_id.name +
-                                            " ----")
-                                        _logger.critical(
-                                            "Expedia Tarifa No Contemplada : "
-                                            + jsonRate)
-                            else:
-                                precio_iva = round(
-                                    precio_neto-(precio_neto/1.10), 2)
-                                precio_comision = round(precio_neto*(
-                                    100/float(100-18)) - precio_neto, 2)
+                                jsonRefundable = jsonRate.find('Refundable')
+                                # jsonIva = jsonExp['channel_data']['vat_included']
+                                # jsonPay = jsonExp['channel_data']['pay_model']
+                                # jsonExpcode = jsonExp['channel_reservation_code']
+
+                                # 10 % Iva
+                                precio_iva = round((precio_neto-(precio_neto/1.1)),2)
+                                # 18 % comision
+                                precio_comision = inv_percent(precio_neto, 18)
                                 precio_neto += precio_comision
-                                channel_c = 902
-                                _logger.error("--------------------------- " +
-                                              linea.reservation_id.partner_id.name
-                                              + " No Json DATA for EXPEDIA rates")
+                                # 3% Refundable ?
+                                if jsonRefundable >= 0:
+                                    precio_dto = inv_percent(precio_neto, 3)
+                                    precio_neto += precio_dto
+                                # precio_iva = inv_percent(precio_neto, 10)
+                                # if jsonIva == 1:
+                                #     precio_neto += precio_iva
+
+
+                            # if jsonRefundable >= 0:
+                            #
+                            #     # Debug Stop -------------------
+                            #     _logger.error(
+                            #     "---- ;" +
+                            #     linea.reservation_id.partner_id.name
+                            #     + " ----")
+                            #     _logger.critical(
+                            #     "Expedia 1 ;jsonRate ; "
+                            #     + jsonRate)
+                            #     _logger.critical(
+                            #     "Expedia 1 ;jsonPay ; "
+                            #     + jsonPay)
+                            #     _logger.critical(
+                            #     "Expedia 1 ;jsonRefundable ; "
+                            #     + str(jsonRefundable))
+                            #     _logger.critical(
+                            #     "Expedia 1 ;jsonIva ; "
+                            #     + str(jsonIva))
+                            #     _logger.critical(
+                            #     "Expedia 1 ;jsonExpcode ; "
+                            #     + jsonExpcode)
+                            #
+                            #     _logger.critical(
+                            #     "Odoo;"
+                            #     + str(linea.price)
+                            #     + " precio_neto;"
+                            #     + str(precio_neto)
+                            #     + " precio_iva;"
+                            #     + str(precio_iva)
+                            #     + " precio_comision;"
+                            #     + str(precio_comision)
+                            #     + " precio_dto;"
+                            #     + str(precio_dto)                            )
+                            #     # if linea.reservation_id.id == 3379:
+                            #     if jsonExpcode == '1125137600':
+                            #         import wdb; wdb.set_trace()
+                            #     if jsonExpcode == '1136234680':
+                            #     # #if jsonRefundable <> -1:
+                            #     #     import wdb; wdb.set_trace()
+                            #     #if jsonPay == 'agency':
+                            #     #if jsonRefundable <> -1:
+                            #         import wdb; wdb.set_trace()
+                            #       # Debug Stop -------------------
                         elif channel_c == 2:
                             # Booking.
                             precio_comision = (precio_neto*15/100)
@@ -511,7 +506,8 @@ class Data_Bi(models.Model):
                     precio_neto -= precio_iva
 
                 habitduerme = self.env['hotel.room'].search(
-                    [('product_id.id', '=', linea.reservation_id.product_id.id)])
+                    [('product_id.id', '=',
+                      linea.reservation_id.product_id.id)])
                 habitduermeid = habitduerme.price_virtual_room.id
                 habitreservoid = linea.reservation_id.virtual_room_id.id
 
@@ -524,7 +520,7 @@ class Data_Bi(models.Model):
                     'ID_Cliente': channel_c,
                     'ID_Canal': chanel_r,
                     'FechaExtraccion': date.today().strftime('%Y-%m-%d'),
-                    'Entrada': linea.date,
+                    'Entrada': linea.date,  # nuevo filtro maximo de dos meses (60dias) para sobre la fecha de extraccion
                     'Salida': (datetime.strptime(linea.date, "%Y-%m-%d") +
                                timedelta(days=1)).strftime("%Y-%m-%d"),
                     'Noches': 1,
