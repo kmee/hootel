@@ -317,9 +317,7 @@ class Data_Bi(models.Model):
         #      ('reservation_id.reservation_type', '=', 'normal'),
         #      ], order="date")
         lineas = self.env['hotel.reservation.line'].search(
-            ['&', ('create_date', '>=',
-                   date(fechafoto.year, 1, 1).strftime('%Y-%m-%d')),
-             ('reservation_id.reservation_type', '=', 'normal')],
+            [('reservation_id.reservation_type', '=', 'normal')],
             order="date")
         # New sistem only send more of 60 days pased....
         # lineas = self.env['hotel.reservation.line'].search(
