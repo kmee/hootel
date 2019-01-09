@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2018 Alda Hotels <informatica@aldahotels.com>
+#    Copyright (C) 2018 -2019 Alda Hotels <informatica@aldahotels.com>
 #                       Jose Luis Algara <osotranquilo@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -316,17 +316,16 @@ class Data_Bi(models.Model):
         #     ['&', ('date', '>=', fechafoto),
         #      ('reservation_id.reservation_type', '=', 'normal'),
         #      ], order="date")
-        lineas = self.env['hotel.reservation.line'].search(
-            [('reservation_id.reservation_type', '=', 'normal')],
-            order="date")
-        # New sistem only send more of 60 days pased....
         # lineas = self.env['hotel.reservation.line'].search(
-        #     ['&', ('create_date', '>=',
-        #            date(fechafoto.year, 1, 1).strftime('%Y-%m-%d')),
-        #      ('date', '>=',
-        #       (fechafoto - timedelta(days=60)).strftime('%Y-%m-%d')),
-        #      ('reservation_id.reservation_type', '=', 'normal')],
+        #     [('reservation_id.reservation_type', '=', 'normal')],
         #     order="date")
+
+        # New sistem only send more of 60 days pased....
+        lineas = self.env['hotel.reservation.line'].search(
+            ['&', ('date', '>=', (
+                fechafoto - timedelta(days=60)).strftime('%Y-%m-%d')),
+             ('reservation_id.reservation_type', '=', 'normal')],
+            order="date")
 
         for linea in lineas:
             if linea.price > 0:
@@ -379,9 +378,6 @@ class Data_Bi(models.Model):
                                         + jsonBooked)
 
                                 jsonRefundable = jsonRate.find('Refundable')
-                                # jsonIva = jsonExp['channel_data']['vat_included']
-                                # jsonPay = jsonExp['channel_data']['pay_model']
-                                # jsonExpcode = jsonExp['channel_reservation_code']
 
                                 # 10 % Iva
                                 precio_iva = round((precio_neto-(precio_neto/1.1)),2)
@@ -392,55 +388,7 @@ class Data_Bi(models.Model):
                                 if jsonRefundable >= 0:
                                     precio_dto = inv_percent(precio_neto, 3)
                                     precio_neto += precio_dto
-                                # precio_iva = inv_percent(precio_neto, 10)
-                                # if jsonIva == 1:
-                                #     precio_neto += precio_iva
 
-
-                            # if jsonRefundable >= 0:
-                            #
-                            #     # Debug Stop -------------------
-                            #     _logger.error(
-                            #     "---- ;" +
-                            #     linea.reservation_id.partner_id.name
-                            #     + " ----")
-                            #     _logger.critical(
-                            #     "Expedia 1 ;jsonRate ; "
-                            #     + jsonRate)
-                            #     _logger.critical(
-                            #     "Expedia 1 ;jsonPay ; "
-                            #     + jsonPay)
-                            #     _logger.critical(
-                            #     "Expedia 1 ;jsonRefundable ; "
-                            #     + str(jsonRefundable))
-                            #     _logger.critical(
-                            #     "Expedia 1 ;jsonIva ; "
-                            #     + str(jsonIva))
-                            #     _logger.critical(
-                            #     "Expedia 1 ;jsonExpcode ; "
-                            #     + jsonExpcode)
-                            #
-                            #     _logger.critical(
-                            #     "Odoo;"
-                            #     + str(linea.price)
-                            #     + " precio_neto;"
-                            #     + str(precio_neto)
-                            #     + " precio_iva;"
-                            #     + str(precio_iva)
-                            #     + " precio_comision;"
-                            #     + str(precio_comision)
-                            #     + " precio_dto;"
-                            #     + str(precio_dto)                            )
-                            #     # if linea.reservation_id.id == 3379:
-                            #     if jsonExpcode == '1125137600':
-                            #         import wdb; wdb.set_trace()
-                            #     if jsonExpcode == '1136234680':
-                            #     # #if jsonRefundable <> -1:
-                            #     #     import wdb; wdb.set_trace()
-                            #     #if jsonPay == 'agency':
-                            #     #if jsonRefundable <> -1:
-                            #         import wdb; wdb.set_trace()
-                            #       # Debug Stop -------------------
                         elif channel_c == 2:
                             # Booking.
                             precio_comision = (precio_neto*15/100)
