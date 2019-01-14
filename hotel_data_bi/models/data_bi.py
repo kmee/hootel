@@ -212,10 +212,14 @@ class Data_Bi(models.Model):
 
         dic_bloqueos = []  # Diccionario con Bloqueos
         lineas = self.env['hotel.reservation.line'].search(
-            ['&', ('create_date', '>=',
-                   date(fechafoto.year, 1, 1).strftime('%Y-%m-%d')),
+            # ['&', ('create_date', '>=',
+            #        date(fechafoto.year, 1, 1).strftime('%Y-%m-%d')),
+            #  ('reservation_id.reservation_type', '<>', 'normal')],
+            ['&', ('date', '>=', (
+                fechafoto - timedelta(days=60)).strftime('%Y-%m-%d')),
              ('reservation_id.reservation_type', '<>', 'normal')],
             order="date")
+
         for linea in lineas:
             if linea.reservation_id.state != 'cancelled':
                 if linea.reservation_id.reservation_type == 'out':
