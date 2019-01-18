@@ -68,7 +68,7 @@
       <div class="page">
         <style>
           .titulo {
-          	font-size: 1.2em;
+          	font-size: 4.2em;
           	text-align: center;}
           .marco {
           	border-radius: 47px 10px 10px 10px;
@@ -101,16 +101,16 @@
           .pie{font-size: 0.65em;
             margin: 0 0 4em 0}
           .tipo{
-          	font-size: 1.2em;
+          	font-size: 3.2em;
             font-weight:bold;}
           .notas{
           	width: 90% !important;
           	margin: 3px 4px;
           	color:#000000;
           	text-align:left;
-            font-size: 1em;}
-          .habitacion{font-size: 1.2em; padding: 0 0 0 3px;}
-          .datos{font-size: 0.8em;}
+            font-size: 2em;}
+          .habitacion{font-size: 3.2em; padding: 0 0 0 3px;}
+          .datos{font-size: 2.4em;}
           .section {
           	clear: both;
           	padding: 0px;

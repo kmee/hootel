@@ -3,7 +3,7 @@
 <data>
     <template id="report_viajero_document">
             <t t-set="company" t-value="res_company"></t>
-            <div class="page" style="font-size:xx-small; padding-left: 0 !important; padding-right: 0 !important;">
+            <div class="page" style="font-size:large; padding-left: 0 !important; padding-right: 0 !important;">
                 <div class="container-fluid" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
                     <div class="row cabezera" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
                         <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
@@ -124,7 +124,7 @@
                 </div>
             </div>
 
-                        <div class="page" style="font-size:xx-small; padding-left: 0 !important; padding-right: 0 !important;">
+                        <div class="page" style="font-size:large; padding-left: 0 !important; padding-right: 0 !important;">
                             <div class="container-fluid" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
                                 <div class="row cabezera" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
                                     <div class="col-md-12 text-center" style="margin:0 0 0 0 !important; padding-left: 0 !important; padding-right: 0 !important;">
