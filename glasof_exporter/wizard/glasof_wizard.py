@@ -170,7 +170,7 @@ class GlassofExporterWizard(models.TransientModel):
         for inv in account_invs:
             if inv.partner_id.parent_id:
                 firstname = inv.partner_id.parent_id.firstname or ''
-                lastname = inv.partner_id.parent_id.lastnme or ''
+                lastname = inv.partner_id.parent_id.lastname or ''
             else:
                 firstname = inv.partner_id.firstname or ''
                 lastname = inv.partner_id.lastname or ''
