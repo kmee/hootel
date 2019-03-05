@@ -329,6 +329,7 @@ class HotelReservation(models.Model):
         ('web', 'Web'),
         ('agency', 'Agencia'),
         ('operator', 'Touroperador'),
+        ('virtualdoor', 'Puerta Virtual'),
         ], 'Sales Channel')
     sales_channel = fields.Many2one(related='folio_id.sales_channel')
     last_updated_res = fields.Datetime('Last Updated')
