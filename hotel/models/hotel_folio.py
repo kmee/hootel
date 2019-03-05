@@ -157,7 +157,8 @@ class HotelFolio(models.Model):
         ('phone', 'Phone'),
         ('web', 'Web'),
         ('agency', 'Agencia'),
-        ('operator', 'Touroperador')
+        ('operator', 'Touroperador'),
+        ('virtualdoor', 'Puerta Virtual'),
         ], 'Sales Channel')
     sales_channel = fields.Many2one('sales_channel', 'Proveedor')
     num_invoices = fields.Integer(compute='_compute_num_invoices')
