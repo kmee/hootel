@@ -144,8 +144,9 @@ class HotelReservation(models.Model):
 
     @api.multi
     def set_call_center_user(self):
-        user = self.env['res.users'].browse(self.env.uid)
-        rec.call_center = user.has_group('hotel.group_hotel_call')
+        for rec in self:
+            user = self.env['res.users'].browse(self.env.uid)
+            rec.call_center = user.has_group('hotel.group_hotel_call')
 
     @api.multi
     def _get_default_checkin(self):
