@@ -5436,7 +5436,7 @@ msgstr "Informações gerais"
 #. module: hotel
 #: model:ir.ui.menu,name:hotel.menu_open_hotel_folio1_form_tree_all
 msgid "Generate Folio"
-msgstr "Criar Fólio"
+msgstr "Fólios"
 
 #. module: hotel
 #: model:ir.model.fields,help:hotel.field_hotel_room_amenities_packaging_ids
