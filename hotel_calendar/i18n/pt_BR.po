@@ -1418,7 +1418,7 @@ msgstr "Quartos virtuais"
 #: code:addons/hotel_calendar/static/src/xml/hotel_calendar_view.xml:15
 #, python-format
 msgid "BOOKS"
-msgstr "RESERVAS"
+msgstr "PESQUISAR RESERVA"
 
 #. module: hotel_calendar
 #. openerp-web
