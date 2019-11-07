@@ -5296,7 +5296,7 @@ msgstr "Estrutura do andar"
 #: model:ir.ui.menu,name:hotel.menu_all_folio
 #: model:ir.ui.view,arch_db:hotel.view_hotel_folio1_form
 msgid "Folio"
-msgstr "Fólio"
+msgstr "Reservas"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_reservation_form
