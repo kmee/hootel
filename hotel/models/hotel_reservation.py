@@ -774,6 +774,8 @@ class HotelReservation(models.Model):
         """
         if not 'reservation_type' in vals or not vals.get('reservation_type'):
             vals.update({'reservation_type': 'normal'})
+
+        folio = False
         if 'folio_id' in vals:
             folio = self.env["hotel.folio"].browse(vals['folio_id'])
             vals.update({'order_id': folio.order_id.id,
