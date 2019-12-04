@@ -3941,7 +3941,7 @@ msgstr ""
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.report_currency_exchange
 msgid "A. Details of Foreign Currency Notes Purchased"
-msgstr "A. Details of Foreign Currency Notes Purchased"
+msgstr "A. Detalhes de Notas de Moedas Estrangeiras Adquiridas"
 
 #. module: hotel
 #: model:ir.model.fields,help:hotel.field_folio_advance_payment_inv_deposit_account_id
@@ -3978,7 +3978,7 @@ msgstr "Ativo"
 #. module: hotel
 #: model:ir.actions.act_window,name:hotel.launch_checkin_wizard_add
 msgid "Add Check"
-msgstr "Add Check"
+msgstr "Adicionar Checkin"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.checkin_wizard_form_2
@@ -3999,7 +3999,7 @@ msgstr "Adultos"
 #: code:addons/hotel/wizard/folio_make_invoice_advance.py:161
 #, python-format
 msgid "Advance: %s"
-msgstr "Advance: %s"
+msgstr "Avançar: %s"
 
 #. module: hotel
 #: selection:hotel.folio,channel_type:0
@@ -4204,7 +4204,7 @@ msgstr "Reserva pendente"
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_folio1_form
 msgid "Branch"
-msgstr "Branch"
+msgstr "Ramo"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_folio1_form
@@ -4218,12 +4218,12 @@ msgstr "Calcula o preço total"
 #: model:ir.ui.view,arch_db:hotel.view_hotel_folio_search
 #: model:ir.ui.view,arch_db:hotel.view_hotel_reservation_search
 msgid "Call Center"
-msgstr "Call Center"
+msgstr "Central de Atendimento"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_call_center
 msgid "Call center"
-msgstr "Call center"
+msgstr "Central de Atendimento"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_qty_delivered_updateable
@@ -4924,7 +4924,7 @@ msgstr "Defina os impostos do fornecedor, se houver algum."
 #: model:ir.ui.view,arch_db:hotel.view_account_payment_folio_form
 #: model:ir.ui.view,arch_db:hotel.view_hotel_room_kanban
 msgid "Delete"
-msgstr "Delete"
+msgstr "Deletar"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_qty_delivered
@@ -5556,7 +5556,7 @@ msgstr "Gestão Hoteleira/ Gerente"
 #. module: hotel
 #: model:ir.actions.act_window,name:hotel.action_hotel_massive_change
 msgid "Hotel Massive Change"
-msgstr "Hotel Massive Change"
+msgstr "Alteração em Massa"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_currency_exchange_hotel_id
@@ -5793,7 +5793,7 @@ msgstr "Entrada"
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_folio_incoterm
 msgid "Incoterms"
-msgstr "Incoterms"
+msgstr "Incotermos"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_room_amenities_form
@@ -6076,7 +6076,7 @@ msgstr "É Check-out"
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_room_form
 msgid "It allows several reservations on the same room simultaneously based on the capacity of people"
-msgstr "It allows several reservations on the same room simultaneously based on the capacity of people"
+msgstr "Permite diversas reservas no mesmo quarto baseado na capacidade de pessoas"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_account_payment_folio_form
@@ -6332,7 +6332,7 @@ msgstr "Mudanças em massa"
 #: model:ir.ui.view,arch_db:hotel.view_hotel_folio1_form
 #: model:ir.ui.view,arch_db:hotel.view_hotel_reservation_form
 msgid "Massive Day Prices"
-msgstr "Massive Day Prices"
+msgstr "Preços em lote diário"
 
 #. module: hotel
 #: model:ir.actions.act_window,name:hotel.action_hotel_massive_price_change_reservation_days
@@ -6490,7 +6490,7 @@ msgstr "Sem OTA (Agência)"
 #. module: hotel
 #: selection:hotel.reservation,cancelled_reason:0
 msgid "No Show"
-msgstr "No Show"
+msgstr "Não exibir"
 
 #. module: hotel
 #: selection:hotel.folio,reservation_type:0
@@ -6551,12 +6551,12 @@ msgstr "Quantidade de mensagens não lidas"
 #: selection:hotel.reservation,state:0
 #: model:ir.ui.view,arch_db:hotel.view_hotel_reservation_search
 msgid "On Board"
-msgstr "On Board"
+msgstr "Em andamento"
 
 #. module: hotel
 #: selection:hotel.folio,hotel_policy:0
 msgid "On Booking"
-msgstr "On Booking"
+msgstr "Listando"
 
 #. module: hotel
 #: selection:hotel.folio,hotel_policy:0
@@ -6652,7 +6652,7 @@ msgstr "Outros"
 #. module: hotel
 #: selection:hotel.reservation,state:0
 msgid "Out"
-msgstr "Out"
+msgstr "CheckOut"
 
 #. module: hotel
 #: selection:hotel.folio,reservation_type:0
@@ -6676,7 +6676,7 @@ msgstr "Moeda de saída"
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_reservation_search
 msgid "Overbookings"
-msgstr "Overbookings"
+msgstr "Listas de Reservas"
 
 #. module: hotel
 #: model:ir.model.fields,field_description:hotel.field_hotel_reservation_product_packaging
@@ -8308,7 +8308,7 @@ msgstr "Valor Total"
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.report_hotel_folio
 msgid "Total Collection"
-msgstr "Total Collection"
+msgstr "Coleção Total"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_folio1_form
@@ -8876,13 +8876,13 @@ msgstr "hotel.wizard.split.reservation"
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.report_currency_exchange
 msgid "in"
-msgstr "in"
+msgstr "em"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.view_hotel_folio1_form
 #: model:ir.ui.view,arch_db:hotel.view_hotel_reservation_form
 msgid "mobile"
-msgstr "mobile"
+msgstr "móvel"
 
 #. module: hotel
 #: model:ir.ui.view,arch_db:hotel.invoice_form
