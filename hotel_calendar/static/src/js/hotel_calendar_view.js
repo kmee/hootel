@@ -490,15 +490,22 @@ var HotelCalendarView = View.extend({
             startDate.set({'hour': def_arrival_hour[0], 'minute': def_arrival_hour[1], 'second': 0});
             endDate.set({'hour': def_departure_hour[0], 'minute': def_departure_hour[1], 'second': 0});
 
+            var context = {
+              'default_checkin': startDate.utc().format(ODOO_DATETIME_MOMENT_FORMAT),
+              'default_checkout': endDate.utc().format(ODOO_DATETIME_MOMENT_FORMAT),
+              'default_adults': numBeds,
+              'default_children': 0,
+              'default_product_id': room.id,
+            };
+
+            Object.entries(self.dataset.context).forEach(([key, value]) => {
+                if(typeof value !== 'object')
+                    context[key] = value
+            });
+
             var popCreate = new Common.FormViewDialog(self, {
                 res_model: 'hotel.reservation',
-                context: {
-                  'default_checkin': startDate.utc().format(ODOO_DATETIME_MOMENT_FORMAT),
-                  'default_checkout': endDate.utc().format(ODOO_DATETIME_MOMENT_FORMAT),
-                  'default_adults': numBeds,
-                  'default_children': 0,
-                  'default_product_id': room.id,
-                },
+                context: context,
                 title: _t("Create: ") + _t("Reservation"),
                 initial_view: "form",
                 disable_multiple_selection: true,
