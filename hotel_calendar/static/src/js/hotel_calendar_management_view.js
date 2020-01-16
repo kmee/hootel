@@ -86,7 +86,7 @@ var HotelCalendarManagementView = View.extend({
         this.view_type = 'mpms';
         this.selected_filters = [];
         this.mutex = new Utils.Mutex();
-        this._model = new Model(this.dataset.model);
+        this._model = new Model(this.dataset.model, this.dataset.context, this.dataset.domain);
         this._action_manager = this.findAncestor(function(ancestor){ return ancestor instanceof ActionManager; });
 
         Bus.on("notification", this, this._on_bus_signal);

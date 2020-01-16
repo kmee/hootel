@@ -275,11 +275,15 @@ class HotelReservation(models.Model):
         }
 
     @api.model
-    def get_hcalendar_all_data(self, dfrom, dto, withRooms=True):
+    def get_hcalendar_all_data(self, dfrom, dto, withRooms=True, **kwargs):
         if not dfrom or not dto:
             raise ValidationError(_('Input Error: No dates defined!'))
 
-        rooms = self.env['hotel.room'].search([], order='hcal_sequence ASC')
+        domain = kwargs.get('domain', [])
+        if domain:
+            domain = [tuple(domain[0])]
+        rooms = self.env['hotel.room'].search(
+            domain, order='hcal_sequence ASC')
         json_res, json_res_tooltips = self.get_hcalendar_reservations_data(
             dfrom, dto, rooms)
 

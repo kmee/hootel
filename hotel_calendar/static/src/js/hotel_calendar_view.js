@@ -193,7 +193,7 @@ var HotelCalendarView = View.extend({
       this.view_type = 'pms';
       this.selected_filters = [];
       this.mutex = new Utils.Mutex();
-      this._model = new Model(this.dataset.model);
+      this._model = new Model(this.dataset.model, this.dataset.context, this.dataset.domain);
       this._action_manager = this.findAncestor(function(ancestor){ return ancestor instanceof ActionManager; });
 
       Bus.on("notification", this, this._on_bus_signal);
@@ -525,7 +525,10 @@ var HotelCalendarView = View.extend({
           domains['dates'][0].format(ODOO_DATETIME_MOMENT_FORMAT),
           domains['dates'][1].format(ODOO_DATETIME_MOMENT_FORMAT)
         ];
-        this._model.call('get_hcalendar_all_data', oparams).then(function(results){
+        var kwargs = {
+            "domain": this._model._domain,
+        };
+        this._model.call('get_hcalendar_all_data', oparams, kwargs).then(function(results){
             self._days_tooltips = results['events'];
             self._reserv_tooltips = results['tooltips'];
             var rooms = [];
