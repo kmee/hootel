@@ -413,6 +413,7 @@ td.hcal-cell-room-type-group-item {
 	vertical-align: middle;
 	font-size: x-small;
 	white-space: nowrap;
+	width: 108px !important;
 }
 td.hcal-cell-room-type-group-item:last-child {
 	border-right-width: 2px;
