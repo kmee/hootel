@@ -415,6 +415,9 @@ td.hcal-cell-room-type-group-item {
 	white-space: nowrap;
 	width: 108px !important;
 }
+td.hcal-cell-room-type-group-item.btn-hcal-flat {
+	width: 0 !important;
+}
 td.hcal-cell-room-type-group-item:last-child {
 	border-right-width: 2px;
 }

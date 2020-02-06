@@ -2326,7 +2326,6 @@ HotelCalendar.prototype = {
 
   _onCellMouseUp: function(ev) {
     if (this._cellSelection.start &&
-        this._cellSelection.start != ev.target &&
         this._cellSelection.start.dataset.hcalParentRow === ev.target.dataset.hcalParentRow) {
       this._cellSelection.end = ev.target;
 
