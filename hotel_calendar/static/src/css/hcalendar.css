@@ -293,6 +293,7 @@
 	white-space: nowrap;
 	overflow: hidden;
 	z-index:8;
+	min-width: 2.5% !important;
 }
 .hcal-reservation:hover {
 	background-color: #4e97bf;
