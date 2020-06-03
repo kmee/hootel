@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-31 18:24+0000\n"
-"PO-Revision-Date: 2019-10-31 18:24+0000\n"
+"POT-Creation-Date: 2020-06-03 18:46+0000\n"
+"PO-Revision-Date: 2020-06-03 18:46+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -209,7 +209,7 @@ msgstr "CHECK-OUT"
 
 #. module: hotel_calendar
 #. openerp-web
-#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:856
+#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:866
 #, python-format
 msgid "CONTINUE"
 msgstr "CONTINUAR"
@@ -245,7 +245,7 @@ msgstr "Cores do calendário"
 #. module: hotel_calendar
 #: model:ir.model.fields,field_description:hotel_calendar.field_hotel_folio_wizard_call_center
 msgid "Call center"
-msgstr "Call center"
+msgstr "Central de Atendimento"
 
 #. module: hotel_calendar
 #: model:ir.model.fields,field_description:hotel_calendar.field_hotel_virtual_room_wizard_can_confirm
@@ -408,7 +408,7 @@ msgstr "Criar Reservas"
 
 #. module: hotel_calendar
 #. openerp-web
-#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:502
+#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:509
 #, python-format
 msgid "Create: "
 msgstr "Criado: "
@@ -512,7 +512,7 @@ msgstr "E-mail"
 
 #. module: hotel_calendar
 #. openerp-web
-#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:863
+#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:873
 #, python-format
 msgid "END"
 msgstr "END"
@@ -606,7 +606,7 @@ msgstr "Fólio Check-out"
 #: model:ir.model.fields,field_description:hotel_calendar.field_hotel_virtual_room_wizard_id
 #: model:ir.model.fields,field_description:hotel_calendar.field_virtual_room_pricelist_cached_id
 msgid "ID"
-msgstr "ID"
+msgstr "Identificação"
 
 #. module: hotel_calendar
 #: code:addons/hotel_calendar/models/hotel_calendar_management.py:288
@@ -640,7 +640,7 @@ msgid "Invalid Swap Operation, can't make this movement :/"
 msgstr "Invalid Swap Operation, can't make this movement :/"
 
 #. module: hotel_calendar
-#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:333
+#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:337
 #, python-format
 msgid "Invalid swap parameters"
 msgstr "Valores incorretos para troca"
@@ -661,7 +661,7 @@ msgstr "LOCALIZAÇÃO:"
 #: model:ir.model.fields,field_description:hotel_calendar.field_hotel_virtual_room_wizard___last_update
 #: model:ir.model.fields,field_description:hotel_calendar.field_virtual_room_pricelist_cached___last_update
 msgid "Last Modified on"
-msgstr "Última Modificação em"
+msgstr "Última atualização em"
 
 #. module: hotel_calendar
 #: model:ir.model.fields,field_description:hotel_calendar.field_bus_hotel_calendar_write_uid
@@ -926,7 +926,7 @@ msgstr "Open"
 #: code:addons/hotel_calendar/static/src/js/open_reservation_wizard_listview_button.js:21
 #, python-format
 msgid "Open Wizard"
-msgstr "Open Wizard"
+msgstr "Várias reservas"
 
 #. module: hotel_calendar
 #. openerp-web
@@ -1044,31 +1044,31 @@ msgstr "Real Max"
 
 #. module: hotel_calendar
 #. openerp-web
-#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:502
+#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:509
 #, python-format
 msgid "Reservation"
 msgstr "Reserva"
 
 #. module: hotel_calendar
-#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:389
+#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:393
 #, python-format
 msgid "Reservation Cancelled"
 msgstr "Reserva Cancelada"
 
 #. module: hotel_calendar
-#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:389
+#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:393
 #, python-format
 msgid "Reservation Changed"
 msgstr "Reserva Alterada"
 
 #. module: hotel_calendar
-#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:371
+#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:375
 #, python-format
 msgid "Reservation Created"
 msgstr "Reserva Criada"
 
 #. module: hotel_calendar
-#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:399
+#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:403
 #, python-format
 msgid "Reservation Deleted"
 msgstr "Reserva Apagada"
@@ -1148,7 +1148,7 @@ msgstr "SEGMENTAÇÃO:"
 #. module: hotel_calendar
 #. openerp-web
 #: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:363
-#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:870
+#: code:addons/hotel_calendar/static/src/js/hotel_calendar_view.js:880
 #: code:addons/hotel_calendar/static/src/xml/hotel_calendar_view.xml:25
 #, python-format
 msgid "START SWAP"
@@ -1178,7 +1178,12 @@ msgstr "Gravas mudanças"
 #: code:addons/hotel_calendar/static/src/xml/hotel_calendar_view.xml:19
 #, python-format
 msgid "Search..."
-msgstr "Search..."
+msgstr "Busca..."
+
+#. module: hotel_calendar
+#: model:ir.model.fields,field_description:hotel_calendar.field_hotel_room_hcal_sequence
+msgid "Sequência no Calendário"
+msgstr "Sequência no Calendário"
 
 #. module: hotel_calendar
 #: model:ir.model.fields,field_description:hotel_calendar.field_hotel_service_wizard_product_id
@@ -1348,7 +1353,7 @@ msgstr "Terça-feira"
 
 #. module: hotel_calendar
 #: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:72
-#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:320
+#: code:addons/hotel_calendar/models/inherited_hotel_reservation.py:324
 #, python-format
 msgid "Undefined"
 msgstr "Indefinido"

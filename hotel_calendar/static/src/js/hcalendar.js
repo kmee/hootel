@@ -988,7 +988,7 @@ HotelCalendar.prototype = {
     edit.style.width = "100%";
     edit.style.display = 'block';
     edit.setAttribute('id', 'cal-search-query');
-    edit.setAttribute('placeholder', 'Search...');
+    edit.setAttribute('placeholder', 'Buscar...');
     cell.appendChild(edit);
 
     edit.addEventListener('keypress', function(ev){
@@ -1212,7 +1212,7 @@ HotelCalendar.prototype = {
       row.setAttribute('id', "ROW_DETAIL_TOTAL_FREE");
       row.classList.add('hcal-row-detail-room-free-total-group-item');
       cell = row.insertCell();
-      cell.textContent = 'FREE TOTAL';
+      cell.textContent = 'TOTAL LIVRE';
       cell.classList.add('hcal-cell-detail-room-free-total-group-item');
       cell.classList.add('btn-hcal');
       cell.classList.add('btn-hcal-flat');
