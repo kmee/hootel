@@ -29,7 +29,7 @@
             <field name="name">hotel.reservation.form</field>
             <field name="model">hotel.reservation</field>
             <field name="arch" type="xml">
-                <form string="Reservation" >
+                <form string="Reservation" delete="false">
                     <header>
                         <field name="splitted" invisible="True" />
                         <field name="parent_reservation" invisible="True" />
