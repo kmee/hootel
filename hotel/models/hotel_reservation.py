@@ -1094,7 +1094,7 @@ class HotelReservation(models.Model):
                    reservation period')
             raise ValidationError(warning_msg)
         domain_rooms = [
-            ('isroom', '=', True),
+            # ('isroom', '=', True),
             ('id', 'not in', rooms_occupied)
         ]
         if self.check_rooms:
