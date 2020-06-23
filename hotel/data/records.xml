@@ -1,5 +1,5 @@
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
 
         <record model="hotel.virtual.room.restriction">
             <field name="name">Default Restrictions</field>
@@ -16,11 +16,11 @@
 
         <function id="default_generate_default_arrival_hour"
             model="ir.values" name="set_default"
-            eval="('hotel.config.settings', 'default_arrival_hour', '14:00')"/>
+            eval="('hotel.config.settings', 'default_arrival_hour', '11:00')"/>
 
         <function id="default_generate_default_departure_hour"
             model="ir.values" name="set_default"
-            eval="('hotel.config.settings', 'default_departure_hour', '12:00')"/>
+            eval="('hotel.config.settings', 'default_departure_hour', '13:00')"/>
 
     </data>
 </odoo>
