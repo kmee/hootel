@@ -1220,4 +1220,17 @@ class HotelReservation(models.Model):
             ('state', '!=', 'cancelled'),
             ('overbooking', '=', False)
         ])
+
+        if days_diff == 0:
+            days_diff = 2
+        else:
+            days_diff += 1
+        dates_list = date_utils.generate_dates_list(checkin_dt, days_diff or 1,
+                                                    stz=tz_hotel)
+        reservations += self.env['hotel.reservation'].search([
+            ('reservation_lines.date', 'in', dates_list),
+            ('state', '!=', 'cancelled'),
+            ('overbooking', '=', False),
+            ('has_pernoite', '=', True)
+        ])
         return reservations
