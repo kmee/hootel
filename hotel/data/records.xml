@@ -16,7 +16,7 @@
 
         <function id="default_generate_default_arrival_hour"
             model="ir.values" name="set_default"
-            eval="('hotel.config.settings', 'default_arrival_hour', '11:00')"/>
+            eval="('hotel.config.settings', 'default_arrival_hour', '14:00')"/>
 
         <function id="default_generate_default_departure_hour"
             model="ir.values" name="set_default"
