@@ -805,10 +805,13 @@ class HotelReservation(models.Model):
 
             adult_guests = 0
             for guest_id in record.guest_ids:
-                birthdate_date = fields.Date.from_string(guest_id.birthdate)
-                delta_age = relativedelta(date.today(), birthdate_date)
-                age_years = delta_age.years
-                if age_years > 17:
+                # NO LONGER ANALYSE GUEST AGE -  GET FROM SELECTION FIELD
+                # birthdate_date = fields.Date.from_string(guest_id.birthdate)
+                # delta_age = relativedelta(date.today(), birthdate_date)
+                # age_years = delta_age.years
+                # if age_years > 17:
+                #     adult_guests += 1
+                if guest_id.guest_type == 'guest':
                     adult_guests += 1
 
             if persons > room.capacity:
